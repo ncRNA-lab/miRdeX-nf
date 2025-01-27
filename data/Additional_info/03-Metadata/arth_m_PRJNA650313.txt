@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA650313, SRR12377947, treated, high-light, 3, 1500u, 2h, Col-0, rosette, 30d, G.0, single
+arth, PRJNA650313, SRR12377948, treated, high-light, 2, 1500u, 2h, Col-0, rosette, 30d, G.0, single
+arth, PRJNA650313, SRR12377949, treated, high-light, 1, 1500u, 2h, Col-0, rosette, 30d, G.0, single
+arth, PRJNA650313, SRR12377950, control, high-light, 3, 100-120u, 2h, Col-0, rosette, 30d, G.0, single
+arth, PRJNA650313, SRR12377951, control, high-light, 2, 100-120u, 2h, Col-0, rosette, 30d, G.0, single
+arth, PRJNA650313, SRR12377952, control, high-light, 1, 100-120u, 2h, Col-0, rosette, 30d, G.0, single

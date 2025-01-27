@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA793928, SRR17439323, control, drought, 3, L.0, T.0, Shanchuan24, leaves, Seeding-stage, G.0, single
+orsa, PRJNA793928, SRR17439324, control, drought, 2, L.0, T.0, Shanchuan24, leaves, Seeding-stage, G.0, single
+orsa, PRJNA793928, SRR17439325, control, drought, 1, L.0, T.0, Shanchuan24, leaves, Seeding-stage, G.0, single
+orsa, PRJNA793928, SRR17439326, treated, drought, 3, L.0, T.0, Shanchuan24, leaves, Seeding-stage, G.0, single
+orsa, PRJNA793928, SRR17439329, treated, drought, 2, L.0, T.0, Shanchuan24, leaves, Seeding-stage, G.0, single
+orsa, PRJNA793928, SRR17439330, treated, drought, 1, L.0, T.0, Shanchuan24, leaves, Seeding-stage, G.0, single

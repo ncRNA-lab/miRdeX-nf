@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+agmo, PRJNA431719, SRR6516044, control, drought, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single
+agmo, PRJNA431719, SRR6516713, control, drought, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single
+agmo, PRJNA431719, SRR6824284, treated, drought, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single
+agmo, PRJNA431719, SRR6516045, treated, drought, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single

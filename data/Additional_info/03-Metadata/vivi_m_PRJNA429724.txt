@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+vivi, PRJNA429724, SRR6476611, control, flavescence-doree, 1, L.0, T.0, Barbera, leaves, D.0, G.0, single
+vivi, PRJNA429724, SRR6476612, treated, flavescence-doree, 3, L.0, T.0, Barbera, leaves, D.0, G.0, single
+vivi, PRJNA429724, SRR6476613, treated, flavescence-doree, 2, L.0, T.0, Barbera, leaves, D.0, G.0, single
+vivi, PRJNA429724, SRR6476614, treated, flavescence-doree, 1, L.0, T.0, Barbera, leaves, D.0, G.0, single
+vivi, PRJNA429724, SRR6476617, control, flavescence-doree, 3, L.0, T.0, Barbera, leaves, D.0, G.0, single
+vivi, PRJNA429724, SRR6476618, control, flavescence-doree, 2, L.0, T.0, Barbera, leaves, D.0, G.0, single

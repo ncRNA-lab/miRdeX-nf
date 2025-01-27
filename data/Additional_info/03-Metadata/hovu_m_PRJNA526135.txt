@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+hovu, PRJNA526135, SRR8698934, treated, drought, 2, 30%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698935, treated, drought, 3, 30%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698937, treated, drought, 1, 30%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698948, control, drought, 1, 70%:30%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698949, control, drought, 2, 70%:30%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698963, control, drought, 3, 70%:20%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698964, control, drought, 2, 70%:20%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698965, control, drought, 1, 70%:20%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698966, treated, drought, 3, 20%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698967, treated, drought, 2, 20%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698968, treated, drought, 1, 20%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single
+hovu, PRJNA526135, SRR8698969, control, drought, 3, 70%:30%SWC, 6h, XZ16, whole-plant, flag-leaf-stage, G.0, single

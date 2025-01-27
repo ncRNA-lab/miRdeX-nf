@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA295538, SRR2391658, control, drought, 1, L.0, 2h, Col-0, whole-plant, D.0, G.0, single
+arth, PRJNA295538, SRR2391659, control, drought, 2, L.0, 2h, Col-0, whole-plant, D.0, G.0, single
+arth, PRJNA295538, SRR2391660, treated, drought, 1, L.0, 2h, Col-0, whole-plant, D.0, G.0, single
+arth, PRJNA295538, SRR2391661, treated, drought, 2, L.0, 2h, Col-0, whole-plant, D.0, G.0, single

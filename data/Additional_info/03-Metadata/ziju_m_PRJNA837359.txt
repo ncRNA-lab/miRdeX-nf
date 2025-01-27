@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+ziju, PRJNA837359, SRR19182927, treated, drought, 1, L.0, T.0, Zanhuangdazao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182928, control, drought, 3, L.0, T.0, Zanhuangdazao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182929, control, drought, 2, L.0, T.0, Zanhuangdazao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182930, control, drought, 1, L.0, T.0, Zanhuangdazao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182931, treated, drought, 3, L.0, T.0, Dongzao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182932, treated, drought, 2, L.0, T.0, Dongzao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182933, treated, drought, 1, L.0, T.0, Dongzao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182934, control, drought, 3, L.0, T.0, Dongzao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182935, treated, drought, 3, L.0, T.0, Zanhuangdazao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182936, treated, drought, 2, L.0, T.0, Zanhuangdazao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182937, control, drought, 2, L.0, T.0, Dongzao, leaves, D.0, G.0, single
+ziju, PRJNA837359, SRR19182938, control, drought, 1, L.0, T.0, Dongzao, leaves, D.0, G.0, single

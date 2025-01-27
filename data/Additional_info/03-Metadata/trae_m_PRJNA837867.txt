@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+trae, PRJNA837867, SRR19238050, treated, drought, 1, L.0, T.0, ZM13, root, seedling-stage, G.T, single
+trae, PRJNA837867, SRR19238051, control, drought, 3, L.0, T.0, ZM13, root, seedling-stage, G.T, single
+trae, PRJNA837867, SRR19238052, control, drought, 2, L.0, T.0, ZM13, root, seedling-stage, G.T, single
+trae, PRJNA837867, SRR19238053, control, drought, 1, L.0, T.0, ZM13, root, seedling-stage, G.T, single
+trae, PRJNA837867, SRR19238054, treated, drought, 3, L.0, T.0, JM38, root, seedling-stage, G.S, single
+trae, PRJNA837867, SRR19238055, treated, drought, 2, L.0, T.0, JM38, root, seedling-stage, G.S, single
+trae, PRJNA837867, SRR19238056, treated, drought, 1, L.0, T.0, JM38, root, seedling-stage, G.S, single
+trae, PRJNA837867, SRR19238057, control, drought, 3, L.0, T.0, JM38, root, seedling-stage, G.S, single
+trae, PRJNA837867, SRR19238058, treated, drought, 3, L.0, T.0, ZM13, root, seedling-stage, G.T, single
+trae, PRJNA837867, SRR19238059, treated, drought, 2, L.0, T.0, ZM13, root, seedling-stage, G.T, single
+trae, PRJNA837867, SRR19238060, control, drought, 2, L.0, T.0, JM38, root, seedling-stage, G.S, single
+trae, PRJNA837867, SRR19238061, control, drought, 1, L.0, T.0, JM38, root, seedling-stage, G.S, single

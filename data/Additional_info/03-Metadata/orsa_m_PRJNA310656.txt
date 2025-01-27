@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA310656, SRR3140952, control, heat, 1, L.0, 0h, HT54, leaves, three-leaf-seedling, G.T, single
+orsa, PRJNA310656, SRR3140953, control, heat, 2, L.0, 0h, HT54, leaves, three-leaf-seedling, G.T, single
+orsa, PRJNA310656, SRR3140954, treated, heat, 3, 45ºC, 12h, HT54, leaves, three-leaf-seedling, G.T, single
+orsa, PRJNA310656, SRR3140955, treated, heat, 1, 45ºC, 12h, HT54, leaves, three-leaf-seedling, G.T, single
+orsa, PRJNA310656, SRR3140956, treated, heat, 2, 45ºC, 24h, HT54, leaves, three-leaf-seedling, G.T, single
+orsa, PRJNA310656, SRR3140957, treated, heat, 3, 45ºC, 24h, HT54, leaves, three-leaf-seedling, G.T, single

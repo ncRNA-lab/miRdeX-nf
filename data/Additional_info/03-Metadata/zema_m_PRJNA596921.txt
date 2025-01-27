@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+zema, PRJNA596921, SRR10747099, treated, rhizoctonia-solani, 1, L.0, T.0, B73, sheath, 4w, G.0, single
+zema, PRJNA596921, SRR10747100, control, rhizoctonia-solani, 1, L.0, T.0, B73, sheath, 4w, G.0, single
+zema, PRJNA596921, SRR10747102, treated, rhizoctonia-solani, 2, L.0, T.0, B73, sheath, 4w, G.0, single
+zema, PRJNA596921, SRR10747103, control, rhizoctonia-solani, 2, L.0, T.0, B73, sheath, 4w, G.0, single

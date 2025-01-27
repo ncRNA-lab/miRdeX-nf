@@ -1,0 +1,10 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+metr, PRJNA501873, SRR8134506, control, salt:alkali, 1, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134507, control, salt:alkali, 2, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134508, control, salt:alkali, 3, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134509, treated, salt, 1, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134510, treated, salt, 2, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134511, treated, salt, 3, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134512, treated, alkali, 1, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134513, treated, alkali, 2, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single
+metr, PRJNA501873, SRR8134514, treated, alkali, 3, L.0, 72h, CV.0, seedling, seedling-stage, G.0, single

@@ -1,0 +1,16 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+vivi, PRJEB42777, ERR5236254, treated, cps, 2, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236255, treated, cps, 3, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236256, treated, cps, 4, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236257, control, cps, 1, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236258, control, cps, 2, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236259, control, cps, 3, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236260, control, cps, 4, L.0, T.0, Zweigelt, leaves, BBCH71, G.0, single
+vivi, PRJEB42777, ERR5236261, treated, cps, 1, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236262, treated, cps, 2, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236263, treated, cps, 3, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236264, treated, cps, 4, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236265, control, cps, 1, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236266, control, cps, 2, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236267, control, cps, 3, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single
+vivi, PRJEB42777, ERR5236268, control, cps, 4, L.0, T.0, Zweigelt, leaves, BBCH89, G.0, single

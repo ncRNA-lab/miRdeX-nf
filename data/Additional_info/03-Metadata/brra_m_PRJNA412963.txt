@@ -1,0 +1,17 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+brra, PRJNA412963, SRR6128852, treated, cold, 1, neg4ºC, 8h, Longyou7, leaves, D.0, G.T, single
+brra, PRJNA412963, SRR6128853, control, cold, 1, 20ºC, 8h, Longyou7, leaves, D.0, G.T, single
+brra, PRJNA412963, SRR6128854, control, cold, 2, 20ºC, 8h, Longyou7, leaves, D.0, G.T, single
+brra, PRJNA412963, SRR6128855, control, cold, 2, 20ºC, 8h, Tianyou4, leaves, D.0, G.S, single
+brra, PRJNA412963, SRR6128856, control, cold, 1, 20ºC, 8h, Longyou7, root, D.0, G.T, single
+brra, PRJNA412963, SRR6128857, control, cold, 2, 20ºC, 8h, Longyou7, root, D.0, G.T, single
+brra, PRJNA412963, SRR6128858, control, cold, 1, 20ºC, 8h, Tianyou4, leaves, D.0, G.S, single
+brra, PRJNA412963, SRR6128859, treated, cold, 2, neg4ºC, 8h, Longyou7, leaves, D.0, G.T, single
+brra, PRJNA412963, SRR6128860, treated, cold, 1, neg4ºC, 8h, Tianyou4, root, D.0, G.S, single
+brra, PRJNA412963, SRR6128861, treated, cold, 2, neg4ºC, 8h, Tianyou4, root, D.0, G.S, single
+brra, PRJNA412963, SRR6128862, treated, cold, 1, neg4ºC, 8h, Longyou7, root, D.0, G.T, single
+brra, PRJNA412963, SRR6128863, treated, cold, 2, neg4ºC, 8h, Longyou7, root, D.0, G.T, single
+brra, PRJNA412963, SRR6128864, treated, cold, 1, neg4ºC, 8h, Tianyou4, leaves, D.0, G.S, single
+brra, PRJNA412963, SRR6128865, control, cold, 1, 20ºC, 8h, Tianyou4, root, D.0, G.S, single
+brra, PRJNA412963, SRR6128866, treated, cold, 2, neg4ºC, 8h, Tianyou4, leaves, D.0, G.S, single
+brra, PRJNA412963, SRR6128867, control, cold, 2, 20ºC, 8h, Tianyou4, root, D.0, G.S, single

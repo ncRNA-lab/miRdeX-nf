@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+onvi, PRJNA553139, SRR9656523, treated, drought, 3, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656524, treated, cold&drought, 1, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656525, control, cold:drought:cold&drought, 1, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656526, control, cold:drought:cold&drought, 2, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656527, control, cold:drought:cold&drought, 3, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656528, treated, cold, 1, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656529, treated, cold&drought, 2, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656530, treated, cold&drought, 3, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656531, treated, drought, 1, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656532, treated, drought, 2, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656533, treated, cold, 2, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single
+onvi, PRJNA553139, SRR9656534, treated, cold, 3, L.0, T.0, CV.0, leaves, seedling-stage, G.0, single

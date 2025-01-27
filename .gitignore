@@ -1,0 +1,16 @@
+
+# Ignore directories with annotation and filtering databases
+data/Additional_info/01-Databases/01-RNAcentral/
+data/Additional_info/01-Databases/02-Annotation_databases/
+bin/.Rhistory
+
+# Ignore some specific files
+main_sin_subworflows.nf
+Singularity.sif
+
+# Ignore some test files and directories
+assets/PRJNA277424/
+assets/PRJNA720229_3.counts.tsv
+assets/PRJNA720229_3.counts.tsv
+assets/samplesheet_counts.csv
+assets/samplesheet_original.csv

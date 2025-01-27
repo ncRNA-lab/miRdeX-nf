@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/nf-core/rnaseq/master/assets/schema_input.json",
+  "title": "nf-mirplan - params.input schema",
+  "description": "Schema for the file provided with params.input",
+  "type": "array",
+  "items": {
+      "type": "object",
+      "properties": {
+          "Species": {
+              "type": "string",
+              "pattern": "^[A-Z][a-z]+( [a-z]+)+$",
+              "errorMessage": "The Species column must contain the scientific names of the species to be used and in the correct format"
+          },
+          "Project": {
+              "type": "string",
+              "errorMessage": "An identifier for the projects must be specified. If the project comes from SRA, the BioProject can be used. Otherwise, the user can specify one of their choice."
+          },
+          "File": {
+              "type": "string",
+              "format": "file-path",
+              "exists": true,
+              "errorMessage": "The file must exist. Additionally, all entries in the File column must be either '.txt', '.fastq', '.fastq.gz' or '.tsv",
+              "oneOf": [
+                    { "pattern": "^\\S+\\.txt$" },
+                    { "pattern": "^\\S+\\.f(ast)?q\\.gz$" },
+                    { "pattern": "^\\S+\\.tsv$" }
+            ]
+          },
+          "Metadata": {
+            "type": "string",
+            "format": "file-path",
+            "exists": true,
+            "errorMessage": "The file must exist. Additionally, all entries in the File column must be '.tsv'",
+            "pattern": "^\\S+\\.(tsv|txt)$"
+        },
+        "Genome": {
+          "type": "string",
+          "format": "file-path",
+          "exists": true,
+          "errorMessage": "The file must exist. Additionally, all entries in the File column must be '.tsv'",
+          "anyOf": [
+            {
+                "pattern": "^\\S+\\.(fna|fa|fasta)(\\.gz)?$" 
+            },
+            {
+                "maxLength": 0
+            }
+          ]
+        },
+        "Group":{
+          "type":"integer",
+          "errorMessage": "The Group must be an integer"
+        }
+      },
+    "required": ["Species", "Project", "File", "Metadata"]
+  }
+}

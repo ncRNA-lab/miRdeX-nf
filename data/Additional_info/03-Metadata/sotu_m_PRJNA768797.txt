@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+sotu, PRJNA768797, SRR16206387, treated, pvy(n-wilga), 1, L.0, 4w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206388, treated, pvy(n-wilga), 2, L.0, 4w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206389, treated, pvy(n-wilga), 3, L.0, 4w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206390, control, pvy(n-wilga), 1, L.0, 4w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206391, control, pvy(n-wilga), 2, L.0, 4w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206392, control, pvy(n-wilga), 3, L.0, 4w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206394, treated, pvy(n-wilga), 1, L.0, 1w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206395, treated, pvy(n-wilga), 2, L.0, 1w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206396, treated, pvy(n-wilga), 3, L.0, 1w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206397, control, pvy(n-wilga), 1, L.0, 1w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206398, control, pvy(n-wilga), 2, L.0, 1w, Russet-Burbank, leaves, D.0, G.0, single
+sotu, PRJNA768797, SRR16206399, control, pvy(n-wilga), 3, L.0, 1w, Russet-Burbank, leaves, D.0, G.0, single

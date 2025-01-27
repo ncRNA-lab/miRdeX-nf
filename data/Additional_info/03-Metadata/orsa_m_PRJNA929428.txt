@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA929428, SRR23269537, treated, heat, 3, L.0, T.0, CV.0, rice, filling-stage, G.T, single
+orsa, PRJNA929428, SRR23269538, treated, heat, 2, L.0, T.0, CV.0, rice, filling-stage, G.T, single
+orsa, PRJNA929428, SRR23269539, treated, heat, 1, L.0, T.0, CV.0, rice, filling-stage, G.T, single
+orsa, PRJNA929428, SRR23269540, control, heat, 3, L.0, T.0, CV.0, rice, filling-stage, G.T, single
+orsa, PRJNA929428, SRR23269541, control, heat, 1, L.0, T.0, CV.0, rice, filling-stage, G.T, single
+orsa, PRJNA929428, SRR23269542, treated, heat, 3, L.0, T.0, CV.0, rice, filling-stage, G.S, single
+orsa, PRJNA929428, SRR23269543, treated, heat, 2, L.0, T.0, CV.0, rice, filling-stage, G.S, single
+orsa, PRJNA929428, SRR23269544, control, heat, 2, L.0, T.0, CV.0, rice, filling-stage, G.T, single
+orsa, PRJNA929428, SRR23269545, treated, heat, 1, L.0, T.0, CV.0, rice, filling-stage, G.S, single
+orsa, PRJNA929428, SRR23269546, control, heat, 3, L.0, T.0, CV.0, rice, filling-stage, G.S, single
+orsa, PRJNA929428, SRR23269547, control, heat, 2, L.0, T.0, CV.0, rice, filling-stage, G.S, single
+orsa, PRJNA929428, SRR23269548, control, heat, 1, L.0, T.0, CV.0, rice, filling-stage, G.S, single

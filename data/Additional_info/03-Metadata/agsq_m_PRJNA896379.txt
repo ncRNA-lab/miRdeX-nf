@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+agsq, PRJNA896379, SRR22121238, treated, drought, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single
+agsq, PRJNA896379, SRR22121239, treated, drought, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single
+agsq, PRJNA896379, SRR22121240, control, drought, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single
+agsq, PRJNA896379, SRR22121241, control, drought, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single

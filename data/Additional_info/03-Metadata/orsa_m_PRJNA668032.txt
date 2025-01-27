@@ -1,0 +1,17 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA668032, SRR12791820, control, heat, 2, 42ºC, 0h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791821, control, heat, 1, 42ºC, 0h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791822, treated, heat, 2, 42ºC, 12h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791823, treated, heat, 1, 42ºC, 12h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791824, treated, heat, 2, 42ºC, 6h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791825, treated, heat, 1, 42ºC, 6h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791826, treated, heat, 2, 42ºC, 3h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791827, treated, heat, 1, 42ºC, 3h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791828, treated, heat, 2, 42ºC, 12h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791829, treated, heat, 1, 42ºC, 12h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791830, treated, heat, 2, 42ºC, 6h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791831, treated, heat, 1, 42ºC, 6h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791832, treated, heat, 2, 42ºC, 3h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791833, treated, heat, 1, 42ºC, 3h, Nagina22, spikelet, 75-days-old, G.T, single
+orsa, PRJNA668032, SRR12791834, control, heat, 2, 42ºC, 0h, 9311, spikelet, 75-days-old, G.S, single
+orsa, PRJNA668032, SRR12791835, control, heat, 1, 42ºC, 0h, 9311, spikelet, 75-days-old, G.S, single

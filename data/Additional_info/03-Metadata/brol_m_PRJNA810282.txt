@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+brol, PRJNA810282, SRR18149514, control, heat, 3, 25ºC, 24h, 01-88, bud, D.0, G.0, single
+brol, PRJNA810282, SRR18149515, control, heat, 2, 25ºC, 24h, 01-88, bud, D.0, G.0, single
+brol, PRJNA810282, SRR18149516, control, heat, 1, 25ºC, 24h, 01-88, bud, D.0, G.0, single
+brol, PRJNA810282, SRR18149517, treated, heat, 3, 32ºC, 24h, 01-88, bud, D.0, G.0, single
+brol, PRJNA810282, SRR18149518, treated, heat, 2, 32ºC, 24h, 01-88, bud, D.0, G.0, single
+brol, PRJNA810282, SRR18149519, treated, heat, 1, 32ºC, 24h, 01-88, bud, D.0, G.0, single

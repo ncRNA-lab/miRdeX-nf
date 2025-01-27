@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA157121, SRR452274, control, high-co2, 1, 430ppmCo2, T.0, Col-0, rosette-leaves, D.0, G.0, single
+arth, PRJNA157121, SRR452275, treated, high-co2, 1, 810ppmCo2, T.0, Col-0, rosette-leaves, D.0, G.0, single
+arth, PRJNA157121, SRR452276, control, high-co2, 2, 430ppmCo2, T.0, Col-0, rosette-leaves, D.0, G.0, single
+arth, PRJNA157121, SRR452277, treated, high-co2, 2, 810ppmCo2, T.0, Col-0, rosette-leaves, D.0, G.0, single

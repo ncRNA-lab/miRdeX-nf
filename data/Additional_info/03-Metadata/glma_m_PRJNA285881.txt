@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+glma, PRJNA285881, SRR2051074, control, salt, 1, L.0, 4h, CV.0, leaves, D.0, G.0, single
+glma, PRJNA285881, SRR2051075, control, salt, 2, L.0, 4h, CV.0, leaves, D.0, G.0, single
+glma, PRJNA285881, SRR2051076, control, salt, 1, L.0, 4h, CV.0, root, D.0, G.0, single
+glma, PRJNA285881, SRR2051077, control, salt, 2, L.0, 4h, CV.0, root, D.0, G.0, single
+glma, PRJNA285881, SRR2051078, treated, salt, 1, 200mM, 4h, CV.0, leaves, D.0, G.0, single
+glma, PRJNA285881, SRR2051079, treated, salt, 2, 200mM, 4h, CV.0, leaves, D.0, G.0, single
+glma, PRJNA285881, SRR2051080, treated, salt, 1, 200mM, 4h, CV.0, root, D.0, G.0, single
+glma, PRJNA285881, SRR2051081, treated, salt, 2, 200mM, 4h, CV.0, root, D.0, G.0, single

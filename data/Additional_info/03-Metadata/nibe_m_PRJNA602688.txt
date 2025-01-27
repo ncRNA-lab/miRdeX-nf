@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+nibe, PRJNA602688, SRR10951689, control, tolcv, 1, L.0, 21d, CV.0, leaves, D.0, G.0, single
+nibe, PRJNA602688, SRR10951690, control, tolcv, 2, L.0, 21d, CV.0, leaves, D.0, G.0, single
+nibe, PRJNA602688, SRR10951691, control, tolcv, 3, L.0, 21d, CV.0, leaves, D.0, G.0, single
+nibe, PRJNA602688, SRR10951695, treated, tolcv, 1, L.0, 21d, CV.0, leaves, D.0, G.0, single
+nibe, PRJNA602688, SRR10951696, treated, tolcv, 2, L.0, 21d, CV.0, leaves, D.0, G.0, single
+nibe, PRJNA602688, SRR10951697, treated, tolcv, 3, L.0, 21d, CV.0, leaves, D.0, G.0, single

@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
+glma, PRJNA591658, SRR10528016, treated, phosphorus-deficiency, 1, 5uM, 7d, Bogao, root, D.0, G.S, single
+glma, PRJNA591658, SRR10528017, control, phosphorus-deficiency, 3, 500uM, 7d, Bogao, root, D.0, G.S, single
+glma, PRJNA591658, SRR10528018, control, phosphorus-deficiency, 2, 500uM, 7d, Bogao, root, D.0, G.S, single
+glma, PRJNA591658, SRR10528019, control, phosphorus-deficiency, 1, 500uM, 7d, Bogao, root, D.0, G.S, single
+glma, PRJNA591658, SRR10528020, treated, phosphorus-deficiency, 3, 5uM, 7d, Nan-nong94-156, root, D.0, G.T, single
+glma, PRJNA591658, SRR10528021, treated, phosphorus-deficiency, 2, 5uM, 7d, Nan-nong94-156, root, D.0, G.T, single
+glma, PRJNA591658, SRR10528022, treated, phosphorus-deficiency, 1, 5uM, 7d, Nan-nong94-156, root, D.0, G.T, single
+glma, PRJNA591658, SRR10528023, control, phosphorus-deficiency, 3, 500uM, 7d, Nan-nong94-156, root, D.0, G.T, single
+glma, PRJNA591658, SRR10528024, treated, phosphorus-deficiency, 3, 5uM, 7d, Bogao, root, D.0, G.S, single
+glma, PRJNA591658, SRR10528025, treated, phosphorus-deficiency, 2, 5uM, 7d, Bogao, root, D.0, G.S, single
+glma, PRJNA591658, SRR10528026, control, phosphorus-deficiency, 2, 500uM, 7d, Nan-nong94-156, root, D.0, G.T, single
+glma, PRJNA591658, SRR10528027, control, phosphorus-deficiency, 1, 500uM, 7d, Nan-nong94-156, root, D.0, G.T, single

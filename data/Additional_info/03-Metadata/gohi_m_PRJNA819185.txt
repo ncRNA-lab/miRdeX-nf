@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+gohi, PRJNA819185, SRR18490846, control, verticillium-wilt, 1, L.0, 24h, zhongzhimian2, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490847, treated, verticillium-wilt, 3, L.0, 24h, zhongzhimian2, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490848, treated, verticillium-wilt, 2, L.0, 24h, zhongzhimian2, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490849, treated, verticillium-wilt, 1, L.0, 24h, zhongzhimian2, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490850, control, verticillium-wilt, 3, L.0, 24h, jimian11, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490851, control, verticillium-wilt, 2, L.0, 24h, jimian11, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490852, control, verticillium-wilt, 1, L.0, 24h, jimian11, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490853, treated, verticillium-wilt, 3, L.0, 24h, jimian11, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490854, control, verticillium-wilt, 3, L.0, 24h, zhongzhimian2, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490855, control, verticillium-wilt, 2, L.0, 24h, zhongzhimian2, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490856, treated, verticillium-wilt, 2, L.0, 24h, jimian11, root, D.0, G.0, single
+gohi, PRJNA819185, SRR18490857, treated, verticillium-wilt, 1, L.0, 24h, jimian11, root, D.0, G.0, single

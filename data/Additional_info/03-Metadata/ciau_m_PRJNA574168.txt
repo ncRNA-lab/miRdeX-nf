@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+ciau, PRJNA574168, SRR23558470, control, clas, 2, L.0, 16w, Colimex, leaves, 11mo, G.0, single
+ciau, PRJNA574168, SRR23558471, control, clas, 1, L.0, 16w, Colimex, leaves, 11mo, G.0, single
+ciau, PRJNA574168, SRR23558472, treated, clas, 2, L.0, 16w, Colimex, leaves, 11mo, G.0, single
+ciau, PRJNA574168, SRR23558473, treated, clas, 1, L.0, 16w, Colimex, leaves, 11mo, G.0, single
+ciau, PRJNA574168, SRR23558474, control, clas, 2, L.0, 8w, Colimex, leaves, 9mo, G.0, single
+ciau, PRJNA574168, SRR23558475, control, clas, 1, L.0, 8w, Colimex, leaves, 9mo, G.0, single
+ciau, PRJNA574168, SRR23558476, treated, clas, 2, L.0, 8w, Colimex, leaves, 9mo, G.0, single
+ciau, PRJNA574168, SRR23558477, treated, clas, 1, L.0, 8w, Colimex, leaves, 9mo, G.0, single

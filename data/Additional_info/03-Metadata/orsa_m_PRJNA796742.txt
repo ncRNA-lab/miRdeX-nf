@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA796742, SRR17605212, treated, drought, 2, L.0, T.0, Azucena, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605213, treated, drought, 1, L.0, T.0, Azucena, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605214, control, drought, 2, L.0, T.0, Azucena, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605215, control, drought, 1, L.0, T.0, Azucena, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605216, treated, drought, 2, L.0, T.0, IR64, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605217, treated, drought, 1, L.0, T.0, IR64, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605218, control, drought, 2, L.0, T.0, IR64, root, seedling-stage, G.0, single
+orsa, PRJNA796742, SRR17605219, control, drought, 1, L.0, T.0, IR64, root, seedling-stage, G.0, single

@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+meru, PRJNA719263, SRR14133156, treated, osmotic, 1, L.0, 24h, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA719263, SRR14133157, treated, osmotic, 2, L.0, 24h, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA719263, SRR14133158, treated, osmotic, 3, L.0, 24h, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA719263, SRR14133159, control, osmotic, 1, L.0, 0h, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA719263, SRR14133160, control, osmotic, 2, L.0, 0h, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA719263, SRR14133161, control, osmotic, 3, L.0, 0h, CV.0, leaves, seedling-stage, G.0, single

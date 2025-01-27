@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+pode, PRJNA597470, SRR10763587, control, cadmium-excess, 1, 0uM, 21d, CV.0, leaves, 89d, G.0, single
+pode, PRJNA597470, SRR10763588, control, cadmium-excess, 2, 0uM, 21d, CV.0, leaves, 89d, G.0, single
+pode, PRJNA597470, SRR10763589, control, cadmium-excess, 3, 0uM, 21d, CV.0, leaves, 89d, G.0, single
+pode, PRJNA597470, SRR10763596, treated, cadmium-excess, 1, 50uM, 21d, CV.0, leaves, 89d, G.0, single
+pode, PRJNA597470, SRR10763597, treated, cadmium-excess, 2, 50uM, 21d, CV.0, leaves, 89d, G.0, single
+pode, PRJNA597470, SRR10763598, treated, cadmium-excess, 3, 50uM, 21d, CV.0, leaves, 89d, G.0, single

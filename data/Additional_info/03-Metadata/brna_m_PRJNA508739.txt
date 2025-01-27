@@ -1,0 +1,13 @@
+Specie, Prject, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+brna, PRJNA508739, SRR8303021, treated, tumv, 3, L.0, T.0, Drakkar, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303022, treated, tumv, 2, L.0, T.0, Drakkar, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303023, treated, tumv, 1, L.0, T.0, Drakkar, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303024, control, tumv, 3, L.0, T.0, Drakkar, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303025, control, tumv, 2, L.0, T.0, Drakkar, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303026, control, tumv, 1, L.0, T.0, Drakkar, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303035, treated, tumv, 2, L.0, T.0, Tanto, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303036, treated, tumv, 3, L.0, T.0, Tanto, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303037, control, tumv, 3, L.0, T.0, Tanto, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303038, treated, tumv, 1, L.0, T.0, Tanto, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303039, control, tumv, 1, L.0, T.0, Tanto, leaves, 5w, G.0, single
+brna, PRJNA508739, SRR8303040, control, tumv, 2, L.0, T.0, Tanto, leaves, 5w, G.0, single

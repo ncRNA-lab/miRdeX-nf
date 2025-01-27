@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+trae, PRJNA374855, SRR5270343, treated, mrcv, 2, L.0, 21d, ProINTA-Federal, first-expanded-leaf, 26d, G.0, single
+trae, PRJNA374855, SRR5270344, treated, mrcv, 1, L.0, 21d, ProINTA-Federal, first-expanded-leaf, 26d, G.0, single
+trae, PRJNA374855, SRR5270345, control, mrcv, 2, L.0, 21d, ProINTA-Federal, first-expanded-leaf, 26d, G.0, single
+trae, PRJNA374855, SRR5270346, control, mrcv, 1, L.0, 21d, ProINTA-Federal, first-expanded-leaf, 26d, G.0, single
+trae, PRJNA374855, SRR5270347, treated, mrcv, 2, L.0, 12d, ProINTA-Federal, first-expanded-leaf, 17d, G.0, single
+trae, PRJNA374855, SRR5270348, treated, mrcv, 1, L.0, 12d, ProINTA-Federal, first-expanded-leaf, 17d, G.0, single
+trae, PRJNA374855, SRR5270349, control, mrcv, 2, L.0, 12d, ProINTA-Federal, first-expanded-leaf, 17d, G.0, single
+trae, PRJNA374855, SRR5270350, control, mrcv, 1, L.0, 12d, ProINTA-Federal, first-expanded-leaf, 17d, G.0, single

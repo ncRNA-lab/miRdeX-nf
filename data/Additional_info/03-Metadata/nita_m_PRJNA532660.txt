@@ -1,0 +1,10 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+nita, PRJNA532660, SRR8934897, treated, salt, 1, L.0, 24h, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934898, treated, salt, 2, L.0, 24h, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934899, control, salt:alkali, 2, L.0, T.0, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934900, control, salt:alkali, 3, L.0, T.0, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934901, treated, alkali, 2, L.0, 24h, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934902, treated, alkali, 3, L.0, 24h, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934903, treated, salt, 3, L.0, 24h, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934904, treated, alkali, 1, L.0, 24h, K326, leaves, five-leave-stage, G.0, single
+nita, PRJNA532660, SRR8934914, control, salt:alkali, 1, L.0, T.0, K326, leaves, five-leave-stage, G.0, single

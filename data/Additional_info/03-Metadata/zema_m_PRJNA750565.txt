@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+zema, PRJNA750565, SRR15292379, treated, drought, 2, L.0, T.0, Huang-Zao-Si, grain, 15d, G.0, single
+zema, PRJNA750565, SRR15292380, treated, drought, 1, L.0, T.0, Huang-Zao-Si, grain, 15d, G.0, single
+zema, PRJNA750565, SRR15292381, treated, drought, 2, L.0, T.0, Huang-Zao-Si, grain, 10d, G.0, single
+zema, PRJNA750565, SRR15292382, treated, drought, 1, L.0, T.0, Huang-Zao-Si, grain, 10d, G.0, single
+zema, PRJNA750565, SRR15292383, control, drought, 2, L.0, T.0, Huang-Zao-Si, grain, 15d, G.0, single
+zema, PRJNA750565, SRR15292384, control, drought, 1, L.0, T.0, Huang-Zao-Si, grain, 15d, G.0, single
+zema, PRJNA750565, SRR15292385, control, drought, 2, L.0, T.0, Huang-Zao-Si, grain, 10d, G.0, single
+zema, PRJNA750565, SRR15292386, control, drought, 1, L.0, T.0, Huang-Zao-Si, grain, 10d, G.0, single

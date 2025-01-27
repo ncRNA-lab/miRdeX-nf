@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+nibe, PRJNA784690-1, SRR19973785, treated, tswv, 3, L.0, T.0, Western-Australia, leaves, 4-leaf, G.0, single
+nibe, PRJNA784690-1, SRR19973786, treated, tswv, 2, L.0, T.0, Western-Australia, leaves, 4-leaf, G.0, single
+nibe, PRJNA784690-1, SRR19973787, treated, tswv, 1, L.0, T.0, Western-Australia, leaves, 4-leaf, G.0, single
+nibe, PRJNA784690-1, SRR19973792, control, tswv, 3, L.0, T.0, Western-Australia, leaves, 4-leaf, G.0, single
+nibe, PRJNA784690-1, SRR19973793, control, tswv, 2, L.0, T.0, Western-Australia, leaves, 4-leaf, G.0, single
+nibe, PRJNA784690-1, SRR19973794, control, tswv, 1, L.0, T.0, Western-Australia, leaves, 4-leaf, G.0, single

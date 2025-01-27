@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+lope, PRJNA768969, SRR16214754, treated, heat, 3, L.0, 12h, Esquire, leaves, D.0, G.0, single
+lope, PRJNA768969, SRR16214755, treated, heat, 2, L.0, 12h, Esquire, leaves, D.0, G.0, single
+lope, PRJNA768969, SRR16214756, treated, heat, 1, L.0, 12h, Esquire, leaves, D.0, G.0, single
+lope, PRJNA768969, SRR16214757, control, heat, 3, L.0, 0h, Esquire, leaves, D.0, G.0, single
+lope, PRJNA768969, SRR16214760, control, heat, 2, L.0, 0h, Esquire, leaves, D.0, G.0, single
+lope, PRJNA768969, SRR16214761, control, heat, 1, L.0, 0h, Esquire, leaves, D.0, G.0, single

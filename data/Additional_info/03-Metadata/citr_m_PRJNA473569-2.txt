@@ -1,0 +1,10 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+citr, PRJNA473569-2, SRR7230863, control, alkali, 1, ph6.5, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230864, control, alkali, 2, ph6.5, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230865, control, alkali, 3, ph6.5, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230866, treated, alkali, 1, ph8.0, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230867, treated, alkali, 2, ph8.0, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230868, treated, alkali, 3, ph8.0, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230869, treated, alkali, 1, ph9.5, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230870, treated, alkali, 2, ph9.5, T.0, CV.0, root, seedling-stage, G.0, single
+citr, PRJNA473569-2, SRR7230871, treated, alkali, 3, ph9.5, T.0, CV.0, root, seedling-stage, G.0, single

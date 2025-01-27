@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Devnegstate, Genotype, Library
+glma, PRJNA340935, SRR4097550, control, drought, 1, neg0.1MPa, 48h, Magellan, root, 1w, G.0, single
+glma, PRJNA340935, SRR4102051, control, drought, 2, neg0.1MPa, 48h, Magellan, root, 1w, G.0, single
+glma, PRJNA340935, SRR4102053, treated, drought, 1, neg1.6MPa, 48h, Magellan, root, 1w, G.0, single
+glma, PRJNA340935, SRR4102054, treated, drought, 2, neg1.6MPa, 48h, Magellan, root, 1w, G.0, single

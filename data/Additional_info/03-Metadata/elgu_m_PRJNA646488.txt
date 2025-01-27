@@ -1,0 +1,10 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+elgu, PRJNA646488, SRR12424937, treated, salt, 3, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424938, treated, salt, 2, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424939, treated, salt, 1, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424940, treated, drought, 3, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424941, treated, drought, 2, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424942, treated, drought, 1, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424943, control, salt:drought, 3, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424944, control, salt:drought, 2, L.0, T.0, AM33, leaves, young-plants, G.0, single
+elgu, PRJNA646488, SRR12424945, control, salt:drought, 1, L.0, T.0, AM33, leaves, young-plants, G.0, single

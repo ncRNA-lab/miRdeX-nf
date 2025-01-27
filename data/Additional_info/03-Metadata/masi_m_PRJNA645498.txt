@@ -1,0 +1,11 @@
+Specie, Prject, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+masi, PRJNA645498, SRR12199149, treated, drought, 1, 20%PEG6000, 24h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199150, treated, drought, 2, 20%PEG6000, 24h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199151, treated, drought, 1, 20%PEG6000, 12h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199152, treated, drought, 2, 20%PEG6000, 12h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199153, treated, drought, 1, 20%PEG6000, 4h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199154, treated, drought, 2, 20%PEG6000, 4h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199155, treated, drought, 1, 20%PEG6000, 2h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199156, treated, drought, 2, 20%PEG6000, 2h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199158, control, drought, 1, L.0, 0h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single
+masi, PRJNA645498, SRR12199159, control, drought, 2, L.0, 0h, Xinjiang-wild-apple, leaves&root-mixed, vegetative-growth-stage, G.0, single

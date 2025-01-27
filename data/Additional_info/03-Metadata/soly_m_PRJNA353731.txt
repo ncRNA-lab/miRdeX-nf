@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+soly, PRJNA353731, SRR5031857, control, pstvd, 1, L.0, 3w, CV.0, leaves, D.0, G.0, single
+soly, PRJNA353731, SRR5031858, control, pstvd, 2, L.0, 3w, CV.0, leaves, D.0, G.0, single
+soly, PRJNA353731, SRR5031859, control, pstvd, 3, L.0, 3w, CV.0, leaves, D.0, G.0, single
+soly, PRJNA353731, SRR5031860, treated, pstvd, 1, L.0, 3w, CV.0, leaves, D.0, G.0, single
+soly, PRJNA353731, SRR5031861, treated, pstvd, 2, L.0, 3w, CV.0, leaves, D.0, G.0, single
+soly, PRJNA353731, SRR5031862, treated, pstvd, 3, L.0, 3w, CV.0, leaves, D.0, G.0, single

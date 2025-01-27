@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+rhbi, PRJNA762427, SRR15851057, treated, heat, 1, L.0, 90m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851058, treated, heat, 3, L.0, 60m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851059, treated, heat, 2, L.0, 60m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851060, treated, heat, 1, L.0, 60m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851061, treated, heat, 3, L.0, 30m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851062, treated, heat, 2, L.0, 30m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851063, treated, heat, 1, L.0, 30m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851064, control, heat, 3, L.0, 0m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851065, treated, heat, 3, L.0, 90m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851066, treated, heat, 2, L.0, 90m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851067, control, heat, 2, L.0, 0m, Wuduiyadanben, fruit, D.0, G.0, single
+rhbi, PRJNA762427, SRR15851068, control, heat, 1, L.0, 0m, Wuduiyadanben, fruit, D.0, G.0, single

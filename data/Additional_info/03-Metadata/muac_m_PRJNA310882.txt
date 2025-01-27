@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
+muac, PRJNA310882, SRR3145378, control, cold:heat, 1, 23ºC, 5d, AAA-cavendish, peel, 80%, G.T, single
+muac, PRJNA310882, SRR3145379, treated, cold, 1, 6ºC, 5d, AAA-cavendish, peel, 80%, G.T, single
+muac, PRJNA310882, SRR3145380, treated, heat, 1, 35ºC, 5d, AAA-cavendish, peel, 80%, G.T, single
+muac, PRJNA310882, SRR3145381, control, cold:heat, 2, 23ºC, 5d, AAA-cavendish, peel, 80%, G.T, single
+muac, PRJNA310882, SRR3145383, treated, cold, 2, 6ºC, 5d, AAA-cavendish, peel, 80%, G.T, single
+muac, PRJNA310882, SRR3145384, treated, heat, 2, 35ºC, 5d, AAA-cavendish, peel, 80%, G.T, single

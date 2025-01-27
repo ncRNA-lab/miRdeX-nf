@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA431815, SRR6667520, treated, botrytis-cinerea, 1, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA431815, SRR6667521, control, botrytis-cinerea, 3, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA431815, SRR6667524, control, botrytis-cinerea, 2, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA431815, SRR6667525, control, botrytis-cinerea, 1, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA431815, SRR6667536, treated, botrytis-cinerea, 3, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA431815, SRR6667537, treated, botrytis-cinerea, 2, L.0, T.0, Col-0, leaves, 4w, G.0, single

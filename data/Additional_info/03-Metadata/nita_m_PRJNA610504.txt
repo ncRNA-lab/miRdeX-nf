@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+nita, PRJNA610504, SRR11241602, treated, afcvd, 2, L.0, T.0, Samsun, pollen, stage-5, G.0, single
+nita, PRJNA610504, SRR11241603, treated, afcvd, 1, L.0, T.0, Samsun, pollen, stage-5, G.0, single
+nita, PRJNA610504, SRR11241604, control, afcvd, 2, L.0, T.0, Samsun, pollen, stage-5, G.0, single
+nita, PRJNA610504, SRR11241605, control, afcvd, 1, L.0, T.0, Samsun, pollen, stage-5, G.0, single
+nita, PRJNA610504, SRR11241606, treated, afcvd, 2, L.0, T.0, Samsun, pollen, stage-3, G.0, single
+nita, PRJNA610504, SRR11241607, treated, afcvd, 1, L.0, T.0, Samsun, pollen, stage-3, G.0, single
+nita, PRJNA610504, SRR11241608, control, afcvd, 2, L.0, T.0, Samsun, pollen, stage-3, G.0, single
+nita, PRJNA610504, SRR11241612, control, afcvd, 1, L.0, T.0, Samsun, pollen, stage-3, G.0, single

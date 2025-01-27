@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
+arth, PRJNA291520, SRR2135656, treated, meloidogyne-javanica, 1, L.0, 3d, Col-0, hand-dissected-galls, D.0, G.0, single
+arth, PRJNA291520, SRR2135657, treated, meloidogyne-javanica, 2, L.0, 3d, Col-0, hand-dissected-galls, D.0, G.0, single
+arth, PRJNA291520, SRR2135658, treated, meloidogyne-javanica, 3, L.0, 3d, Col-0, hand-dissected-galls, D.0, G.0, single
+arth, PRJNA291520, SRR2135659, control, meloidogyne-javanica, 1, L.0, 3d, Col-0, root, D.0, G.0, single
+arth, PRJNA291520, SRR2135660, control, meloidogyne-javanica, 2, L.0, 3d, Col-0, root, D.0, G.0, single
+arth, PRJNA291520, SRR2135661, control, meloidogyne-javanica, 3, L.0, 3d, Col-0, root, D.0, G.0, single

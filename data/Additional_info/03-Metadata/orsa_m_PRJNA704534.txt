@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA704534, SRR13775404, treated, fe-deficiency, 3, L.0, T.0, CV.0, shoot, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775405, treated, fe-deficiency, 2, L.0, T.0, CV.0, shoot, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775406, treated, fe-deficiency, 1, L.0, T.0, CV.0, shoot, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775407, control, fe-deficiency, 3, L.0, T.0, CV.0, shoot, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775409, control, fe-deficiency, 2, L.0, T.0, CV.0, shoot, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775410, control, fe-deficiency, 1, L.0, T.0, CV.0, shoot, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775411, treated, fe-deficiency, 3, L.0, T.0, CV.0, root, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775412, treated, fe-deficiency, 2, L.0, T.0, CV.0, root, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775413, treated, fe-deficiency, 1, L.0, T.0, CV.0, root, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775414, control, fe-deficiency, 3, L.0, T.0, CV.0, root, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775415, control, fe-deficiency, 2, L.0, T.0, CV.0, root, 10-days-after-germination, G.0, single
+orsa, PRJNA704534, SRR13775416, control, fe-deficiency, 1, L.0, T.0, CV.0, root, 10-days-after-germination, G.0, single

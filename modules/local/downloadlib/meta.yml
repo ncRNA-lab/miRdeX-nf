@@ -1,0 +1,55 @@
+name: download
+description: Create bowtie index for reference genome
+keywords:
+  - index
+  - fasta
+  - genome
+  - reference
+tools:
+  - prefetch:
+      description: |
+        Tool from the SRA Toolkit (NCBI) to facilitate the access and
+        manipulation of these sequencing data. This tool is designed
+        to download sequencing data from the Sequence Read Archive (SRA). Its main 
+        purpose is to obtain the .sra files that contain the sequencing data of a
+        specific project.
+        Tool from the SRA Toolkit (NCBI) for downloading sequencing reads from
+        Sequence Read Archive (SRA). These sequence reads will be downloaded
+        as SRA files. 
+      homepage: https://github.com/ncbi/sra-tools
+      documentation: https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump
+  - fasterq-dump:
+      description: |
+        Tool from the SRA Toolkit (NCBI) for downloading sequencing reads from
+        Sequence Read Archive (SRA). These sequence reads will be downloaded
+        as FASTQ files. In this case, fasterq-dump converts downloaded SRA files
+        into FASTQ.
+      homepage: https://github.com/ncbi/sra-tools
+      documentation: https://github.com/ncbi/sra-tools/wiki/08.-prefetch-and-fasterq-dump
+  - fastqc:
+      description: |
+        Tool from the SRA Toolkit (NCBI) for downloading sequencing reads from
+        Sequence Read Archive (SRA). These sequence reads will be downloaded
+        as FASTQ files. In this case, fasterq-dump converts downloaded SRA files
+        into FASTQ.
+      homepage: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+      documentation: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/
+input:
+  - fasta:
+      type: file
+      description: Input genome fasta file
+output:
+  - index:
+      type: file
+      description: Bowtie genome index files
+      pattern: "*.ebwt"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+authors:
+  - "@kevinmenden"
+  - "@drpatelh"
+maintainers:
+  - "@kevinmenden"
+  - "@drpatelh"

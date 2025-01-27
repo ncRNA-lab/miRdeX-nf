@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA579274, SRR10340283, control, cold, 2, 23ºC, 12h, Col-0, root, 5d, G.0, single
+arth, PRJNA579274, SRR10340284, control, cold, 1, 23ºC, 12h, Col-0, root, 5d, G.0, single
+arth, PRJNA579274, SRR10340285, treated, cold, 2, 4ºC, 12h, Col-0, root, 5d, G.0, single
+arth, PRJNA579274, SRR10340286, treated, cold, 1, 4ºC, 12h, Col-0, root, 5d, G.0, single

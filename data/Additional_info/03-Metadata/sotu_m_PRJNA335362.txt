@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+sotu, PRJNA335362, SRR3953305, control, pvy(ntn), 1, L.0, 3d, Desiree, leaves, D.0, G.0, single
+sotu, PRJNA335362, SRR3953306, control, pvy(ntn), 2, L.0, 3d, Desiree, leaves, D.0, G.0, single
+sotu, PRJNA335362, SRR3953307, control, pvy(ntn), 3, L.0, 3d, Desiree, leaves, D.0, G.0, single
+sotu, PRJNA335362, SRR3953308, treated, pvy(ntn), 1, L.0, 3d, Desiree, leaves, D.0, G.0, single
+sotu, PRJNA335362, SRR3953309, treated, pvy(ntn), 2, L.0, 3d, Desiree, leaves, D.0, G.0, single
+sotu, PRJNA335362, SRR3953310, treated, pvy(ntn), 3, L.0, 3d, Desiree, leaves, D.0, G.0, single

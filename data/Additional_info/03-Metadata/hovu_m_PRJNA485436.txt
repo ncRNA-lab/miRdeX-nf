@@ -1,0 +1,17 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
+hovu, PRJNA485436, SRR7687211, treated, cadmium-excess, 1, 5uM, 10d, WB-1, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687212, treated, cadmium-excess, 2, 5uM, 10d, WB-1, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687213, treated, cadmium-excess, 1, 5uM, 10d, GoldenPromise, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687214, treated, cadmium-excess, 2, 5uM, 10d, GoldenPromise, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687215, control, cadmium-excess, 1, 0uM, 10d, WB-1, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687216, control, cadmium-excess, 2, 0uM, 10d, WB-1, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687217, control, cadmium-excess, 1, 0uM, 10d, GoldenPromise, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687218, control, cadmium-excess, 2, 0uM, 10d, GoldenPromise, root, 22d, G.0, single
+hovu, PRJNA485436, SRR7687219, treated, cadmium-excess, 1, 5uM, 10d, WB-1, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687220, treated, cadmium-excess, 2, 5uM, 10d, WB-1, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687221, treated, cadmium-excess, 1, 5uM, 10d, GoldenPromise, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687222, treated, cadmium-excess, 2, 5uM, 10d, GoldenPromise, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687223, control, cadmium-excess, 1, 0uM, 10d, WB-1, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687224, control, cadmium-excess, 2, 0uM, 10d, WB-1, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687225, control, cadmium-excess, 1, 0uM, 10d, GoldenPromise, shoot, 22d, G.0, single
+hovu, PRJNA485436, SRR7687226, control, cadmium-excess, 2, 0uM, 10d, GoldenPromise, shoot, 22d, G.0, single

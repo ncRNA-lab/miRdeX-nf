@@ -1,0 +1,10 @@
+name: bowtie
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - conda-forge::numpy=1.23.1
+  - conda-forge::pandas=1.5.0
+  - conda-forge::sqlite=3.39.3
+

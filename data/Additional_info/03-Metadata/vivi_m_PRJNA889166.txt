@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+vivi, PRJNA889166, SRR21855917, treated, drought, 3, L.0, T.0, Muscat-Hamburg, leaves, 1y, G.0, single
+vivi, PRJNA889166, SRR21855918, treated, drought, 2, L.0, T.0, Muscat-Hamburg, leaves, 1y, G.0, single
+vivi, PRJNA889166, SRR21855919, treated, drought, 1, L.0, T.0, Muscat-Hamburg, leaves, 1y, G.0, single
+vivi, PRJNA889166, SRR21855920, control, drought, 3, L.0, T.0, Muscat-Hamburg, leaves, 1y, G.0, single
+vivi, PRJNA889166, SRR21855921, control, drought, 2, L.0, T.0, Muscat-Hamburg, leaves, 1y, G.0, single
+vivi, PRJNA889166, SRR21855922, control, drought, 1, L.0, T.0, Muscat-Hamburg, leaves, 1y, G.0, single

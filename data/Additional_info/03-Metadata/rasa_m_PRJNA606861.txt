@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+rasa, PRJNA606861, SRR11117166, treated, cadmium-excess, 2, L.0, T.0, NAY-XBC, root, 4w, G.0, single
+rasa, PRJNA606861, SRR11117167, treated, cadmium-excess, 1, L.0, T.0, NAY-XBC, root, 4w, G.0, single
+rasa, PRJNA606861, SRR11117168, control, cadmium-excess, 2, L.0, T.0, NAY-XBC, root, 4w, G.0, single
+rasa, PRJNA606861, SRR11117169, control, cadmium-excess, 1, L.0, T.0, NAY-XBC, root, 4w, G.0, single

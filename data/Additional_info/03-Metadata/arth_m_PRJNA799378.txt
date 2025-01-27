@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA799378, SRR17697106, treated, camv(CM184I), 1, L.0, 21d, Col-0, rosette, 39d, G.0, single
+arth, PRJNA799378, SRR17697107, control, camv(CM184I), 1, L.0, 21d, Col-0, rosette, 39d, G.0, single
+arth, PRJNA799378, SRR17697114, treated, camv(CM184I), 2, L.0, 21d, Col-0, rosette, 39d, G.0, single
+arth, PRJNA799378, SRR17697115, control, camv(CM184I), 2, L.0, 21d, Col-0, rosette, 39d, G.0, single

@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA717313, SRR14073796, control, cmv, 1, L.0, 30d, Col-0, rosette, 17d, G.0, single
+arth, PRJNA717313, SRR14073797, control, cmv, 2, L.0, 30d, Col-0, rosette, 17d, G.0, single
+arth, PRJNA717313, SRR14073798, treated, cmv, 1, L.0, 30d, Col-0, rosette, 17d, G.0, single
+arth, PRJNA717313, SRR14073799, treated, cmv, 2, L.0, 30d, Col-0, rosette, 17d, G.0, single

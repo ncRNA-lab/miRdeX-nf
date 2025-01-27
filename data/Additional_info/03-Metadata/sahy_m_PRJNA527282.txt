@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+sahy, PRJNA527282, SRR9035242, treated, aluminium-excess, 3, 221umolAlCl3, 6h, CTC2, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035243, treated, aluminium-excess, 2, 221umolAlCl3, 6h, CTC2, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035244, treated, aluminium-excess, 3, 221umolAlCl3, 6h, RB855453, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035245, treated, aluminium-excess, 2, 221umolAlCl3, 6h, RB855453, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035246, treated, aluminium-excess, 1, 221umolAlCl3, 6h, RB855453, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035247, control, aluminium-excess, 3, L.0, 6h, RB855453, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035248, treated, aluminium-excess, 1, 221umolAlCl3, 6h, CTC2, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035249, control, aluminium-excess, 3, L.0, 6h, CTC2, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035250, control, aluminium-excess, 2, L.0, 6h, CTC2, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035251, control, aluminium-excess, 1, L.0, 6h, CTC2, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035252, control, aluminium-excess, 2, L.0, 6h, RB855453, root, 45d, G.0, single
+sahy, PRJNA527282, SRR9035253, control, aluminium-excess, 1, L.0, 6h, RB855453, root, 45d, G.0, single

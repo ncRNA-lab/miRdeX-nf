@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+trae, PRJNA895954, SRR22103146, control, heat, 1, 25ºC//day-20ºC//night, 35d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103147, treated, heat, 3, 35ºC//day-25ºC//night, 28d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103148, treated, heat, 2, 35ºC//day-25ºC//night, 28d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103149, treated, heat, 1, 35ºC//day-25ºC//night, 28d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103150, control, heat, 3, 25ºC//day-20ºC//night, 28d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103151, control, heat, 2, 25ºC//day-20ºC//night, 28d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103152, control, heat, 1, 25ºC//day-20ºC//night, 28d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103169, treated, heat, 3, 35ºC//day-25ºC//night, 35d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103170, treated, heat, 2, 35ºC//day-25ºC//night, 35d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103171, treated, heat, 1, 35ºC//day-25ºC//night, 35d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103172, control, heat, 3, 25ºC//day-20ºC//night, 35d, Waitoubai, developing-seeds, D.0, G.0, single
+trae, PRJNA895954, SRR22103173, control, heat, 2, 25ºC//day-20ºC//night, 35d, Waitoubai, developing-seeds, D.0, G.0, single

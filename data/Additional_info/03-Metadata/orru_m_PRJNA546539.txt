@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orru, PRJNA546539, SRR9203240, control, cold, 1, L.0, 0h, Dongxiang-common-wild-rice, seedling, D.0, G.0, single
+orru, PRJNA546539, SRR9203241, control, cold, 2, L.0, 0h, Dongxiang-common-wild-rice, seedling, D.0, G.0, single
+orru, PRJNA546539, SRR9203242, control, cold, 3, L.0, 0h, Dongxiang-common-wild-rice, seedling, D.0, G.0, single
+orru, PRJNA546539, SRR9203243, treated, cold, 1, L.0, 6h, Dongxiang-common-wild-rice, seedling, D.0, G.0, single
+orru, PRJNA546539, SRR9203244, treated, cold, 2, L.0, 6h, Dongxiang-common-wild-rice, seedling, D.0, G.0, single
+orru, PRJNA546539, SRR9203245, treated, cold, 3, L.0, 6h, Dongxiang-common-wild-rice, seedling, D.0, G.0, single

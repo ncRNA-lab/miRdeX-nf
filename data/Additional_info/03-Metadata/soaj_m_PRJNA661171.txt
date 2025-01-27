@@ -1,0 +1,10 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+soaj, PRJNA661171, SRR12578538, treated, drought, 3, 10%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578539, treated, drought, 2, 10%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578540, treated, drought, 1, 10%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578541, treated, drought, 3, 20%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578542, treated, drought, 2, 20%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578543, treated, drought, 1, 20%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578544, control, drought, 3, 80%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578546, control, drought, 2, 80%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single
+soaj, PRJNA661171, SRR12578547, control, drought, 1, 80%SWC, T.0, Jancko-Sisu-Yari, leaves, seedling-stage, G.0, single

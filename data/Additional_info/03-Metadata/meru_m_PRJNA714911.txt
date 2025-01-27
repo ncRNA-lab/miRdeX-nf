@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+meru, PRJNA714911, SRR13977915, control, drought, 1, 80%RSM, 15d, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA714911, SRR13977916, control, drought, 2, 80%RSM, 15d, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA714911, SRR13977917, control, drought, 3, 80%RSM, 15d, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA714911, SRR13977918, treated, drought, 1, 20%RSM, 15d, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA714911, SRR13977919, treated, drought, 2, 20%RSM, 15d, CV.0, leaves, seedling-stage, G.0, single
+meru, PRJNA714911, SRR13977920, treated, drought, 3, 20%RSM, 15d, CV.0, leaves, seedling-stage, G.0, single

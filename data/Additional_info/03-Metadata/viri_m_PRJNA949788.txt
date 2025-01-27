@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+viri, PRJNA949788, SRR24010806, treated, salt, 3, L.0, T.0, CV.0, leaves, D.0, G.0, single
+viri, PRJNA949788, SRR24010807, treated, salt, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single
+viri, PRJNA949788, SRR24010808, treated, salt, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single
+viri, PRJNA949788, SRR24010809, control, salt, 3, L.0, T.0, CV.0, leaves, D.0, G.0, single
+viri, PRJNA949788, SRR24010810, control, salt, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single
+viri, PRJNA949788, SRR24010811, control, salt, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single

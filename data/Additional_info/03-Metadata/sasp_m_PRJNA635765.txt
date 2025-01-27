@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+sasp, PRJNA635765, SRR11871150, treated, cold, 1, L.0, 6h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871151, treated, cold, 3, L.0, 1h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871152, treated, cold, 2, L.0, 1h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871153, treated, cold, 1, L.0, 1h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871154, treated, cold, 3, L.0, 0.5h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871155, treated, cold, 2, L.0, 0.5h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871156, treated, cold, 1, L.0, 0.5h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871157, control, cold, 3, L.0, 0h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871158, treated, cold, 3, L.0, 6h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871159, treated, cold, 2, L.0, 6h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871160, control, cold, 2, L.0, 0h, CV.0, leaves, D.0, G.0, single
+sasp, PRJNA635765, SRR11871161, control, cold, 1, L.0, 0h, CV.0, leaves, D.0, G.0, single

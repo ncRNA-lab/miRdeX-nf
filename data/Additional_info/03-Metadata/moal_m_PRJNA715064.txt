@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+moal, PRJNA715064, SRR13985254, treated, calcium-excess, 1, 660, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985255, treated, calcium-excess, 3, 440, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985256, treated, calcium-excess, 2, 440, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985257, treated, calcium-excess, 1, 440, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985258, treated, calcium-excess, 3, 220, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985259, treated, calcium-excess, 2, 220, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985260, treated, calcium-excess, 1, 220, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985261, control, calcium-excess, 3, 0, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985262, treated, calcium-excess, 3, 660, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985263, treated, calcium-excess, 2, 660, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985264, control, calcium-excess, 2, 0, T.0, Yu711, leaves, seedling-stage, G.0, single
+moal, PRJNA715064, SRR13985265, control, calcium-excess, 1, 0, T.0, Yu711, leaves, seedling-stage, G.0, single

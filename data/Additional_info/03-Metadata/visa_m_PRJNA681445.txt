@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+visa, PRJNA681445, SRR13164830, treated, drought, 2, L.0, 5d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164831, treated, drought, 1, L.0, 5d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164832, treated, drought, 2, L.0, 3d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164833, treated, drought, 1, L.0, 3d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164834, control, drought, 2, L.0, 5d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164835, control, drought, 1, L.0, 5d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164836, control, drought, 2, L.0, 3d, WulateNo1, whole-plant, seedling-stage, G.0, single
+visa, PRJNA681445, SRR13164837, control, drought, 1, L.0, 3d, WulateNo1, whole-plant, seedling-stage, G.0, single

@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+arth, PRJNA336060, SRR3992484, control, tcv, 1, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA336060, SRR3992485, control, tcv, 2, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA336060, SRR3992486, control, tcv, 3, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA336060, SRR3992487, treated, tcv, 1, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA336060, SRR3992488, treated, tcv, 2, L.0, T.0, Col-0, leaves, 4w, G.0, single
+arth, PRJNA336060, SRR3992489, treated, tcv, 3, L.0, T.0, Col-0, leaves, 4w, G.0, single

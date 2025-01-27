@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+amna, PRJNA601806, SRR10906482, treated, cold, 3, L.0, T.0, CV.0, leaves, seedling-stage, G.T, single
+amna, PRJNA601806, SRR10906483, treated, cold, 2, L.0, T.0, CV.0, leaves, seedling-stage, G.T, single
+amna, PRJNA601806, SRR10906484, treated, cold, 1, L.0, T.0, CV.0, leaves, seedling-stage, G.T, single
+amna, PRJNA601806, SRR10906485, control, cold, 3, L.0, T.0, CV.0, leaves, seedling-stage, G.T, single
+amna, PRJNA601806, SRR10906486, control, cold, 2, L.0, T.0, CV.0, leaves, seedling-stage, G.T, single
+amna, PRJNA601806, SRR10906487, control, cold, 1, L.0, T.0, CV.0, leaves, seedling-stage, G.T, single

@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+jacu, PRJNA660857, SRR12567697, control, cold, 3, h26ºC//20ºC, 2d, CV.0, leaves, seedling-stage, G.0, single
+jacu, PRJNA660857, SRR12567706, treated, cold, 3, nh//1ºC, 2d, CV.0, leaves, seedling-stage, G.0, single
+jacu, PRJNA660857, SRR12567707, treated, cold, 2, nh//1ºC, 2d, CV.0, leaves, seedling-stage, G.0, single
+jacu, PRJNA660857, SRR12567708, control, cold, 2, h26ºC//20ºC, 2d, CV.0, leaves, seedling-stage, G.0, single
+jacu, PRJNA660857, SRR12567709, treated, cold, 1, nh//1ºC, 2d, CV.0, leaves, seedling-stage, G.0, single
+jacu, PRJNA660857, SRR12567719, control, cold, 1, h26ºC//20ºC, 2d, CV.0, leaves, seedling-stage, G.0, single

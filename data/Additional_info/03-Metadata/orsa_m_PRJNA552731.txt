@@ -1,0 +1,5 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA552731, SRR9644411, treated, xanthomonas-oryzae, 1, L.0, T.0, Nipponbare, leaves, 4w, G.0, single
+orsa, PRJNA552731, SRR9644414, control, xanthomonas-oryzae, 1, L.0, T.0, Nipponbare, leaves, 4w, G.0, single
+orsa, PRJNA552731, SRR9644415, control, xanthomonas-oryzae, 2, L.0, T.0, Nipponbare, leaves, 4w, G.0, single
+orsa, PRJNA552731, SRR9644416, treated, xanthomonas-oryzae, 2, L.0, T.0, Nipponbare, leaves, 4w, G.0, single

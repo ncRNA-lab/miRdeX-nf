@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+zema, PRJNA419326, SRR6322649, control, drought, 1, 80%RWC, T.0, B73, seedling, seedling-stage, G.S, single
+zema, PRJNA419326, SRR6322650, control, drought, 2, 80%RWC, T.0, B73, seedling, seedling-stage, G.S, single
+zema, PRJNA419326, SRR6322651, control, drought, 3, 80%RWC, T.0, B73, seedling, seedling-stage, G.S, single
+zema, PRJNA419326, SRR6322652, treated, drought, 1, 40%RWC, T.0, B73, seedling, seedling-stage, G.S, single
+zema, PRJNA419326, SRR6322653, treated, drought, 2, 40%RWC, T.0, B73, seedling, seedling-stage, G.S, single
+zema, PRJNA419326, SRR6322654, treated, drought, 3, 40%RWC, T.0, B73, seedling, seedling-stage, G.S, single
+zema, PRJNA419326, SRR6322655, control, drought, 1, 80%RWC, T.0, H21, seedling, seedling-stage, G.R, single
+zema, PRJNA419326, SRR6322656, control, drought, 2, 80%RWC, T.0, H21, seedling, seedling-stage, G.R, single
+zema, PRJNA419326, SRR6322657, treated, drought, 1, 40%RWC, T.0, H21, seedling, seedling-stage, G.R, single
+zema, PRJNA419326, SRR6322658, control, drought, 3, 80%RWC, T.0, H21, seedling, seedling-stage, G.R, single
+zema, PRJNA419326, SRR6322659, treated, drought, 3, 40%RWC, T.0, H21, seedling, seedling-stage, G.R, single
+zema, PRJNA419326, SRR6322660, treated, drought, 2, 40%RWC, T.0, H21, seedling, seedling-stage, G.R, single

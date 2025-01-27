@@ -1,0 +1,19 @@
+Group	Species	Project	Run	Treatment	Replicate	Level	Time	Cultivar	Tissue	Stage	Genotype	Batch	Test	Design	DesignRef	DesignRed	Contrast
+1	Amaranthus hypochondriacus	PRJEB38055	ERR4078847	None	1	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+1	Amaranthus hypochondriacus	PRJEB38055	ERR4078848	None	2	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+1	Amaranthus hypochondriacus	PRJEB38055	ERR4078849	None	3	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+1	Amaranthus hypochondriacus	PRJEB38055	ERR4078850	cold	1	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+1	Amaranthus hypochondriacus	PRJEB38055	ERR4078851	cold	2	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+1	Amaranthus hypochondriacus	PRJEB38055	ERR4078852	cold	3	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+2	Amaranthus hypochondriacus	PRJEB38055	ERR4078847	None	1	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+2	Amaranthus hypochondriacus	PRJEB38055	ERR4078848	None	2	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+2	Amaranthus hypochondriacus	PRJEB38055	ERR4078849	None	3	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+2	Amaranthus hypochondriacus	PRJEB38055	ERR4078853	cold	1	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+2	Amaranthus hypochondriacus	PRJEB38055	ERR4078854	cold	2	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+2	Amaranthus hypochondriacus	PRJEB38055	ERR4078855	cold	3	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+3	Amaranthus hypochondriacus	PRJEB38055	ERR4078847	None	1	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+3	Amaranthus hypochondriacus	PRJEB38055	ERR4078848	None	2	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+3	Amaranthus hypochondriacus	PRJEB38055	ERR4078849	None	3	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+3	Amaranthus hypochondriacus	PRJEB38055	ERR4078856	cold	1	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+3	Amaranthus hypochondriacus	PRJEB38055	ERR4078857	cold	2	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0
+3	Amaranthus hypochondriacus	PRJEB38055	ERR4078858	cold	3	L.0	T.0	Gabriela	aerial-tissues	S.0	G.0	B.0	Wald	~ Treatment	Treatment(None)	DR.0	CT.0

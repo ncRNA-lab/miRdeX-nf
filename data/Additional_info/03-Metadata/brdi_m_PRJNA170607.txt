@@ -1,0 +1,9 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+brdi, PRJNA170607, SRR522511, control, drought, 1, L.0, T.0, BD21, leaf-expansion-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522512, control, drought, 2, L.0, T.0, BD21, leaf-expansion-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522513, treated, drought, 1, L.0, T.0, BD21, leaf-expansion-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522514, treated, drought, 2, L.0, T.0, BD21, leaf-expansion-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522515, control, drought, 1, L.0, T.0, BD21, leaf-division-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522516, control, drought, 2, L.0, T.0, BD21, leaf-division-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522517, treated, drought, 1, L.0, T.0, BD21, leaf-division-zone, D.0, G.0, single
+brdi, PRJNA170607, SRR522518, treated, drought, 2, L.0, T.0, BD21, leaf-division-zone, D.0, G.0, single

@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+casi, PRJNA558429, SRR9903553, treated, lasiodiplodia-theobromae, 2, L.0, 3d, Fuding-dabaicha, leaves, 5y, G.0, single
+casi, PRJNA558429, SRR9903554, treated, lasiodiplodia-theobromae, 3, L.0, 3d, Fuding-dabaicha, leaves, 5y, G.0, single
+casi, PRJNA558429, SRR9903555, control, lasiodiplodia-theobromae, 3, L.0, 3d, Fuding-dabaicha, leaves, 5y, G.0, single
+casi, PRJNA558429, SRR9903556, treated, lasiodiplodia-theobromae, 1, L.0, 3d, Fuding-dabaicha, leaves, 5y, G.0, single
+casi, PRJNA558429, SRR9903557, control, lasiodiplodia-theobromae, 1, L.0, 3d, Fuding-dabaicha, leaves, 5y, G.0, single
+casi, PRJNA558429, SRR9903558, control, lasiodiplodia-theobromae, 2, L.0, 3d, Fuding-dabaicha, leaves, 5y, G.0, single

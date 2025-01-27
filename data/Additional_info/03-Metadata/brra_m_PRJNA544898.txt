@@ -1,0 +1,16 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+brra, PRJNA544898, SRR9129318, treated, hyaloperonospora-parasitica, 1, L.0, 48h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129319, treated, hyaloperonospora-parasitica, 2, L.0, 48h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129320, treated, hyaloperonospora-parasitica, 2, L.0, 24h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129321, treated, hyaloperonospora-parasitica, 3, L.0, 24h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129322, treated, hyaloperonospora-parasitica, 3, L.0, 48h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129323, control, hyaloperonospora-parasitica, 3, L.0, 0h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129324, treated, hyaloperonospora-parasitica, 1, L.0, 6h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129325, control, hyaloperonospora-parasitica, 1, L.0, 0h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129326, control, hyaloperonospora-parasitica, 2, L.0, 0h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129327, treated, hyaloperonospora-parasitica, 1, L.0, 12h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129328, treated, hyaloperonospora-parasitica, 2, L.0, 12h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129329, treated, hyaloperonospora-parasitica, 2, L.0, 6h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129330, treated, hyaloperonospora-parasitica, 3, L.0, 6h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129331, treated, hyaloperonospora-parasitica, 3, L.0, 12h, suzhouqing, flesh, D.0, G.0, single
+brra, PRJNA544898, SRR9129332, treated, hyaloperonospora-parasitica, 1, L.0, 24h, suzhouqing, flesh, D.0, G.0, single

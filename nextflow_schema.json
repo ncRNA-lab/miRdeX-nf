@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com///nextflow_schema.json",
+  "title": " pipeline parameters",
+  "description": "",
+  "type": "object",
+  "$defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": ["input", "outdir"],
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "file-path",
+          "exists": true,
+          "schema": "assets/schema_input.json",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.csv$",
+          "description": "Path to comma-separated file containing information about the samples in the experiment.",
+          "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+          "fa_icon": "fas fa-file-csv"
+        },
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+          "fa_icon": "fas fa-folder-open"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/$defs/input_output_options"
+    }
+  ],
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "input_fastp": {
+      "type": "boolean"
+    },
+    "input_validation": {
+      "type": "boolean"
+    },
+    "input_filtering": {
+      "type": "boolean"
+    },
+    "extra_fastqc_args": {
+      "type": "string"
+    },
+    "extra_multiqc_args": {
+      "type": "string"
+    },
+    "trimming_adapters": {
+      "type": "string",
+      "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/illumina_adapters.fa"
+    },
+    "trimming_min_len": {
+      "type": "integer",
+      "default": 20
+    },
+    "trimming_max_len": {
+      "type": "integer",
+      "default": 25
+    },
+    "custom_fastp_args": {
+      "type": "string"
+    },
+    "validation_depth": {
+      "type": "integer",
+      "default": 500000
+    },
+    "validation_rep": {
+      "type": "integer",
+      "default": 2
+    },
+    "filtering_rnacentral": {
+      "type": "string"
+    },
+    "filtering_db_mismatches": {
+      "type": "integer",
+      "default": 0
+    },
+    "filtering_genome_mismatches": {
+      "type": "integer",
+      "default": 1
+    },
+    "min_counts": {
+      "type": "integer",
+      "default": 5
+    },
+    "min_samples": {
+      "type": "integer",
+      "default": 3
+    },
+    "ea_p_value": {
+      "type": "number",
+      "default": 0.2
+    },
+    "dea_alpha": {
+      "type": "number",
+      "default": 0.05
+    },
+    "annotation_mismatches": {
+      "type": "integer",
+      "default": 1
+    },
+    "annotation_mirbase": {
+      "type": "string"
+    },
+    "annotation_sRNAanno": {
+      "type": "string"
+    },
+    "annotation_pmiren": {
+      "type": "string"
+    },
+    "counts_project_table": {
+      "type": "boolean"
+    },
+    "skip_qc": {
+      "type": "boolean"
+    },
+    "skip_fastqc": {
+      "type": "boolean"
+    },
+    "skip_multiqc": {
+      "type": "boolean"
+    },
+    "skip_trimming": {
+      "type": "boolean"
+    },
+    "skip_validation": {
+      "type": "boolean"
+    },
+    "skip_filt_db": {
+      "type": "boolean"
+    },
+    "skip_filt_genome": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
+hovu, PRJNA507337, SRR8265663, treated, salt, 2, 200mM, 10d, XZ16, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265664, treated, salt, 1, 200mM, 10d, XZ16, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265665, control, salt, 1, 0mM, 10d, XZ16, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265667, control, salt, 2, 0mM, 10d, GoldenPromise, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265668, control, salt, 2, 0mM, 10d, XZ16, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265669, control, salt, 1, 0mM, 10d, GoldenPromise, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265670, treated, salt, 2, 200mM, 10d, XZ16, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265671, treated, salt, 1, 200mM, 10d, GoldenPromise, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265672, control, salt, 2, 0mM, 10d, GoldenPromise, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265673, treated, salt, 1, 200mM, 10d, XZ16, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265674, control, salt, 1, 0mM, 10d, GoldenPromise, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265675, treated, salt, 2, 200mM, 10d, GoldenPromise, root, 25d, G.0, single
+hovu, PRJNA507337, SRR8265676, treated, salt, 2, 200mM, 10d, GoldenPromise, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265677, treated, salt, 1, 200mM, 10d, GoldenPromise, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265678, control, salt, 2, 0mM, 10d, XZ16, shoot, 25d, G.0, single
+hovu, PRJNA507337, SRR8265679, control, salt, 1, 0mM, 10d, XZ16, shoot, 25d, G.0, single

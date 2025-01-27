@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+brna, PRJNA742780, SRR15010961, treated, plasmodiophora-brassicae, 1, L.0, 20d, Bing409, root, seedling-stage, G.S, single
+brna, PRJNA742780, SRR15010962, control, plasmodiophora-brassicae, 3, L.0, 20d, Bing409, root, seedling-stage, G.S, single
+brna, PRJNA742780, SRR15010963, control, plasmodiophora-brassicae, 2, L.0, 20d, Bing409, root, seedling-stage, G.S, single
+brna, PRJNA742780, SRR15010964, control, plasmodiophora-brassicae, 1, L.0, 20d, Bing409, root, seedling-stage, G.S, single
+brna, PRJNA742780, SRR15010965, treated, plasmodiophora-brassicae, 3, L.0, 20d, Bing409, root, seedling-stage, G.R, single
+brna, PRJNA742780, SRR15010966, treated, plasmodiophora-brassicae, 2, L.0, 20d, Bing409, root, seedling-stage, G.R, single
+brna, PRJNA742780, SRR15010967, treated, plasmodiophora-brassicae, 1, L.0, 20d, Bing409, root, seedling-stage, G.R, single
+brna, PRJNA742780, SRR15010968, control, plasmodiophora-brassicae, 3, L.0, 20d, Bing409, root, seedling-stage, G.R, single
+brna, PRJNA742780, SRR15010973, treated, plasmodiophora-brassicae, 3, L.0, 20d, Bing409, root, seedling-stage, G.S, single
+brna, PRJNA742780, SRR15010974, treated, plasmodiophora-brassicae, 2, L.0, 20d, Bing409, root, seedling-stage, G.S, single
+brna, PRJNA742780, SRR15010975, control, plasmodiophora-brassicae, 2, L.0, 20d, Bing409, root, seedling-stage, G.R, single
+brna, PRJNA742780, SRR15010976, control, plasmodiophora-brassicae, 1, L.0, 20d, Bing409, root, seedling-stage, G.R, single

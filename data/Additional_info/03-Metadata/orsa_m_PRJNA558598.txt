@@ -1,0 +1,13 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA558598, SRR9915700, treated, cold, 2, L.0, 24h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915701, treated, cold, 2, L.0, 48h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915702, treated, cold, 2, L.0, 6h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915703, treated, cold, 2, L.0, 12h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915704, treated, cold, 1, L.0, 24h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915705, treated, cold, 1, L.0, 48h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915706, control, cold, 2, L.0, 0h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915707, treated, cold, 2, L.0, 2h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915708, control, cold, 1, L.0, 0h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915709, treated, cold, 1, L.0, 2h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915710, treated, cold, 1, L.0, 6h, Rice89-1, leaves, seedling-stage, G.T, single
+orsa, PRJNA558598, SRR9915711, treated, cold, 1, L.0, 12h, Rice89-1, leaves, seedling-stage, G.T, single

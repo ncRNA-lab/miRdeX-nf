@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+soly, PRJNA439162, SRR6866904, control, tomv, 2, L.0, T.0, alisa-craig, leaves, D.0, G.0, single
+soly, PRJNA439162, SRR6866905, control, tomv, 3, L.0, T.0, alisa-craig, leaves, D.0, G.0, single
+soly, PRJNA439162, SRR6866907, control, tomv, 1, L.0, T.0, alisa-craig, leaves, D.0, G.0, single
+soly, PRJNA439162, SRR6872534, treated, tomv, 1, L.0, T.0, alisa-craig, leaves, D.0, G.0, single
+soly, PRJNA439162, SRR6872536, treated, tomv, 3, L.0, T.0, alisa-craig, leaves, D.0, G.0, single
+soly, PRJNA439162, SRR6872537, treated, tomv, 2, L.0, T.0, alisa-craig, leaves, D.0, G.0, single

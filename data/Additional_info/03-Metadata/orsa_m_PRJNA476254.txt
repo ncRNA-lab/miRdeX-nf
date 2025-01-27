@@ -1,0 +1,7 @@
+Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
+orsa, PRJNA476254, SRR7346985, control, cadmium-excess, 1, 0uM, 12d, Zhong-Jiazao-17, shoot, D.0, G.0, single
+orsa, PRJNA476254, SRR7346986, control, cadmium-excess, 2, 0uM, 12d, Zhong-Jiazao-17, shoot, D.0, G.0, single
+orsa, PRJNA476254, SRR7346987, control, cadmium-excess, 3, 0uM, 12d, Zhong-Jiazao-17, shoot, D.0, G.0, single
+orsa, PRJNA476254, SRR7346988, treated, cadmium-excess, 1, 100uM, 12d, Zhong-Jiazao-17, shoot, D.0, G.0, single
+orsa, PRJNA476254, SRR7346989, treated, cadmium-excess, 2, 100uM, 12d, Zhong-Jiazao-17, shoot, D.0, G.0, single
+orsa, PRJNA476254, SRR7346990, treated, cadmium-excess, 3, 100uM, 12d, Zhong-Jiazao-17, shoot, D.0, G.0, single
