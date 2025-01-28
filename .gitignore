@@ -14,3 +14,6 @@ assets/PRJNA720229_3.counts.tsv
 assets/PRJNA720229_3.counts.tsv
 assets/samplesheet_counts.csv
 assets/samplesheet_original.csv
+
+# Ignore nextflow log files
+.nextflow*

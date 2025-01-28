@@ -9,8 +9,6 @@
 ----------------------------------------------------------------------------------------
 */
 
-nextflow.enable.dsl=2
-
 // println """\
 //          M I R P L A N - N F   P I P E L I N E
 //          ===================================
@@ -20,41 +18,40 @@ nextflow.enable.dsl=2
 //          """
 //          .stripIndent()
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE & PRINT PARAMETER SUMMARY
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
-
-// Print help message, supply typical command line usage for the pipeline
-if (params.help) {
-   log.info paramsHelp("nextflow run mirplan.nf --input samplesheet.csv")
-   exit 0
-}
-
-// Validate input parameters
-validateParameters()
-
-// Print summary of supplied parameters
-log.info paramsSummaryLog(workflow)
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    NAMED WORKFLOW FOR PIPELINE
+    IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { MIRPLAN } from './workflows/mirplan'
+include { MIRPLAN                   } from './workflows/mirplan'
+include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_mirplan_pipeline'
+
 
 //
 // WORKFLOW: Run main nf-mirplan pipeline
 //
-workflow MAIN_MIRPLAN {
-    MIRPLAN ()
-}
+// workflow MAIN_MIRPLAN {
+
+//     main:
+    
+//     // Create an empty channel for versions 
+//     ch_versions = Channel.empty()
+
+//     //
+//     // WORKFLOW: Run mirplan workflow
+//     //
+
+//     // Check if the input file exists
+//     ch_samplesheet = Channel.value(file(params.input, checkIfExists: true))
+    
+//     // Run the workflow
+//     MIRPLAN (ch_samplesheet)
+
+//     // // Get the versions channel from the main workflow
+//     // ch_versions = ch_versions.mix(MIRPLAN.out.versions)
+// }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,7 +63,27 @@ workflow MAIN_MIRPLAN {
 // WORKFLOW: Execute a single named workflow for the pipeline
 //
 workflow {
-    MAIN_MIRPLAN ()
+
+    main:
+        println(params.version)
+        
+        //
+        // SUBWORKFLOW: Run initialisation tasks
+        //
+
+        // PIPELINE_INITIALISATION(
+        //     params.version,
+        //     params.validate_params,
+        //     args,
+        //     params.outdir
+        // )
+        // // USAR LOS UTILS DE NFCORE PARA VALIDAR LOS PROFILES. CITAR A RNASEQ EN EL FICHERO DE PIPELINE INCIALIZACION
+        // PIPELINE_INITIALISATION.out.version.view()
+
+        //
+        // SUBWORKFLOW: Run the main workflow
+        //
+        // MAIN_MIRPLAN ()
 }
 
 /*

@@ -14,8 +14,6 @@
 
 include { BOWTIE_BUILD } from '../../../modules/nf-core/bowtie/build'
 include { BOWTIE_ALIGN       } from '../../../modules/local/bowtie/align'
-include { PIGZ_UNCOMPRESS       } from '../../../modules/nf-core/pigz/uncompress'
-
 /*
 ========================================================================================
     Workflow FILTERING
@@ -24,7 +22,7 @@ include { PIGZ_UNCOMPRESS       } from '../../../modules/nf-core/pigz/uncompress
 
 /// ATENCIÓN. ESTE SUBWORKFLOW ESTÁ SIENDO EDITADO. TERMINAR.
 // Specify DSL2
-nextflow.enable.dsl=2
+// nextflow.enable.dsl=2
 
 workflow FILTERING {
     take:
