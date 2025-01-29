@@ -44,7 +44,8 @@ include { validateAccessionList      } from "../subworkflows/local/utils_mirplan
 //
 // MODULES
 //
-include { DOWNLOADLIB } from '../modules/local/downloadlib'
+include { DOWNLOADLIB       } from '../modules/local/downloadlib'
+include { DIFFEXPANALYSIS   } from "../modules/local/diffexpanalysis"
 
 
 //
@@ -58,7 +59,6 @@ include { VALIDATION                              } from "../subworkflows/local/
 include { FILTERING as FILTERING_DB               } from "../subworkflows/local/filtering"
 include { FILTERING as FILTERING_GENOME           } from "../subworkflows/local/filtering"
 include { QUANTIFICATION                          } from "../subworkflows/local/quantification"
-include { DIFFEXPANALYSIS                         } from "../subworkflows/local/diffexpanalysis"
 include { ANNOTATION                              } from "../subworkflows/local/annotation"
 include { RESULTS_GENERATION                      } from "../subworkflows/local/results"
 
@@ -96,7 +96,7 @@ workflow MIRPLAN {
     // Fastq files empty channels
     ch_fastq         = Channel.empty()
     pipeline_summary = Channel.empty()
-    ch_counts        = channel.empty()
+    ch_counts        = Channel.empty()
 
     // Create a channel from input file using params.input
     Channel
@@ -178,25 +178,25 @@ workflow MIRPLAN {
     */
     
     ch_input
-    .branch { meta, file ->
-            
-            // Accession lists. It ends with '.txt'
-            acclist: file.toString().endsWith('.txt')
-                def meta_with_id = [id: meta.project] + meta
-                return [meta_with_id, file]
+        .branch { meta, file ->
+                
+                // Accession lists. It ends with '.txt'
+                acclist: file.toString().endsWith('.txt')
+                    def meta_acclist_with_id = [id: meta.project] + meta
+                    return [meta_acclist_with_id, file]
 
-            // Sequencing libraries. They end with '.fastq', '.fastq.gz', '.fq', o '.fq.gz'
-            fastq: file.toString() =~ /\.(fastq(\.gz)?|fq(\.gz)?)$/
-                def file_wo_extension = file.getName().replaceFirst(/\.(fastq(\.gz)?|fq(\.gz)?)$/, '')
-                def meta_with_id = [id: file_wo_extension] + meta
-                return [meta_with_id, file]
+                // Sequencing libraries. They end with '.fastq', '.fastq.gz', '.fq', o '.fq.gz'
+                fastq: file.toString() =~ /\.(fastq(\.gz)?|fq(\.gz)?)$/
+                    def file_wo_extension = file.getName().replaceFirst(/\.(fastq(\.gz)?|fq(\.gz)?)$/, '')
+                    def meta_fastq_with_id = [id: file_wo_extension] + meta
+                    return [meta_fastq_with_id, file]
 
-            // Counts matrices. They end with '.tsv'
-            counts: file.toString().endsWith('.tsv')
-                def meta_with_id = [id: meta.project] + meta
-                return[meta_with_id, file]   
-    }
-    .set { ch_input_files }
+                // Counts matrices. They end with '.tsv'
+                counts: file.toString().endsWith('.tsv')
+                    def meta_counts_with_id = [id: meta.project] + meta
+                    return[meta_counts_with_id, file]   
+        }
+        .set { ch_input_files }
     
     // Check that the count matrices provided as input are valid.
     if (params.from_counts){
@@ -358,7 +358,7 @@ workflow MIRPLAN {
         ============================================================================
         */
 
-        if (!(params.skip_fastqc || skip_qc_trim)) {
+        if (!(params.skip_fastqc || params.skip_qc_trim)) {
             QUALITY_CONTROL_TRIM(
                 FASTP.out.reads,
                 params.skip_multiqc,
@@ -594,6 +594,8 @@ workflow MIRPLAN {
         
         // Perform exploratory and differential expression analyses.
         DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
+
+        DIFFEXPANALYSIS.out.sig.view()
         
         // Add the EA data to the pipeline_summary channel
         DIFFEXPANALYSIS.out.easum
@@ -804,7 +806,7 @@ workflow MIRPLAN {
         }
         .set{ pipeline_summary }
     
-    pipeline_summary.view()
+    // pipeline_summary.view()
 
 
 

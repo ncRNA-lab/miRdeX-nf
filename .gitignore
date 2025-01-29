@@ -18,6 +18,10 @@ assets/samplesheet_original.csv
 # Ignore work directory
 work/
 
+# Ignore test directories/files
+.nf-test*
+testdata/
+
 # Ignore nextflow log files
 .nextflow*
 

@@ -1,0 +1,65 @@
+// Test for DEA Process
+nextflow_process {
+
+    name "Test Process DEA"
+    script "../main.nf"
+    process "DEA"
+
+    test("test_dea_pairwise_comparisons") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/dea/Metadata/test_metadata.tsv', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'modules/dea/test.counts.tsv', checkIfExists: true)
+                ])
+                input[1] = 0.05
+                input[2] = 5
+                input[3] = 3
+                """
+            }
+        }
+
+        then {
+                            
+            def keywords_output = ["seq", "padj", "Shrunkenlog2FoldChange"]
+            def keywords_easum = ["Group_id", "PC1", "P-value(MWW)"]
+            def keywords_deasum = ["Test", "Padj<alpha", "Samples"]
+
+            def rawFileHeader = path(process.out.raw[0][1]).newReader().readLine()
+            def sigFileHeader = path(process.out.sig[0][1]).newReader().readLine()
+            def easumFileHeader = path(process.out.easum[0]).newReader().readLine()
+            def deasumFileHeader = path(process.out.deasum[0]).newReader().readLine()
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert process.out.raw[0][1] ==~ /.*\.dea_raw\.tsv/ }
+                { assert process.out.sig[0][1] ==~ /.*\.dea_sig\.tsv/ }
+                { assert process.out.easum[0] ==~ /.*TEST_1\.ea_summary\.tsv/ }
+                { assert process.out.deasum[0] ==~ /.*TEST_1\.dea_summary\.tsv/ }
+                       
+                // Verify that the output files contain some of the fields they should have.
+                { assert keywords_output.every { keyword -> rawFileHeader.contains(keyword) } }
+                { assert keywords_output.every { keyword -> sigFileHeader.contains(keyword) } }
+                { assert keywords_easum.every { keyword -> easumFileHeader.contains(keyword) } }
+                { assert keywords_deasum.every { keyword -> deasumFileHeader.contains(keyword) } }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.raw,
+                        process.out.sig,
+                        process.out.easum,
+                        process.out.deasum
+                    ).match() 
+                }
+            }
+        }
+    }
+}

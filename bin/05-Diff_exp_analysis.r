@@ -80,6 +80,10 @@ get_arguments <- function() {
                         type = 'character',
                         help = 'Job identifier.',
                         required = TRUE)
+  required$add_argument('-g', '--group_id',
+                        type = 'character',
+                        help = 'Group id (e.g. 3)',
+                        required = TRUE)
   required$add_argument('-c', '--counts',
                         type = 'character',
                         help = 'Absolute counts matrix file.',
@@ -105,7 +109,7 @@ get_arguments <- function() {
   args <- parser$parse_args()
   
   #  Check for missing arguments
-  expected_arguments <- c('id', 'counts', 'metadata', 'alpha', 'min_counts', 'min_samples')
+  expected_arguments <- c('id', 'group_id', 'counts', 'metadata', 'alpha', 'min_counts', 'min_samples')
   if (any(sapply(args, is.null))) {
     empty_args <- names(args[sapply(args, is.null)])
     error_message <- paste('\n\tError. Unspecified argument:', empty_args, sep = ' ')
@@ -148,7 +152,7 @@ get_arguments <- function() {
 #' dds <- create_DeseqDataSet("counts.tsv", "metadata.tsv", min_counts = 5, min_samples = 3)
 #' 
  
-create_DeseqDataSet <- function(id, file, metadata, min_counts=5, min_samples=5){
+create_DeseqDataSet <- function(group_id, file, metadata, min_counts=5, min_samples=5){
   
   ###################### Prepare the counts matrix #############################
   
@@ -184,13 +188,8 @@ create_DeseqDataSet <- function(id, file, metadata, min_counts=5, min_samples=5)
       if (is.character(col)) { return(trimws(col)) } else { return(col) }
     }), stringsAsFactors = FALSE)
     
-    # Get the group of samples
-    group_of_samples <- str_split(id, "_")[[1]][2]
-    
     # Get the metadata of the group of samples
-    group_metadata <- metadata_df[metadata_df$Group == group_of_samples,]
-    print(group_of_samples)
-    print(group_metadata)
+    group_metadata <- metadata_df[metadata_df$Group == group_id,]
     
     # Get the design formula
     design_formula <- unique(group_metadata$Design)
@@ -1293,7 +1292,8 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
 args <- get_arguments()
 
 # Save the rest of the arguments in variables
-subproject <- args$id
+group <- args$id
+group_id <- args$group_id
 file <- args$counts
 metadata <- args$metadata
 alpha <- args$alpha
@@ -1303,17 +1303,17 @@ min_samples <- args$min_samples
 ######################### Create the DeseqDataSet ##############################
 
 # Filter the counts matrix by low counts and create the DeseqDataSet
-dds <- create_DeseqDataSet(subproject, file, metadata, min_counts, min_samples)
+dds <- create_DeseqDataSet(group_id, file, metadata, min_counts, min_samples)
 
 ########################## Exploratory analysis ################################
 
 # Perform an exploratory analysis.
-ea_results <- exploratory_analysis(dds, subproject)
+ea_results <- exploratory_analysis(dds, group)
 
 # Get the test
 test <- unique(colData(dds)$Test)
 
-cat("\n######################## ", subproject, " ########################\n\n")
+cat("\n######################## ", group, " ########################\n\n")
 cat("- Test: ", test, "\n")
 
 ###################### Differential expression analysis ########################
@@ -1329,7 +1329,7 @@ if (toupper(test) == "LRT"){
   dds <- suppressMessages(DESeq(dds, test = "LRT", reduced = as.formula(reduced_formula)))
   
   # Get the DESeq results
-  sum <- get_DESeq_results(dds, alpha, test, sum, paste0(subproject,"_0"))
+  sum <- get_DESeq_results(dds, alpha, test, sum, paste0(group,"_0"))
   
   # Print some information
   cat("- Full model: ", unique(colData(dds)$Design), "\n")
@@ -1365,11 +1365,11 @@ if ("Contrast" %in% colnames(colData(dds))){
     
     # If there is more than one comparison
     if (length(group_of_contrast_v) > 1) {
-      output_file_id <- paste0(subproject,"_", subfile_num)
+      output_file_id <- paste0(group,"_", subfile_num)
       
       # If the formula uses only one factor ...
     } else {
-      output_file_id <- paste0(subproject,"_0")
+      output_file_id <- paste0(group,"_0")
     }
     
     # Print some information
@@ -1396,11 +1396,11 @@ if ("Contrast" %in% colnames(colData(dds))){
       
       # If there is more than one comparison
       if (length(results_names) > 2) {
-        output_file_id <- paste0(subproject,"_", subfile_num)
+        output_file_id <- paste0(group,"_", subfile_num)
         
         # If the formula uses only one factor ...
       } else {
-        output_file_id <- paste0(subproject,"_0")
+        output_file_id <- paste0(group,"_0")
       }
       
       # Print some information
@@ -1420,9 +1420,9 @@ if ("Contrast" %in% colnames(colData(dds))){
 cat('\n')
 
 # Save Differential expression analysis summary file
-colnames(sum) <- c('Group', 'Test', 'Padj<0.05', 'Total', 'Coefficient', 'Contrast', 'Contrast_coefficient', 'Samples')
+colnames(sum) <- c('Group', 'Test', 'Padj<alpha', 'Total', 'Coefficient', 'Contrast', 'Contrast_coefficient', 'Samples')
 write.table(sum,
-            file=paste0(subproject, '.dea_summary.tsv', sep=""),
+            file=paste0(group, '.dea_summary.tsv', sep=""),
             quote=FALSE,
             sep='\t',
             row.names = FALSE)
@@ -1433,7 +1433,7 @@ write.table(sum,
 ea_df <- t(as.data.frame(ea_results[2:10]))
 colnames(ea_df) <- c('Group_id', 'Group', 'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'P-value(MWW)')
 write.table(ea_df,
-            file = paste0(subproject, '.ea_summary.tsv', sep=""),
+            file = paste0(group, '.ea_summary.tsv', sep=""),
             quote=FALSE,
             sep='\t',
             row.names = FALSE)
