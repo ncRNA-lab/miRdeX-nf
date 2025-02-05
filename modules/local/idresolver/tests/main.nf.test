@@ -1,0 +1,428 @@
+// Test for MIRNA_ANNOTATION Process
+nextflow_process {
+
+    name "Test Process DB_ID_RESOLVER"
+    script "../main.nf"
+    process "DB_ID_RESOLVER"
+
+    test("Database ID resolver - all databases") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = true
+                    input[1] = true
+                    input[2] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Database ID resolver - miRBase - PmiREN") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = true
+                    input[1] = false
+                    input[2] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Database ID resolver - miRBase - sRNAanno") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = true
+                    input[1] = true
+                    input[2] = false
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Database ID resolver - PmiREN - sRNAanno") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = false
+                    input[1] = true
+                    input[2] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Database ID resolver - miRBase") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = true
+                    input[1] = false
+                    input[2] = false
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Database ID resolver - sRNAanno") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = false
+                    input[1] = true
+                    input[2] = false
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Database ID resolver - PmiREN") {
+
+        setup {
+
+            run("DOWNLOADDB") {
+                script "../../../../modules/local/downloaddb/main.nf"
+                process {
+                    """
+                    input[0] = false
+                    input[1] = false
+                    input[2] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = DOWNLOADDB.out.mirbase_mature
+                input[2] = DOWNLOADDB.out.mirbase_hairpin
+                input[3] = DOWNLOADDB.out.mirbase_species
+                input[4] = 'Viridiplantae'
+                input[5] = DOWNLOADDB.out.srnaanno_all
+                input[6] = DOWNLOADDB.out.pmiren_mature
+                input[7] = DOWNLOADDB.out.pmiren_hairpin
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids_db\.csv/ }
+                { assert path(process.out.mirbase_mature.get(0)) ==~ /.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase_hairpin.get(0)) ==~ /.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno_mature.get(0)) ==~ /.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno_hairpin.get(0)) ==~ /.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

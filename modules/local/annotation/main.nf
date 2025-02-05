@@ -16,22 +16,18 @@ process MIRNA_ANNOTATION {
     val mismatches
     path ea_sum_table
     val mww_pvalue
+    val min_num_db
 
     output:
-    tuple val(meta), path("mature/*.annot_len.tsv"), emit: annotmat, optional: true
-    tuple val(meta), path("mature/*.annot_filt.tsv"), emit: annotfiltmat, optional: true
-    tuple val(meta), path("hairpin/*.annot_len.tsv"), emit: annothair, optional: true
-    tuple val(meta), path("hairpin/*.annot_filt.tsv"), emit: annotfilthair, optional: true
-    path "mature/${meta.id}.mature_summary.tsv", emit: sum_mat, optional: true
-    path "mature/${meta.id}.mature_summary_len.tsv", emit: sum_mat_len, optional: true
-    path "hairpin/${meta.id}.hairpin_summary.tsv", emit: sum_hair, optional: true
-    path "hairpin/${meta.id}.hairpin_summary_len.tsv", emit: sum_hair_len, optional: true
-    path "mature/*.sam", optional: true
-    path "mature/*dea*.{fasta,tsv}", optional: true
-    path "hairpin/*.sam", optional: true
-    path "hairpin/*dea*.{fasta,tsv}", optional: true
+    tuple val(meta), path("*.annot_all.tsv"), emit: annot
+    tuple val(meta), path("*.annot_filt.tsv"), emit: annotfilt
+    path "*_summary.tsv", emit: sum
+    path "*_summary_len.tsv", emit: sumlen
 
     script:
+    def mirbase_in = mirbase.name != 'EMPTY_mirbase_mature.fa' ? "--mirbase ${mirbase}" : ""
+    def srnaanno_in = srnaanno.name != 'EMPTY_srnaanno_mature.fa' ? "--srnaanno ${srnaanno}" : ""
+    def pmiren_in = pmiren.name != 'EMPTY_pmiren_mature.fa' ? "--pmiren ${pmiren}" : ""
     """
     ## Create a string to include all files in the 'input' argument
     input_files=''
@@ -52,13 +48,14 @@ process MIRNA_ANNOTATION {
         --input \$input_files \
         --id ${meta.id} \
         --species ${meta.species_id} \
-        --mirbase ${mirbase} \
-        --pmiren ${pmiren} \
-        --srnaanno ${srnaanno} \
+        $mirbase_in \
+        $pmiren_in \
+        $srnaanno_in \
         --mismatches ${mismatches} \
         --threads ${task.cpus} \
         --ea-table ${ea_sum_table} \
-        --mww-pvalue ${mww_pvalue}
+        --mww-pvalue ${mww_pvalue} \
+        --min-num-db ${min_num_db} 
     """
 }
 

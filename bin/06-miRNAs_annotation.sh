@@ -11,10 +11,10 @@
 #   to identify the mature miRNAs and also their precursors. Once annotated,
 #   the results of all three alignments are merged into a single five-column
 #   table: sequence, Annotation with miRBase using only sequences of specific
-#   species, Annotation with miRBase using the rest of the species, Annotation
+#   species, Annotation with miRBase using the others of the species, Annotation
 #   with PmiREN using only sequences of specific species, Annotation with
 #   PmiREN, and Annotation with sRNAanno using only sequences of specific
-#   species, Annotation with sRNAanno using the rest of the species. If any of
+#   species, Annotation with sRNAanno using the others of the species. If any of
 #   the sequences has not obtained results in the alignment with one of the
 #   three databases, it will be represented as NULL. Additionally, the program
 #   generates files where sequences are filtered based on whether they have
@@ -89,15 +89,20 @@ arguments_management() {
     ############################################################################
 
     # Set a default value for optional arguments
-    projects_list=''
+    projects_valid_list=''
     ea_table=''
     mww_pvalue=-1
+    threads=1
+    min_num_db=2
+    path_mirbase=''
+    path_PmiREN=''
+    path_sRNAanno=''
 
     # Inicialize the files variable.
     files=''
 
     # Read the options
-    TEMP=$(getopt -o h::i:d:s:m:e:a:v:t:l:a:w: --long help::,input:,id:,species:,mirbase:,pmiren:,srnaanno:,mismatches:,threads:,projects-list:,ea-table:,mww-pvalue: -- "$@")
+    TEMP=$(getopt -o h::i:d:s:m:e:a:v:n:t:l:a:w: --long help::,input:,id:,species:,mirbase:,pmiren:,srnaanno:,mismatches:,min-num-db:,threads:,projects-list:,ea-table:,mww-pvalue: -- "$@")
 
     # Check if the arguments are valid
     VALID_ARGUMENTS=$?
@@ -122,13 +127,31 @@ arguments_management() {
             -s|--species)
                 species="$2"; shift 2 ;;
             -m|--mirbase)
-                path_mirbase="$2"; shift 2 ;;
+                # Check if srnaanno miRBase is provided
+                if [ -n "$2" ] ; then
+                    path_mirbase="$2"
+                fi
+                shift 2 ;;
             -e|--pmiren)
-                path_PmiREN="$2"; shift 2 ;;
+                # Check if srnaanno PmiREN is provided
+                if [ -n "$2" ] ; then
+                    path_PmiREN="$2"
+                fi
+                shift 2 ;;
             -a|--srnaanno)
-                path_sRNAanno="$2"; shift 2 ;;
+                # Check if srnaanno database is provided
+                if [ -n "$2" ] ; then
+                    path_sRNAanno="$2"
+                fi
+                shift 2 ;;
             -v|--mismatches)
                 mismatches="$2"; shift 2 ;;
+            -n|--min-num-db)
+                # Check if a value for -n is provided
+                if [ -n "$2" ] ; then
+                    min_num_db="$2"
+                fi
+                shift 2 ;;
             -t|--threads)
                 threads="$2";
                 # Check if -d is a positive number
@@ -205,7 +228,7 @@ arguments_management() {
 #   This function separates a database (.fasta)
 #   into two different files, one with all the
 #   sequences belonging to a specific species and
-#   the other with the sequences of the rest of
+#   the other with the sequences of the others of
 #   the species in the database. To do this, it
 #   receives the four-letter "id" of the species
 #   in question, obtains the three-letter code of
@@ -232,7 +255,7 @@ create_temporary_databases(){
 
     # Other variables
     file_out_species=$path_dir_out/$database"_species.fasta"
-    file_out_others=$path_dir_out/$database"_rest.fasta"
+    file_out_others=$path_dir_out/$database"_others.fasta"
     path_tmp=$path_dir_out/tmp_databases
 
     # Create temporary directory
@@ -379,6 +402,68 @@ merge_tsv_files () {
 }
 
 
+sort_table_by_colnames() {
+    # Arguments:
+    # $1 -> path to the file (input file)
+    # $2 -> output file name (without extension)
+    # $3 -> Desired column order (array)
+
+    # Read the file paths and desired order
+    local path_in="${1}"
+    local -n order="${2}"
+    local path_out="${3}"
+
+    # Read the header to get the index of each column
+    read -r header < "$path_in"
+    IFS=$'\t' read -r -a columns <<< "$header"
+
+    # Create an array with the indices of the columns in the desired order
+    indices=()
+    for col in "${order[@]}"; do
+        for i in "${!columns[@]}"; do
+            if [[ "${columns[i]}" == "$col" ]]; then
+                indices+=($i)
+                break
+            fi
+        done
+    done
+
+    # Write the reordered header to the output file
+    reordered_header=""
+    len=${#indices[@]}
+    for i in "${!indices[@]}"; do
+        if [[ $i -eq $((len - 1)) ]]; then
+            reordered_header+="${columns[${indices[i]}]}"
+        else
+            reordered_header+="${columns[${indices[i]}]}\t"
+        fi
+    done
+    echo -e "$reordered_header" > "$path_out"
+
+    # Reorder columns for each data line and write to the output file
+    first_line=true
+    while read -r line; do
+        # Skip the header
+        if $first_line; then
+            first_line=false
+            continue 
+        fi
+
+        IFS=$'\t' read -r -a data <<< "$line"
+        reordered=""
+        for i in "${!indices[@]}"; do
+            if [[ $i -gt 0 ]]; then
+                reordered+=$'\t'  # Add tab before all columns except the first
+            fi
+            reordered+="${data[${indices[i]}]}"
+        done
+        # Write the reordered line to the output file
+        echo -e "$reordered" >> "$path_out"
+    done < "$path_in"
+
+}
+
+
 #####################################################
 #
 #   This function creates an annotation table
@@ -388,8 +473,8 @@ merge_tsv_files () {
 #   belonging to the species and sequences
 #   belonging to other species separately).
 #   This table consists of 8 columns: seq, miRBase_
-#   species, miRBase_rest, PmiREN_species,
-#   PmiREN_rest, sRNAanno_species, sRNAanno_rest
+#   species, miRBase_others, PmiREN_species,
+#   PmiREN_others, sRNAanno_species, sRNAanno_others
 #   and length. The first column contains
 #   the nucleotide sequence, the next 6 columns
 #   represent the sequence name according to
@@ -400,18 +485,7 @@ merge_tsv_files () {
 #   nucleotide sequence in question.
 #
 #   Arguments:
-#       SAM file obtained from miRBase
-#           alignment (species)
-#       SAM file obtained from miRBase
-#           alignment (other species)
-#       SAM file obtained from PmiREN
-#           alignment (species)
-#       SAM file obtained from PmiREN
-#           alignment (other species)
-#       SAM file obtained from sRNAanno
-#           alignment (species)
-#       SAM file obtained from sRNAanno
-#           alignment (other species)
+#       Array with SAM files
 #       Two-column TSV file with nucleotide
 #           sequences of significantly
 #           differentially expressed sequences
@@ -426,60 +500,122 @@ merge_tsv_files () {
 get_miRNAs_annotation () {
 
     # Arguments
-    local sam_file_mirbase_species="${1}"
-    local sam_file_mirbase_rest="${2}"
-    local sam_file_PmiREN_species="${3}"
-    local sam_file_PmiREN_rest="${4}"
-    local sam_file_sRNAanno_species="${5}"
-    local sam_file_sRNAanno_rest="${6}"
-    local path_tsv_seq="${7}"
-    local out_name="${8}"
-    local path_out="${9}"
+    local -n array="${1}"
+    local path_tsv_seq="${2}"
+    local out_name="${3}"
+    local path_out="${4}"
 
-    # Get annotation tables
-    [[ -f $sam_file_mirbase_species ]] &&
-        cat $sam_file_mirbase_species | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_mirbase_species_temp.tsv" ||
-        touch $path_out/$out_name"_mirbase_species_temp.tsv"
-    [[ -f $sam_file_mirbase_rest ]] && 
-        cat $sam_file_mirbase_rest | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_mirbase_rest_temp.tsv" ||
-        touch $path_out/$out_name"_mirbase_rest_temp.tsv" 
-    [[ -f $sam_file_PmiREN_species ]] &&
-        cat $sam_file_PmiREN_species | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_PmiREN_species_temp.tsv" ||
-        touch $path_out/$out_name"_PmiREN_species_temp.tsv"
-    [[ -f $sam_file_PmiREN_rest ]] &&
-        cat $sam_file_PmiREN_rest | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_PmiREN_rest_temp.tsv" ||
-        touch $path_out/$out_name"_PmiREN_rest_temp.tsv"
-    [[ -f $sam_file_sRNAanno_species ]] &&
-        cat $sam_file_sRNAanno_species | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_sRNAanno_species_temp.tsv" ||
-        touch $path_out/$out_name"_sRNAanno_species_temp.tsv"
-    [[ -f $sam_file_sRNAanno_rest ]] &&
-        cat $sam_file_sRNAanno_rest | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_sRNAanno_rest_temp.tsv" ||
-        touch $path_out/$out_name"_sRNAanno_rest_temp.tsv"
+    # Create an array to know which files must be merged
+    declare -A files_to_merge
 
-    # Join nucleotide sequence with identifier
-    merge_tsv_files $path_out/$out_name"_mirbase_species_temp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_mirbase_species_annot.tsv"
-    merge_tsv_files $path_out/$out_name"_mirbase_rest_temp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_mirbase_rest_annot.tsv"
-    merge_tsv_files $path_out/$out_name"_PmiREN_species_temp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_PmiREN_species_annot.tsv"
-    merge_tsv_files $path_out/$out_name"_PmiREN_rest_temp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_PmiREN_rest_annot.tsv"
-    merge_tsv_files $path_out/$out_name"_sRNAanno_species_temp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_sRNAanno_species_annot.tsv"
-    merge_tsv_files $path_out/$out_name"_sRNAanno_rest_temp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_sRNAanno_rest_annot.tsv"
+    # Iterate through the array elements
+    for db in "${!array[@]}"; do
+        
+        # Get the SAM file from the array
+        sam_file=${array[$db]}
+
+        # Get annotation tables
+        [[ -f $sam_file ]] &&
+            cat $sam_file | cut -f1,3 | awk -F "\t" '{if (substr($1,1,1) != "@"){print}}' > $path_out/$out_name"_"$db"_tmp.tsv" ||
+            touch $path_out/$out_name"_"$db"_tmp.tsv"
+
+        # Join nucleotide sequence with identifier
+        merge_tsv_files $path_out/$out_name"_"$db"_tmp.tsv" $path_tsv_seq 1 1 1.2,2.2 $path_out/$out_name"_"$db"_annot.tsv"
+
+        # Save the output file into the files_to_merge array
+        files_to_merge["${db}"]=$path_out/$out_name"_"$db"_annot.tsv"
+
+    done
+
+    # Required vars
+    output_columns="0,2.1"
+    counter=1
+    key_file1=2
+    key_file_2=2
+    final_colnames='1i\seq'
+
+    # Iterate through the array elements (sorted!)
+    for filename in $(echo "${!files_to_merge[@]}" | tr ' ' '\n' | sort -t_ -k1,1 -k2,2r); do
+
+        # Get the file path
+        current_file=${files_to_merge[$filename]}
+        
+        # Firs iteration
+        if [[ $counter -eq 1 ]]; then
+            merged_file=$current_file
+            ((counter++))
+            final_colnames+="\t${filename}"
+            continue
+        fi
+
+        # Get the output columns depending on the merge step
+        if [[ $counter -eq 3 ]]; then
+            # Second merge
+            output_columns="0,1.2,1.3,2.1"
+        else
+            next_column_to_add=$(echo $output_columns | awk -F, '{print $(NF-1)}' | awk '{if ($1 == 0) print 1.1; else print $1+0.1}' | bc)
+            output_columns=$(echo $output_columns | sed 's/,[^,]*$//' | awk -v nc="$next_column_to_add" '{print $0 "," nc ",2.1"}')
+        fi
+        
+        # Create the name of the new tmp file
+        next_temp_file="$path_out/$out_name"_tmp_$counter.tsv
+
+        # Merge tsv files
+        merge_tsv_files \
+            $merged_file \
+            $current_file \
+            $key_file1 \
+            $key_file_2 \
+            $output_columns \
+            $next_temp_file \
+            TRUE
+
+        # Update some variables
+        ((counter++))
+        key_file1=1
+        key_file_2=2
+        merged_file=$next_temp_file
+        final_colnames+="\t${filename}"
+    done
+
+    # # Sort the TSV file
+    sort -k 1b,1 -t$'\t' $merged_file -o $path_out/$out_name"_annot_tmp.tsv"
+    # #sed -i $final_colnames $path_out/$out_name"_annot.tsv"
+
+    # If miRBase has not been provided...
+    if [[ ! -v array["mirbase_species"] && ! -v array["mirbase_others"] ]]; then
+        # Add the missing column names.
+        final_colnames+="\tmirbase_species\tmirbase_others"
+        # Add two NULL columns at the end of the table.
+        awk 'BEGIN {OFS="\t"} {print $0, "NULL", "NULL"}' $path_out/$out_name"_annot_tmp.tsv" > tmp.csv && mv tmp.csv $path_out/$out_name"_annot_tmp.tsv"
+    fi
+
+    # If sRNAanno has not been provided...
+    if [[ ! -v array["srnaanno_species"] && ! -v array["srnaanno_others"] ]]; then
+        # Add the missing column names.
+        final_colnames+="\tsrnaanno_species\tsrnaanno_others"
+        # Add two NULL columns at the end of the table.
+        awk 'BEGIN {OFS="\t"} {print $0, "NULL", "NULL"}' $path_out/$out_name"_annot_tmp.tsv" > tmp.csv && mv tmp.csv $path_out/$out_name"_annot_tmp.tsv"
+    fi
+
+    # If PmiREN has not been provided...
+    if [[ ! -v array["pmiren_species"] && ! -v array["pmiren_others"] ]]; then
+        # Add the missing column names.
+        final_colnames+="\tpmiren_species\tpmiren_others"
+        # Add two NULL columns at the end of the table.
+        awk 'BEGIN {OFS="\t"} {print $0, "NULL", "NULL"}' $path_out/$out_name"_annot_tmp.tsv" > tmp.csv && mv tmp.csv $path_out/$out_name"_annot_tmp.tsv"
+    fi
     
-    # Create tsv annotation table
-    merge_tsv_files $path_out/$out_name"_mirbase_species_annot.tsv" $path_out/$out_name"_mirbase_rest_annot.tsv" 2 2 0,1.1,2.1 $path_out/$out_name"_temp_1.tsv" TRUE
-    merge_tsv_files $path_out/$out_name"_temp_1.tsv" $path_out/$out_name"_PmiREN_species_annot.tsv" 1 2 0,1.2,1.3,2.1 $path_out/$out_name"_temp_2.tsv" TRUE
-    merge_tsv_files $path_out/$out_name"_temp_2.tsv" $path_out/$out_name"_PmiREN_rest_annot.tsv" 1 2 0,1.2,1.3,1.4,2.1 $path_out/$out_name"_temp_3.tsv" TRUE
-    merge_tsv_files $path_out/$out_name"_temp_3.tsv" $path_out/$out_name"_sRNAanno_species_annot.tsv" 1 2 0,1.2,1.3,1.4,1.5,2.1 $path_out/$out_name"_temp_4.tsv" TRUE
-    merge_tsv_files $path_out/$out_name"_temp_4.tsv" $path_out/$out_name"_sRNAanno_rest_annot.tsv" 1 2 0,1.2,1.3,1.4,1.5,1.6,2.1 $path_out/$out_name"_temp_5.tsv" TRUE
+    # Sort the table
+    sort -t$'\t' -k1,1 $path_out/$out_name"_annot_tmp.tsv" > tmp.csv && mv tmp.csv $path_out/$out_name"_annot_tmp.tsv"
 
-    # Sort the TSV file
-    sort -k 1b,1 -t$'\t' $path_out/$out_name"_temp_5.tsv" -o $path_out/$out_name"_annot.tsv"
-    sed -i '1i\seq\tmiRBase_species\tmiRBase_others\tPmiREN_species\tPmiREN_others\tsRNAanno_species\tsRNAanno_others' $path_out/$out_name"_annot.tsv"
-  
-    # Remove temporal files
-    #rm $path_out/*temp*
-    #rm $path_out/*_mirbase*.tsv
-    #rm $path_out/*_PmiREN*.tsv
-    #rm $path_out/*_sRNAanno*.tsv
+    # Add the header to the annotation file
+    sed -i $final_colnames $path_out/$out_name"_annot_tmp.tsv"
+
+    ## Order the columns: miRBase, sRNAanno, PmiREN
+    # Desired column order (by name)
+    order=("seq" "mirbase_species" "mirbase_others" "srnaanno_species" "srnaanno_others" "pmiren_species" "pmiren_others")
+    sort_table_by_colnames $path_out/$out_name"_annot_tmp.tsv" order $path_out/$out_name"_annot.tsv"
 }
 
 
@@ -491,16 +627,16 @@ get_miRNAs_annotation () {
 #   miRBase, PmiREN, and sRNAanno. It processes
 #   the CSV file corresponding to the annotation
 #   table containing the following fields: seq,
-#   miRBase_species, miRBase_rest, PmiREN_species,
-#   PmiREN_rest, sRNAanno_species, sRNAanno_rest,
+#   miRBase_species, miRBase_others, PmiREN_species,
+#   PmiREN_others, sRNAanno_species, sRNAanno_others,
 #   and length. The function checks each line in
 #   the input file to determine if there are
 #   annotations in at least two of the three
 #   databases. Specifically, it checks if at
 #   least one field in both miRBase (miRBase_species
-#   and miRBase_rest) and PmiREN (PmiREN_species
-#   and PmiREN_rest) or sRNAanno (sRNAanno_species
-#   and sRNAanno_rest) is not equal to "NULL".
+#   and miRBase_others) and PmiREN (PmiREN_species
+#   and PmiREN_others) or sRNAanno (sRNAanno_species
+#   and sRNAanno_others) is not equal to "NULL".
 #   If this condition is met, the function writes
 #   the line to a new file (path_file_out). This
 #   function effectively filters and saves lines
@@ -517,29 +653,47 @@ filter_annotated_sequences () {
 
     # Arguments
     local path_file_in="${1}"
-    local path_file_out="${2}"
+    local min_num_db="${2}"
+    local path_file_out="${3}"
 
-    # Read the original table and iterate through each line
-    while IFS=$'\t' read -r seq miRBase_species miRBase_others PmiREN_species PmiREN_others sRNAanno_species sRNAanno_others length
-    do  
+    # Read the first line to determine column positions
+    IFS=$'\t' read -r header < "$path_file_in"
+
+    # Convert the header into an array
+    read -r -a columns <<< "$header"
+
+    # Identify the indices of the relevant columns (excluding seq and length)
+    declare -a db_columns=()
+    for ((i = 1; i < ${#columns[@]} - 1; i++)); do
+        db_columns+=("$i")
+    done
+
+    # Calculate the number of databases (each database has two columns: species & others)
+    num_databases=$(( ${#db_columns[@]} / 2 ))
+
+    # Print the header to the output file
+    echo -e "$header" > "$path_file_out"
+
+    # Read the original table and iterate through each line (skipping header)
+    tail -n +2 "$path_file_in" | while IFS=$'\t' read -r -a line; do  
         # Number of databases where the sequence has been annotated
         points=0
         
-        # Check if the sequence is annotated at least once in miRBase
-        [[ ( "$miRBase_species" != "NULL" || "$miRBase_others" != "NULL" ) ]] && let "points++"
+        # Check each database (each has two associated columns)
+        for ((i = 0; i < ${#db_columns[@]}; i+=2)); do
+            species_col=${db_columns[$i]}
+            others_col=${db_columns[$i+1]}
 
-        # Check if the sequence is annotated at least once in PmiREN
-        [[ ( "$PmiREN_species" != "NULL" || "$PmiREN_others" != "NULL" ) ]] && let "points++"
-
-        # Check if the sequence is annotated at least once in sRNAanno
-        [[ ( "$sRNAanno_species" != "NULL" || "$sRNAanno_others" != "NULL" ) ]] && let "points++"
+            # Check if the sequence is annotated at least once in this database
+            [[ ( "${line[$species_col]}" != "NULL" || "${line[$others_col]}" != "NULL" ) ]] && ((points++))
+        done
         
-        # Print the line that meets the criteria and save it to the output file
-        [ $points -ge 2 ] && echo -e "$seq\t$miRBase_species\t$miRBase_others\t$PmiREN_species\t$PmiREN_others\t$sRNAanno_species\t$sRNAanno_others\t$length" >> "$path_file_out"
+        # Print the line that meets the criteria and save it to the output file (using tab separator)
+        if [ $points -ge $min_num_db ]; then
+            printf "%s\n" "$(IFS=$'\t'; echo "${line[*]}")" >> "$path_file_out"
+        fi
 
-
-    done < "$path_file_in"
-
+    done
 }
 
 
@@ -578,13 +732,12 @@ main () {
     # Get arguments
     arguments_management "$@"
 
-    # echo $files
-    # echo $way
-    # echo $ea_table
-    #echo $mww_pvalue
-    #echo $id
-    echo "HOLAAAA"
-    echo $path_PmiREN
+    # Create an array with the provided databases
+    declare -A databases=(
+        ["mirbase"]="$path_mirbase"
+        ["pmiren"]="$path_PmiREN"
+        ["srnaanno"]="$path_sRNAanno"
+    )
 
     # Create directory for temporary files
     mkdir -p ./tmp
@@ -595,29 +748,34 @@ main () {
     # Create output directory
     file_name=$(basename "$path_mirbase") # hairpin.fa or mature.fa
     reference_name=$(echo "$file_name" | grep -oE "mature|hairpin")
-    mkdir -p $reference_name
+    mkdir -p tmp/$reference_name
 
-    # Create temporary databases (species and others)
-    create_temporary_databases mirbase $species $path_mirbase $reference_name
-    create_temporary_databases pmiren $species $path_PmiREN $reference_name
-    create_temporary_databases srnaanno $species $path_sRNAanno $reference_name
+    ## Create temporary databases
+    # Iterate through the array items (mirbase, pmiren, srnaanno)
+    for db in "${!databases[@]}"; do
 
-    # Create Index directories
-    mkdir -p $reference_name/mirbase_species_idx
-    mkdir -p $reference_name/mirbase_rest_idx
-    mkdir -p $reference_name/PmiREN_species_idx
-    mkdir -p $reference_name/PmiREN_rest_idx
-    mkdir -p $reference_name/sRNAanno_species_idx
-    mkdir -p $reference_name/sRNAanno_rest_idx
+        # Check if the database has been provided
+        if [ -n "${databases[$db]}" ]; then
 
-    # Index databases
-    bowtie-build --threads $threads $reference_name/mirbase_species.fasta $reference_name/mirbase_species_idx/mirbase_species > /dev/null 2>&1
-    bowtie-build --threads $threads $reference_name/mirbase_rest.fasta $reference_name/mirbase_rest_idx/mirbase_rest > /dev/null 2>&1
-    bowtie-build --threads $threads $reference_name/pmiren_species.fasta $reference_name/PmiREN_species_idx/PmiREN_species > /dev/null 2>&1
-    bowtie-build --threads $threads $reference_name/pmiren_rest.fasta $reference_name/PmiREN_rest_idx/PmiREN_rest > /dev/null 2>&1
-    bowtie-build --threads $threads $reference_name/srnaanno_species.fasta $reference_name/sRNAanno_species_idx/sRNAanno_species > /dev/null 2>&1
-    bowtie-build --threads $threads $reference_name/srnaanno_rest.fasta $reference_name/sRNAanno_rest_idx/sRNAanno_rest > /dev/null 2>&1
-    
+            # Create the temporary database only if the key exists.
+            create_temporary_databases "$db" "$species" "${databases[$db]}" "tmp/$reference_name"
+
+            # Create Index directories
+            mkdir -p tmp/$reference_name/"$db"_species_idx
+            mkdir -p tmp/$reference_name/"$db"_others_idx
+
+            # Index databases
+            bowtie-build --threads $threads tmp/$reference_name/"${db}"_species.fasta tmp/$reference_name/"${db}"_species_idx/"${db}"_species > /dev/null 2>&1
+            bowtie-build --threads $threads tmp/$reference_name/"$db"_others.fasta tmp/$reference_name/"$db"_others_idx/"$db"_others > /dev/null 2>&1
+        fi
+    done
+
+    # Create an array to store the alignment results (SAM files).
+    declare -A sam_array
+
+    # Define the database types
+    types=("species" "others")
+
     # Iterate through project files
     for file in $files
     do
@@ -636,7 +794,7 @@ main () {
             # Save results in summary file and pass to the next subproject.
             if [[ $valid == "false" ]]
             then
-                echo -e "$species\t$id\tNA\tNA" >> $reference_name/$id"."$reference_name"_summary.tsv"
+                echo -e "$species\t$id\tNA\tNA" >> tmp/$reference_name/$id"."$reference_name"_summary.tsv"
                 continue
             fi
 
@@ -652,7 +810,7 @@ main () {
             # Save results in summary file and pass to the next subproject.
             if [[ $valid == "false" ]]
             then
-                echo -e "$species\t$id\tNA\tNA" >> $reference_name/$id"."$reference_name"_summary.tsv"
+                echo -e "$species\t$id\tNA\tNA" >> tmp/$reference_name/$id"."$reference_name"_summary.tsv"
                 continue
             fi
         fi
@@ -660,137 +818,98 @@ main () {
         printf "\n########################### File: $file ($species) ###########################\n\n"
 
         # Remove header and create temporary file
-        tail -n +2 $file > $reference_name/$id"_temp_file.tsv"
+        tail -n +2 $file > tmp/$reference_name/$id"_temp_file.tsv"
         
         # Check if the file does not contain differentially expressed sRNAs (file empty)
-        if [ -s $reference_name/$id"_temp_file.tsv" ]
+        if [ -s "tmp/${reference_name}/${id}_temp_file.tsv" ]
         then
 
             # Create Fasta
-            table_to_fasta_and_tsv $file $reference_name $id
+            table_to_fasta_and_tsv $file tmp/$reference_name $id
 
             # Check if fasta file exist
-            if test -f "$reference_name/$id"".fasta"
+            if test -f "tmp/${reference_name}/${id}.fasta"
             then
 
-                # Alignment with miRBase (species databasw)
-                printf "Bowtie alignment with miRBase (species database)...\n"
-                results_mirbase_sp=$(bowtie -x $reference_name/mirbase_species_idx/mirbase_species \
-                                            --best -v $mismatches -k1 --no-unal -p $threads \
-                                            -f "$reference_name/$id"".fasta" \
-                                            -S $reference_name/$id"_mirbase_species.sam" 2>&1)
-                
-                # Check if an alignment error occurred due to the non-existence of the database.
-                [ $? -ne 0 ] && echo "Species $species not found in the miRBase database!" || printf "Done!\n"
+                # Iterate through databases names
+                for db in "${!databases[@]}"; do
 
-                # Alignment with miRBase (Rest database)
-                printf "Bowtie alignment with miRBase (others database)...\n"
-                results_mirbase_others=$(bowtie -x $reference_name/mirbase_rest_idx/mirbase_rest \
-                                                --best -v $mismatches -k1 --no-unal -p $threads \
-                                                -f "$reference_name/$id"".fasta" \
-                                                -S $reference_name/$id"_mirbase_rest.sam" 2>&1)
-                                        
-                # Check if an alignment error occurred due to the non-existence of the database.
-                [ $? -ne 0 ] && echo "Species $species not found in the miRBase database!" || printf "Done!\n"
+                    for type in "${types[@]}"; do
 
-                # Alignment with PmiREN (species database)
-                printf "Bowtie alignment with PmiREN (species database)...\n"
-                results_pmiren_sp=$(bowtie -x $reference_name/PmiREN_species_idx/PmiREN_species \
-                                            --best -v $mismatches -k1 --no-unal -p $threads \
-                                            -f "$reference_name/$id"".fasta" \
-                                            -S $reference_name/$id"_PmiREN_species.sam" 2>&1)
+                        # Check if the database has been provided
+                        if [ -n "${databases[$db]}" ]; then
 
-                # Check if an alignment error occurred due to the non-existence of the database.
-                [ $? -ne 0 ] && echo "Species $species not found in the PmiREN database!" || printf "Done!\n"
-                
-                # Alignment with PmiREN (Rest database)
-                printf "Bowtie alignment with PmiREN (others database)...\n"
-                results_pmiren_others=$(bowtie -x $reference_name/PmiREN_rest_idx/PmiREN_rest \
-                                                --best -v $mismatches -k1 --no-unal -p $threads \
-                                                -f "$reference_name/$id"".fasta" \
-                                                -S $reference_name/$id"_PmiREN_rest.sam" 2>&1)
-                
-                # Check if an alignment error occurred due to the non-existence of the database.
-                [ $? -ne 0 ] && echo "Species $species not found in the PmiREN database!" || printf "Done!\n"
+                            # Create the required files names
+                            index=tmp/$reference_name/"${db}_${type}_idx/${db}_${type}"
+                            fasta_file=tmp/$reference_name/$id".fasta"
+                            sam_file=tmp/$reference_name/$id"_${db}_${type}.sam"
 
-                # Alignment with sRNAanno (species database)
-                printf "Bowtie alignment with sRNAanno (species database)...\n"
-                results_srnaanno_sp=$(bowtie -x $reference_name/sRNAanno_species_idx/sRNAanno_species \
-                                                --best -v $mismatches -k1 --no-unal -p $threads \
-                                                -f "$reference_name/$id"".fasta" \
-                                                -S $reference_name/$id"_sRNAanno_species.sam" 2>&1)
+                            # Alignment with miRBase (species databasw)
+                            printf "Bowtie alignment with ${db} (${type} database)...\n"
+                            bowtie -x $index --best -v $mismatches -k1 \
+                                --no-unal -p $threads -f $fasta_file \
+                                -S $sam_file 2>&1
 
-                    
-                # Check if an alignment error occurred due to the non-existence of the database.
-                [ $? -ne 0 ] && echo "Species $species not found in the sRNAanno database!" || printf "Done!\n"
-                
-                # Alignment with sRNAanno (Rest database. No mismatches)
-                printf "Bowtie alignment with sRNAanno (others database)...\n"
-                results_srnaanno_others=$(bowtie -x $reference_name/sRNAanno_rest_idx/sRNAanno_rest \
-                                                    --best -v $mismatches -k1 --no-unal -p $threads \
-                                                    -f "$reference_name/$id"".fasta" \
-                                                    -S $reference_name/$id"_sRNAanno_rest.sam" 2>&1)
-                
-                # Check if an alignment error occurred due to the non-existence of the database.
-                [ $? -ne 0 ] && echo "Species $species not found in the sRNAanno database!" || printf "Done!\n"
-                
+                            # Check if an alignment error occurred due to the non-existence of the database.
+                            [ $? -ne 0 ] && echo "Species $species not found in the ${db} database!" || printf "Done!\n"
+
+                            # Save the sam files paths into the array
+                            sam_array["${db}_${type}"]=$sam_file
+
+                        fi
+                    done
+                done
+
+
                 # Create annotation table from sam files
-                printf "Creating annotation table...\n"
-                get_miRNAs_annotation $reference_name/$id"_mirbase_species.sam" \
-                                        $reference_name/$id"_mirbase_rest.sam" \
-                                        $reference_name/$id"_PmiREN_species.sam" \
-                                        $reference_name/$id"_PmiREN_rest.sam" \
-                                        $reference_name/$id"_sRNAanno_species.sam" \
-                                        $reference_name/$id"_sRNAanno_rest.sam" \
-                                        $reference_name/$id".tsv" \
-                                        $id $reference_name
+                printf "\nCreating annotation table...\n"
+                get_miRNAs_annotation \
+                    "sam_array" \
+                    tmp/$reference_name/$id".tsv" \
+                    $id \
+                    tmp/$reference_name
                 printf "Done!\n"
                 
                 # Calculate the sequences length and add a length column to annotated file
-                awk 'BEGIN{ FS=OFS="\t" } {if (NR==1) {print $0, "length"} else {print $0, length($1)} }' $reference_name/$id"_annot.tsv" > $reference_name/$id".annot_len.tsv"
-                rm -r $reference_name/*_annot.tsv
+                awk 'BEGIN{ FS=OFS="\t" } {if (NR==1) {print $0, "length"} else {print $0, length($1)} }' tmp/$reference_name/$id"_annot.tsv" > $id".annot_all.tsv"
+                #rm -r tmp/$reference_name/*_annot.tsv
 
-                printf "Creating filtered annotation tables....\n"
-                filter_annotated_sequences $reference_name/$id".annot_len.tsv" \
-                                            $reference_name/$id".annot_filt.tsv"
+                printf "\nCreating filtered annotation tables....\n"
+                filter_annotated_sequences \
+                    $id".annot_all.tsv" \
+                    $min_num_db \
+                    $id".annot_filt.tsv"
                 printf "Done!\n"
 
                 # Count the number of annotated sequences and how many of them have been selected.
-                num_miRNAs=$(tail -n +2 $reference_name/$id".annot_len.tsv" | wc -l)
-                num_miRNAs_filtered=$(tail -n +2 $reference_name/$id".annot_filt.tsv" | wc -l)
+                num_miRNAs=$(tail -n +2 $id".annot_all.tsv" | wc -l)
+                num_miRNAs_filtered=$(tail -n +2 $id".annot_filt.tsv" | wc -l)
 
-                ## Create length summary file
-                awk -F '\t' -v species="$species" -v project="$id" 'NR>1 {count[$8]++} END {printf "%s\t%s\t", species, project; for (i=20; i<=25; i++) printf "%s%s", count[i] ? count[i] : 0, (i<25) ? "\t" : ""; printf "\n"}' $reference_name/$id".annot_len.tsv" >> ./tmp/summary_len_"$reference_name"_tmp.tsv
-                awk -F '\t' -v species="$species" -v project="$id" 'NR>1 {count[$8]++} END {printf "%s\t%s\t", species, project; for (i=20; i<=25; i++) printf "%s%s", count[i] ? count[i] : 0, (i<25) ? "\t" : ""; printf "\n"}' $reference_name/$id".annot_filt.tsv" >> ./tmp/summary_len_"$reference_name"_filt_tmp.tsv
-                merge_tsv_files ./tmp/summary_len_"$reference_name"_tmp.tsv ./tmp/summary_len_"$reference_name"_filt_tmp.tsv 2 2 1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,2.3,2.4,2.5,2.6,2.7,2.8 ./tmp/summary_len_"$reference_name"_join_tmp.tsv
-                cat ./tmp/summary_len_"$reference_name"_join_tmp.tsv >> $reference_name/$id"_"$reference_name"_summary_len.tsv" # e.g. PRJNA277424_1_0_mature_summary_len.tsv
-                rm ./tmp/*tmp.tsv
-
-                # Convert length summary file to csv
-                awk 'BEGIN {FS="\t"; OFS="\t"} {$1=$1; print}' $reference_name/$id"."$reference_name"_summary_len.tsv" > $reference_name/$id"_"$reference_name"_summary_lenght.tsv"
-                rm $reference_name/$id"_"$reference_name"_summary_lenght.tsv"
+                ## Get the number of annotated sequences for each length (20-25)
+                awk -F '\t' -v species="$species" -v project="$id" 'NR>1 {count[$8]++} END {printf "%s\t%s\t", species, project; for (i=20; i<=25; i++) printf "%s%s", count[i] ? count[i] : 0, (i<25) ? "\t" : ""; printf "\n"}' $id".annot_all.tsv" >> tmp/$reference_name/summary_len_"$reference_name"_tmp.tsv
+                awk -F '\t' -v species="$species" -v project="$id" 'NR>1 {count[$8]++} END {printf "%s\t%s\t", species, project; for (i=20; i<=25; i++) printf "%s%s", count[i] ? count[i] : 0, (i<25) ? "\t" : ""; printf "\n"}' $id".annot_filt.tsv" >> tmp/$reference_name/summary_len_"$reference_name"_filt_tmp.tsv
+                merge_tsv_files tmp/$reference_name/summary_len_"$reference_name"_tmp.tsv tmp/$reference_name/summary_len_"$reference_name"_filt_tmp.tsv 2 2 1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,2.3,2.4,2.5,2.6,2.7,2.8 $id"."$reference_name"_summary_len.tsv" 
+                sed -i '1i\Species_id\tGroup_comparison\t20nt_all\t21nt_all\t22nt_all\t23nt_all\t24nt_all\t25nt_all\t20nt_filt\t21nt_filt\t22nt_filt\t23nt_filt\t24nt_filt\t25nt_filt' $id"."$reference_name"_summary_len.tsv"
+                #rm ./tmp/*tmp.tsv
 
                 # Save it in summary file
-                echo -e "$species\t$id\t$num_miRNAs\t$num_miRNAs_filtered" >> $reference_name/$id"."$reference_name"_summary.tsv"
+                echo -e "$species\t$id\t$num_miRNAs\t$num_miRNAs_filtered" >> $id"."$reference_name"_summary.tsv"
+                sed -i '1i\Species_id\tGroup_comparison\tNum_seq_all\tNum_seq_filt' $id"."$reference_name"_summary.tsv"
                 
                 
             else
                 printf "NOTE: $id"".dea_"$suffix".fasta does not exist\n"
-                echo -e "$species\t$id\t0\t0" >> $reference_name/$id"."$reference_name"_summary.tsv"
+                echo -e "$species\t$id\t0\t0" >> $id"."$reference_name"_summary.tsv"
             fi
 
         # The file has no differentially expressed sRNAs. 
         else
             printf "NOTE: the file has no differentially expressed sRNAs (File is empty)\n"
-            echo -e "$species\t$id\t0\t0" >> $reference_name/$id"."$reference_name"_summary.tsv"
+            echo -e "$species\t$id\t0\t0" >> $id"."$reference_name"_summary.tsv"
         fi
-        # Delete temporary file
-        #rm $reference_name/$id"_temp_file.csv"
-
-        # Remove database files
-        #rm -r ./*species*
-        #rm -r ./*rest*
     done
+
+    #rm -r tmp
 
 }
 main "$@"

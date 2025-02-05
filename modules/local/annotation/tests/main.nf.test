@@ -1,0 +1,571 @@
+// Test for MIRNA_ANNOTATION Process
+nextflow_process {
+
+    name "Test Process MIRNA_ANNOTATION"
+    script "../main.nf"
+    process "MIRNA_ANNOTATION"
+
+    test("miRNA annotation - all databases - min3") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = true
+                    input[2] = 'Viridiplantae'
+                    input[3] = true
+                    input[4] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 3
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("miRNA annotation - all databases - min2") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = true
+                    input[2] = 'Viridiplantae'
+                    input[3] = true
+                    input[4] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("miRNA annotation - all databases - min1") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = true
+                    input[2] = 'Viridiplantae'
+                    input[3] = true
+                    input[4] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 1
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("miRNA annotation - miRBase - PmiREN - min2") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = true
+                    input[2] = 'Viridiplantae'
+                    input[3] = false
+                    input[4] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+
+    test("miRNA annotation - miRBase - sRNAanno - min2") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = true
+                    input[2] = 'Viridiplantae'
+                    input[3] = true
+                    input[4] = false
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+    
+    test("miRNA annotation - PmiREN - sRNAanno - min2") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = false
+                    input[2] = 'Viridiplantae'
+                    input[3] = true
+                    input[4] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+
+    test("miRNA annotation - miRBase - min1") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = true
+                    input[2] = 'Viridiplantae'
+                    input[3] = false
+                    input[4] = false
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 1
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+
+    test("miRNA annotation - sRNAanno - min1") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = false
+                    input[2] = 'Viridiplantae'
+                    input[3] = true
+                    input[4] = false
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 1
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+
+    test("miRNA annotation - PmiREN - min1") {
+
+        setup {
+
+            run("ID_RESOLUTION") {
+                script "../../../../subworkflows/local/idresolution/main.nf"
+                process {
+                    """
+                    input[0] = Channel.of("Glycine max")
+                    input[1] = false
+                    input[2] = 'Viridiplantae'
+                    input[3] = false
+                    input[4] = true
+                    """
+                }
+            }
+        }
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1', species_id: 'gma'],
+                    [ file(params.modules_testdata_base_path + 'modules/annotation/TEST_1_0.dea_sig.tsv', checkIfExists: true) ]
+                ])
+                input[1] = ID_RESOLUTION.out.mirbase_mature
+                input[2] = ID_RESOLUTION.out.pmiren_mature
+                input[3] = ID_RESOLUTION.out.srnaanno_mature
+                input[4] = 1
+                input[5] = Channel.of(file(params.modules_testdata_base_path + 'modules/annotation/TEST_1.ea_summary.tsv', checkIfExists: true))
+                input[6] = 0.7
+                input[7] = 1
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.annot.get(0).get(1)) ==~ /.*\.annot_all\.tsv/ }
+                { assert path(process.out.annotfilt.get(0).get(1)) ==~ /.*\.annot_filt\.tsv/ }
+                { assert path(process.out.sum.get(0)) ==~ /.*summary\.tsv/ }
+                { assert path(process.out.sumlen.get(0)) ==~ /.*summary_len\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.annot,
+                        process.out.annotfilt,
+                        process.out.sum,
+                        process.out.sumlen,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

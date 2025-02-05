@@ -141,34 +141,34 @@ workflow MIRPLAN {
     */
 
     // Execute only if the annotation step is required.
-    if (!params.only_preprocessing && !params.skip_annotation && !params.skip_dea ){
+    // if (!params.only_preprocessing && !params.skip_annotation && !params.skip_dea ){
 
-        // Get the input species names
-        ch_input
-            .map{it[0]}
-            .unique()
-            .collect()
-            .set{ch_sp_names}
+    //     // Get the input species names
+    //     ch_input
+    //         .map{it[0]}
+    //         .unique()
+    //         .collect()
+    //         .set{ch_sp_names}
 
-        // Prepare identifiers for the species
-        ID_RESOLUTION(ch_sp_names)
+    //     // Prepare identifiers for the species
+    //     ID_RESOLUTION(ch_sp_names)
 
-        // Add the assigned identifiers for the species in the meta section of the input channel.
-        ch_input.combine(ID_RESOLUTION.out.species_ids, by: 0)
-        .map { item ->
-                [[species: item[0], species_id: item[6], project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
-        }
-        .set{ ch_input }
+    //     // Add the assigned identifiers for the species in the meta section of the input channel.
+    //     ch_input.combine(ID_RESOLUTION.out.species_ids, by: 0)
+    //     .map { item ->
+    //             [[species: item[0], species_id: item[6], project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
+    //     }
+    //     .set{ ch_input }
 
-    } else {
+    // } else {
         
-        // Add null identifiers for the species in the meta section of the input channel.
-        ch_input
-        .map { item ->
-                [[species: item[0], species_id: 'null', project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
-        }
-        .set{ ch_input }
+    // Add null identifiers for the species in the meta section of the input channel.
+    ch_input
+    .map { item ->
+            [[species: item[0], species_id: 'null', project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
     }
+    .set{ ch_input }
+    // }
 
     
     /*
@@ -594,8 +594,6 @@ workflow MIRPLAN {
         
         // Perform exploratory and differential expression analyses.
         DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
-
-        DIFFEXPANALYSIS.out.sig.view()
         
         // Add the EA data to the pipeline_summary channel
         DIFFEXPANALYSIS.out.easum
@@ -703,108 +701,113 @@ workflow MIRPLAN {
             // Identify which differentially expressed sRNA sequences are miRNAs.
             ANNOTATION(
                 dea_sig_ch,
-                ID_RESOLUTION.out.mirbase_mature,
-                ID_RESOLUTION.out.pmiren_mature,
-                ID_RESOLUTION.out.srnaanno_mature,
+                params.annotation_mirbase,
+                params.annotation_mirbase_taxon,
+                params.annotation_srnaanno,
+                params.annotation_pmiren,
                 params.annotation_mismatches,
                 DIFFEXPANALYSIS.out.easum,
-                params.ea_p_value
+                params.ea_p_value,
+                params.annotation_min_db
             )
 
-            // Get the number of sequences annotated as miRNAs
-            ANNOTATION.out.annotmat
-                .map { item ->
-                    // Count the number of sequences annotated as miRNAs
-                    def filePath = item[1]
-                    def numSeq = filePath ? filePath.text.split('\n').drop(1).size() : 0
-                    
-                    // Get the comparison id
-                    comparison_id = filePath.getName().replaceFirst(/\.annot_len\.tsv$/, '')
-                    
-                    [comparison_id, numSeq]
-                }
-                .set{ num_annot_miRNAs_ch }
+        //     ANNOTATION.out.annot_sum
+        //         .splitCsv(sep: '\t', skip: 1)
+        //         .map { [it[1], *it[2..-1]] }
+        //         .set{annot_summary_ch}
 
-            // Get the number of sequences annotated as miRNAs (filtered)
-            ANNOTATION.out.annotfiltmat
-                .map { item ->
-                    // Count the number of sequences annotated as miRNAs
-                    def filePath = item[1]
-                    def numSeq = filePath ? filePath.text.split('\n').drop(1).size() : 0
-                    
-                    // Get the comparison id
-                    comparison_id = filePath.getName().replaceFirst(/\.annot_filt\.tsv$/, '')
-                    
-                    [comparison_id, numSeq]
-                }
-                .set{ num_annot_miRNAs_filt_ch }
+        //     // Join the general summary and the length summary
+        //     ANNOTATION.out.annot_sumlen
+        //         .splitCsv(sep: '\t', skip: 1)
+        //         .map { [it[1], *it[2..-1]] }
+        //         .join(annot_summary_ch, remainder:true)
+        //         .set {annot_summary_ch}
 
-            // Join annotmat and annotfiltmat channels
-            num_annot_miRNAs_ch
-                .join(num_annot_miRNAs_filt_ch, remainder:true)
-                .set { annot_summary_ch }
+        //     // Join the information from the miRNA annotation with the information from family grouping
+        //     ANNOTATION.out.fam_sum
+        //         .splitCsv(sep: '\t' )
+        //         .join(annot_summary_ch, remainder:true)
+        //         .set { annot_and_group_summary_ch }
 
-            // Join the information from the miRNA annotation with the information from family grouping
-            ANNOTATION.out.fam_sum
-                .splitCsv(sep: '\t' )
-                .join(annot_summary_ch, remainder:true)
-                .set { annot_and_group_summary_ch }
+        //     // Add the Annotation data to the pipeline_summary channel
+        //     pipeline_summary
+        //         .map{ item -> [item.comparison_id, item]}
+        //         .groupTuple(by:0)
+        //         .join(annot_and_group_summary_ch, remainder:true)
+        //         .flatMap { item ->
 
-            // Add the Annotation data to the pipeline_summary channel
-            pipeline_summary
-                .map{ item -> [item.comparison_id, item]}
-                .groupTuple(by:0)
-                .join(annot_and_group_summary_ch, remainder:true)
-                .flatMap { item ->
+        //             // Campos adicionales a añadir
+        //             def additionalFields = item[6] ? [
+        //                 num_annotated_miRNA : item[17],
+        //                 num_annotated_miRNA_filt: item[18],
+        //                 num_annot_20nt: item[5],
+        //                 num_annot_21nt: item[6],
+        //                 num_annot_22nt: item[7],
+        //                 num_annot_23nt: item[8],
+        //                 num_annot_24nt: item[9],
+        //                 num_annot_25nt: item[10],
+        //                 num_annot_20nt_filt: item[11],
+        //                 num_annot_21nt_filt: item[12],
+        //                 num_annot_22nt_filt: item[13],
+        //                 num_annot_23nt_filt: item[14],
+        //                 num_annot_24nt_filt: item[15],
+        //                 num_annot_25nt_filt: item[16],
+        //                 num_miRNA_fam: item[2],
+        //                 num_miRNA_fam_divergent_ExpPatern: item[3],
+        //                 miRNA_fam_divergent_ExpPatern: item[4],
+        //             ] : [
+        //                 num_annotated_miRNA : 'NA',
+        //                 num_annotated_miRNA_filt: 'NA',
+        //                 num_annot_20nt: 'NA',
+        //                 num_annot_21nt: 'NA',
+        //                 num_annot_22nt: 'NA',
+        //                 num_annot_23nt: 'NA',
+        //                 num_annot_24nt: 'NA',
+        //                 num_annot_25nt: 'NA',
+        //                 num_annot_20nt_filt: 'NA',
+        //                 num_annot_21nt_filt: 'NA',
+        //                 num_annot_22nt_filt: 'NA',
+        //                 num_annot_23nt_filt: 'NA',
+        //                 num_annot_24nt_filt: 'NA',
+        //                 num_annot_25nt_filt: 'NA',
+        //                 num_miRNA_fam: 'NA',
+        //                 num_miRNA_fam_divergent_ExpPatern: 'NA',
+        //                 miRNA_fam_divergent_ExpPatern: 'NA',
+        //             ]
 
-                    // Campos adicionales a añadir
-                    def additionalFields = item[6] ? [
-                        num_annotated_miRNA : item[5],
-                        num_annotated_miRNA_filt: item[6],
-                        num_miRNA_fam: item[2],
-                        num_miRNA_fam_divergent_ExpPatern: item[3],
-                        miRNA_fam_divergent_ExpPatern: item[4],
-                    ] : [
-                        num_annotated_miRNA : 'NA',
-                        num_annotated_miRNA_filt: 'NA',
-                        num_miRNA_fam: 'NA',
-                        num_miRNA_fam_divergent_ExpPatern: 'NA',
-                        miRNA_fam_divergent_ExpPatern: 'NA',
-                    ]
+        //             def updatedItem = item[1].collect { element ->
+        //                 element + additionalFields
+        //             }
 
-                    def updatedItem = item[1].collect { element ->
-                        element + additionalFields
-                    }
-
-                    return updatedItem
-                }
-                .set{pipeline_summary}
+        //             return updatedItem
+        //         }
+        //         .set{pipeline_summary}
         }
         
     }
 
-    // Specify which samples have been discarded at any stage of the pipeline.
-    pipeline_summary
-        .map { item ->
+    // // Specify which samples have been discarded at any stage of the pipeline.
+    // pipeline_summary
+    //     .map { item ->
             
-            // Lista de valores inválidos
-            def invalidValues = ['NA', 'not-valid', 'not-quantified']
+    //         // Lista de valores inválidos
+    //         def invalidValues = ['NA', 'not-valid', 'not-quantified']
             
-            // Indicar si se ha encontrado un valor inválido
-            def stopProcessing = false
+    //         // Indicar si se ha encontrado un valor inválido
+    //         def stopProcessing = false
             
-            // Recorrer las claves del mapa y verificar los valores
-            item.each { key, value ->
-                // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
-                if (stopProcessing || invalidValues.contains(value)) {
-                    item[key] = 'NA'
-                    stopProcessing = true
-                }
-            }
+    //         // Recorrer las claves del mapa y verificar los valores
+    //         item.each { key, value ->
+    //             // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
+    //             if (stopProcessing || invalidValues.contains(value)) {
+    //                 item[key] = 'NA'
+    //                 stopProcessing = true
+    //             }
+    //         }
             
-            return item
-        }
-        .set{ pipeline_summary }
+    //         return item
+    //     }
+    //     .set{ pipeline_summary }
     
     // pipeline_summary.view()
 

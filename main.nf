@@ -65,18 +65,17 @@ workflow MAIN_MIRPLAN {
 workflow {
 
     main:
-        println(params.version)
         
         //
         // SUBWORKFLOW: Run initialisation tasks
         //
 
-        PIPELINE_INITIALISATION(
-            params.version,
-            params.validate_params,
-            args,
-            params.outdir
-        )
+        // PIPELINE_INITIALISATION(
+        //     params.version,
+        //     params.validate_params,
+        //     args,
+        //     params.outdir
+        // )
 
         //
         // SUBWORKFLOW: Run the main workflow
