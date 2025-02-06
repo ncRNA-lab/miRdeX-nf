@@ -532,42 +532,42 @@ workflow MIRPLAN {
             // Create count matrix
             QUANTIFICATION(ch_fastq, 'raw')
             
-            // // Add the quantification data to the pipeline_summary channel
-            // QUANTIFICATION.out.group_matrix
-            //     .map { meta, file ->
-            //         id = file.getName().replaceFirst(/\.counts\.tsv$/, '')
-            //         return [id, meta, file]
-            //     }
-            //     .set{ quantification_subproject_ch }
+            // Add the quantification data to the pipeline_summary channel
+            QUANTIFICATION.out.group_matrix
+                .map { meta, file ->
+                    id = file.getName().replaceFirst(/\.counts\.tsv$/, '')
+                    return [id, meta, file]
+                }
+                .set{ quantification_subproject_ch }
 
-            // pipeline_summary
-            //     .map{ item -> [item.group, item]}
-            //     .groupTuple(by:0)
-            //     .join(quantification_subproject_ch, remainder:true)
-            //     .flatMap { item ->
-            //         // Check if the last element of item is null
-            //         def lastElement = item.last()
+            pipeline_summary
+                .map{ item -> [item.group, item]}
+                .groupTuple(by:0)
+                .join(quantification_subproject_ch, remainder:true)
+                .flatMap { item ->
+                    // Check if the last element of item is null
+                    def lastElement = item.last()
 
-            //         // Set filteringGenomeValue based on conditions
-            //         def quantification = (lastElement == null) ? "not-quantified" : "quantified"
+                    // Set filteringGenomeValue based on conditions
+                    def quantification = (lastElement == null) ? "not-quantified" : "quantified"
                     
-            //         // Add the "Filtering_genome" value to each map
-            //         def updatedItem = item[1].collect { element ->
-            //             element + [quantification: quantification]
-            //         }
+                    // Add the "Filtering_genome" value to each map
+                    def updatedItem = item[1].collect { element ->
+                        element + [quantification: quantification]
+                    }
                     
-            //         return updatedItem
-            //     }
-            //     .set{pipeline_summary}
+                    return updatedItem
+                }
+                .set{pipeline_summary}
             
-            // // Change the meta.id from project to subproject.
-            // QUANTIFICATION.out.group_matrix
-            //     .map { meta, file ->
-            //         def updatedMeta = meta.clone()
-            //         updatedMeta.id = file.getName().replaceFirst(/\.counts\.tsv$/, '')
-            //         return [updatedMeta, file]
-            //     }
-            //     .set {ch_counts}
+            // Change the meta.id from project to subproject.
+            QUANTIFICATION.out.group_matrix
+                .map { meta, file ->
+                    def updatedMeta = meta.clone()
+                    updatedMeta.id = file.getName().replaceFirst(/\.counts\.tsv$/, '')
+                    return [updatedMeta, file]
+                }
+                .set {ch_counts}
         }
         
     }

@@ -1,37 +1,207 @@
 {
-    "test_dea": {
+    "Differential expression analysis - LRT": {
         "content": [
             [
                 [
                     {
-                        "id": "TEST_1",
-                        "group_id": 1,
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                        "id": "TEST_9",
+                        "group_id": 9,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
                     },
-                    "TEST_1_0.dea_raw.tsv:md5,5fb8e1d4ac608818af3bdbc52cac9459"
+                    [
+                        "TEST_9_0.general_dea_raw.tsv:md5,b1ef1b495c6dd84b8e7928435610e11d",
+                        "TEST_9_1.dea_raw.tsv:md5,600024c02e6ac747df31db2590b64f11",
+                        "TEST_9_2.dea_raw.tsv:md5,7ed6bca02f39623fa8722bca443c7c9a",
+                        "TEST_9_3.dea_raw.tsv:md5,0a4233a7543ed8eaa80a9d82ad8d6fc8",
+                        "TEST_9_4.dea_raw.tsv:md5,9f4bbea3aebb0c2e1c7ad46262961e57",
+                        "TEST_9_5.dea_raw.tsv:md5,6e05eaf41e9abe1387ad1621283edf29"
+                    ]
                 ]
             ],
             [
                 [
                     {
-                        "id": "TEST_1",
-                        "group_id": 1,
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                        "id": "TEST_9",
+                        "group_id": 9,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
                     },
-                    "TEST_1_0.dea_sig.tsv:md5,ce48ecfa56eaacb98284b8f2f38d02f2"
+                    [
+                        "TEST_9_0.general_dea_sig.tsv:md5,b18210da34255608b2109a28fcd92d25",
+                        "TEST_9_1.dea_sig.tsv:md5,ea459445d0639e6b112383e239063913",
+                        "TEST_9_2.dea_sig.tsv:md5,2f79a7201b70beb50c2e903a04d60743",
+                        "TEST_9_3.dea_sig.tsv:md5,81f86ed4be64513a2876deddd7e75f6d",
+                        "TEST_9_4.dea_sig.tsv:md5,8740f54b4685d9b3367e7b7f462f0700",
+                        "TEST_9_5.dea_sig.tsv:md5,228eebc5b2c74d14f71ae3b09954de4f"
+                    ]
                 ]
             ],
             [
-                "TEST_1.ea_summary.tsv:md5,3ff1fc68d81b5428217c5445c0d1aa18"
+                "TEST_9.ea_summary.tsv:md5,647a0c14573e63783e4cca49ae077795"
             ],
             [
-                "TEST_1.dea_summary.tsv:md5,2036de8313b6c1c8b2d9af7b932094b1"
+                "TEST_9.dea_summary.tsv:md5,ca03d5dfb9f4774b0be7b157fbc798e5"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
             "nextflow": "24.10.4"
         },
-        "timestamp": "2025-01-29T09:38:26.843896"
+        "timestamp": "2025-02-06T16:21:01.783221"
+    },
+    "Differential expression analysis - 1 Factor - Wald": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "group_id": 1,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    "TEST_1_0.dea_raw.tsv:md5,51f8c55ea72db9fa658f4ee02c09569a"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "group_id": 1,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    "TEST_1_0.dea_sig.tsv:md5,516134152f4e14145af8995ece093d6f"
+                ]
+            ],
+            [
+                "TEST_1.ea_summary.tsv:md5,6f863899d807fba4b5a79bc3236a3a81"
+            ],
+            [
+                "TEST_1.dea_summary.tsv:md5,a961c81407b8636d58ade2678514e6c9"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-06T16:17:53.35607"
+    },
+    "Differential expression analysis - 1 Factor with multiple levels - Wald": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_10",
+                        "group_id": 10,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    [
+                        "TEST_10_1.dea_raw.tsv:md5,452ab914cb44af88b18475bdf89fb38b",
+                        "TEST_10_2.dea_raw.tsv:md5,a49eb01ef70fea8515f7d20733f2d878",
+                        "TEST_10_3.dea_raw.tsv:md5,6a94e6b85f6a17e838ea99afda8338e5"
+                    ]
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_10",
+                        "group_id": 10,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    [
+                        "TEST_10_1.dea_sig.tsv:md5,3a08da818047689085b3db1b8f7d3ea8",
+                        "TEST_10_2.dea_sig.tsv:md5,ed6cf6bb68b58d0214b951d0fc0342b8",
+                        "TEST_10_3.dea_sig.tsv:md5,6f0bbef4520ff825732d649aa5979cc5"
+                    ]
+                ]
+            ],
+            [
+                "TEST_10.ea_summary.tsv:md5,5dc6514db5cdf217f6b7fd160aae2be7"
+            ],
+            [
+                "TEST_10.dea_summary.tsv:md5,a9c0dd4c4d9da7d22115b5601299f6db"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-06T16:18:35.678707"
+    },
+    "Differential expression analysis - 2 Factor with interaction - Wald": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_8",
+                        "group_id": 8,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    [
+                        "TEST_8_1.dea_raw.tsv:md5,1f26ad969f7812de45d79a34dc600407",
+                        "TEST_8_2.dea_raw.tsv:md5,605c75329ad5f70fad64f42a718b8877",
+                        "TEST_8_3.dea_raw.tsv:md5,0ad0eb5730332edad739cd52c83738a4"
+                    ]
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_8",
+                        "group_id": 8,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    [
+                        "TEST_8_1.dea_sig.tsv:md5,b93f7cbe769869a31355a14d08d9a062",
+                        "TEST_8_2.dea_sig.tsv:md5,3853f88bc95268c24f4dfd527b94cc09",
+                        "TEST_8_3.dea_sig.tsv:md5,a95a4c321bf9d22b55d36d5b96e5397a"
+                    ]
+                ]
+            ],
+            [
+                "TEST_8.ea_summary.tsv:md5,5156e01e3e6c2e7b9dbfcd75b688395d"
+            ],
+            [
+                "TEST_8.dea_summary.tsv:md5,646dc2e6ae0a8b0e62f5218286e037b6"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-06T16:19:14.349889"
+    },
+    "Differential expression analysis - Numeric contrast - Wald": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_7",
+                        "group_id": 7,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    "TEST_7_0.dea_raw.tsv:md5,e8b42789bf9248216ee160c3d19864bb"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_7",
+                        "group_id": 7,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                    },
+                    "TEST_7_0.dea_sig.tsv:md5,c79a41a84fa920b79b5234ce2d16f367"
+                ]
+            ],
+            [
+                "TEST_7.ea_summary.tsv:md5,ac27db06f474985c8827645203355ba5"
+            ],
+            [
+                "TEST_7.dea_summary.tsv:md5,d34c871aab7356bf6cdd6edb4e9a4d04"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-06T16:19:37.360339"
     }
 }

@@ -1,0 +1,37 @@
+// Test for MIRNA_ANNOTATION Process
+nextflow_process {
+
+    name "Test Process DOWNLOADLIB"
+    script "../main.nf"
+    process "DOWNLOADLIB"
+
+    test("Download libraries") {
+
+        when {
+
+            process {
+                """
+                    input[0] = Channel.of([
+                        [id:'TEST'],
+                        [ file(params.modules_testdata_base_path + 'modules/download_libraries/test.txt', checkIfExists: true) ]
+                    ])
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.fastqgz.get(0).get(1)) ==~ /.*\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                { assert snapshot( process.out.fastqgz ).match() }
+            }
+        }
+    }
+}

@@ -179,10 +179,6 @@ create_DeseqDataSet <- function(group_id, file, metadata, min_counts=5, min_samp
     # Read the metadata file
     metadata_df <- read.csv(metadata, sep = "\t", header = TRUE)
     
-    # Select only the runs present in the counts matrix
-    metadata_df <- metadata_df[metadata_df$Run %in% colnames(counts_df), ]
-    metadata_df <- metadata_df[match(colnames(counts_df), metadata_df$Run), ]
-    
     # Apply trimws to each element of the dataframe (strip)
     metadata_df <- as.data.frame(lapply(metadata_df, function(col) {
       if (is.character(col)) { return(trimws(col)) } else { return(col) }
@@ -190,6 +186,10 @@ create_DeseqDataSet <- function(group_id, file, metadata, min_counts=5, min_samp
     
     # Get the metadata of the group of samples
     group_metadata <- metadata_df[metadata_df$Group == group_id,]
+    
+    # Select only the runs present in the counts matrix
+    group_metadata <- group_metadata[group_metadata$Run %in% colnames(counts_df), ]
+    group_metadata <- group_metadata[match(colnames(counts_df), group_metadata$Run), ]
     
     # Get the design formula
     design_formula <- unique(group_metadata$Design)
@@ -1266,9 +1266,9 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
   ########################## Save the output plots #############################
   
   # Save the plots
-  ggsave(paste0(path_plots, "/default.cluster.png"), plot = default_plot, width = 8, height = 6, dpi = 300)
-  ggsave(paste0(path_plots, "/standard_error.cluster.png"), plot = plot_se, width = 8, height = 6, dpi = 300)
-  ggsave(paste0(path_plots, "/standard_deviation.cluster.png"), plot = plot_sdl, width = 8, height = 6, dpi = 300)
+  ggsave("default.cluster.png", plot = default_plot, width = 8, height = 6, dpi = 300)
+  ggsave("standard_error.cluster.png", plot = plot_se, width = 8, height = 6, dpi = 300)
+  ggsave("standard_deviation.cluster.png", plot = plot_sdl, width = 8, height = 6, dpi = 300)
 
   ########################## Save the output tables ############################
 
