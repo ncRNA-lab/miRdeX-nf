@@ -97,7 +97,7 @@ def connect_to_database (database_name: str):
         return sqliteConnection, cursor
 
 def insert_to_database (database_name: str, table_name: str, data_path: str,
-                        type_data: str='counts', sep: str='\t', chunksize=1000000) -> None:
+                        type_data: str='raw', sep: str='\t', chunksize=1000000) -> None:
     '''
     This function inserts data into a specified SQLite database table.
 
@@ -112,17 +112,17 @@ def insert_to_database (database_name: str, table_name: str, data_path: str,
     type_data : str
         Type of data to be inserted. In this program you can insert a library
         of sequences in .tsv format (type_data="sequences"), a table of
-        absolute counts (type_data="counts_abs") or a table of rpm
-        ("type_data="counts_rpm"). By default "sequences.
+        absolute counts (type_data="raw") or a table of rpm
+        ("type_data="rpm"). By default "sequences.
     '''
     # Connect to database
     sqliteConnection, cursor = connect_to_database(database_name)
 
     # Select type of data
-    if type_data == 'counts':
-        query_section = '(seq TEXT, counts INT);'
-    elif type_data == 'RPM':
-        query_section = '(seq TEXT, RPM REAL);'
+    if type_data == 'raw':
+        query_section = '(seq TEXT, raw INT);'
+    elif type_data == 'rpm':
+        query_section = '(seq TEXT, rpm REAL);'
     
     # Read data to insert
     data_to_insert = pd.read_csv(data_path, sep=sep, chunksize=chunksize, low_memory=False)
@@ -132,6 +132,7 @@ def insert_to_database (database_name: str, table_name: str, data_path: str,
         cursor.execute('PRAGMA synchronous = OFF')
         cursor.execute('PRAGMA journal_mode = OFF')
 
+        print(f'CREATE TABLE IF NOT EXISTS {table_name}{query_section}')
         # Create table
         cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name}{query_section}')
 
@@ -184,7 +185,7 @@ def merge_counts_tables (database_name: str, data_in: list, type_data: str,
         List with the name of replicates of each condition (t_1_r_1, t_1_r_2,
         t_2_r_1, t_2_r_2)
     type_data : str
-        Type of data. Type_data can be "counts" or "RPM".
+        Type of data. Type_data can be "raw" or "rpm".
     type_tables:
         Type of tables to join. type_tables can be "replicates" or "conditions".
     mode : str
@@ -642,8 +643,6 @@ def main():
                                         of them, and then joins these tables \
                                         to form a single table for the project.''',  
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-s', '--species', type=str, nargs=1, 
-                        help='Species id.') 
     parser.add_argument('-p', '--project', type=str, nargs=1, 
                         help='Project id.')
     parser.add_argument('-c', '--counts-tsv', type=str, nargs='+',  
@@ -680,7 +679,6 @@ def main():
     ###########################################################################
 
     try:
-        species = args.species[0]
         project = args.project[0]
         counts_tsv_files = args.counts_tsv
         metadata = args.metadata[0]
@@ -701,9 +699,11 @@ def main():
 
     # To verify the type of the input data.
     if rpm:
-        data_type = 'RPM'
+        data_type = 'rpm'
     else:
-        data_type = 'counts'
+        data_type = 'raw'
+
+    print(data_type)
 
     # Variables
     shortened_sample_dic = {}           # t_1_r_3 = SRRXXXXX1
@@ -755,7 +755,6 @@ def main():
     ## 1.2 Insert the counts tables into the SQLite database
     #######################################################################
 
-    print(counts_tsv_files)
     # Sort the files list
     counts_tsv_files.sort()
 
@@ -766,7 +765,7 @@ def main():
     for counts_file in counts_tsv_files:
         
         # Get the run name from the file name (delete the suffix)
-        run_name = re.split('.abs|.rpm', counts_file)[0]
+        run_name = re.split('.raw|.rpm', counts_file)[0]
 
         # Add the run name to the run names list
         run_input_list.append(run_name)

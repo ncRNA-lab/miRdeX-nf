@@ -1,0 +1,114 @@
+nextflow_process {
+
+    name "Test Process COUNTS_MATRIX"
+    script "../main.nf"
+    process "COUNTS_MATRIX"
+
+    test("Counts matrix - Raw counts") {
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE1.raw.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE2.raw.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE3.raw.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE4.raw.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE5.raw.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE6.raw.tsv', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 'raw'
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.matrix.get(0).get(1)) ==~ /.*\.raw\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.matrix).match() }
+
+            }
+        }
+    }
+    test("Counts matrix - RPM") {
+    
+        // setup {
+
+        //     run("RPM") {
+        //         script "../../../../modules/local/rpm/main.nf"
+        //         process {
+        //             """
+        //             input[0] = Channel.of([
+        //                 [id:'SAMPLE1', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE1.raw.tsv', checkIfExists: true)],
+        //                 [id:'SAMPLE2', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE2.raw.tsv', checkIfExists: true)],
+        //                 [id:'SAMPLE3', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE3.raw.tsv', checkIfExists: true)],
+        //                 [id:'SAMPLE4', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE4.raw.tsv', checkIfExists: true)],
+        //                 [id:'SAMPLE5', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE5.raw.tsv', checkIfExists: true)],
+        //                 [id:'SAMPLE6', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE6.raw.tsv', checkIfExists: true)]
+        //             ])
+        //             """
+        //         }
+                
+        //         // Change the meta.id from file to project.
+        //         RPM.out.rpm
+        //             .map { meta, file ->
+        //                 def updatedMeta = meta.clone()
+        //                 updatedMeta.id = meta.project
+        //                 tuple(meta.species, meta.project, updatedMeta, file)
+        //             }
+        //             .groupTuple(by: [0,1])
+        //             .map{ item ->
+        //                 [item[2][0], item[3]]
+        //             }
+        //             .set{ch_counts}
+        //     }
+        // }
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE1.rpm.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE2.rpm.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE3.rpm.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE4.rpm.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE5.rpm.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE6.rpm.tsv', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 'rpm'
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.matrix.get(0).get(1)) ==~ /.*\.rpm\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.matrix).match() }
+
+            }
+        }
+    }
+}
+

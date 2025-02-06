@@ -1,0 +1,36 @@
+{
+    "Counts - Decompressed input": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST"
+                    },
+                    "TEST.raw.tsv:md5,0538663575b02f068baa8ee06942aa9d"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-05T14:59:44.180702"
+    },
+    "Counts - Compressed input": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST"
+                    },
+                    "TEST.raw.tsv:md5,0538663575b02f068baa8ee06942aa9d"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-05T14:59:53.643243"
+    }
+}

@@ -12,8 +12,8 @@
 ========================================================================================
 */
 
-include { BOWTIE_BUILD } from '../../../modules/nf-core/bowtie/build'
-include { BOWTIE_ALIGN       } from '../../../modules/local/bowtie/align'
+include { BOWTIE_BUILD  } from '../../../modules/nf-core/bowtie/build'
+include { BOWTIE_ALIGN  } from '../../../modules/local/bowtie/align'
 /*
 ========================================================================================
     Workflow FILTERING
@@ -26,7 +26,7 @@ include { BOWTIE_ALIGN       } from '../../../modules/local/bowtie/align'
 
 workflow FILTERING {
     take:
-        input                   // channel: [[species:val(species), species_id:val(species_id), project:val(project)], metadata:val(metadata)], genome:val(genome)], file]
+        input                   // channel: [[id:val(id), species:val(species), genome:val(genome)], file]
         mismatches              // value: number of mismatches
         type                    // value: 'database' or 'genome'
         database                // path: reference fasta file (optional)
@@ -78,14 +78,14 @@ workflow FILTERING {
             // Modify the channel to later combine it with the indexed genome.
             input
                 .map{ meta, file ->
-                    return [[id: meta.species_id], meta, file]
+                    return [[id: meta.species], meta, file]
                 }
                 .set{ch_files_to_align}
 
             // Create a channel for the genomes [[id: Arabidopsis thaliana, etc], genome_file]
             input
                 .map{ meta, file ->
-                    return [[id: meta.species_id], meta.genome]
+                    return [[id: meta.species], meta.genome]
                 }
                 .unique()
                 .set{ch_genomes}

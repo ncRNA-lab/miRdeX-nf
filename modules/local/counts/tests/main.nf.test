@@ -1,0 +1,66 @@
+// Test for MIRNA_ANNOTATION Process
+nextflow_process {
+
+    name "Test Process COUNTS"
+    script "../main.nf"
+    process "COUNTS"
+
+    test("Counts - Decompressed input") {
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST'],
+                    [ file(params.modules_testdata_base_path + 'modules/counts/test.fastq', checkIfExists: true) ]
+                ])
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.raw.get(0).get(1)) ==~ /.*\.raw\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.raw).match() }
+
+            }
+        }
+    }
+    test("Counts - Compressed input") {
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST'],
+                    [ file(params.modules_testdata_base_path + 'modules/counts/test.fastq.gz', checkIfExists: true) ]
+                ])
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.raw.get(0).get(1)) ==~ /.*\.raw\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.raw).match() }
+                
+            }
+        }
+    }
+}

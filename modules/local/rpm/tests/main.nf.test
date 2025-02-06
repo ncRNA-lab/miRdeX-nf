@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "Test Process RPM"
+    script "../main.nf"
+    process "RPM"
+
+    test("RPM") {
+
+        when {
+            process {
+                """
+                input[0] = Channel.of(
+                    [   
+                        [id: 'SAMPLE1', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], 
+                        file(params.modules_testdata_base_path + 'modules/counts_matrix/SAMPLE1.raw.tsv', checkIfExists: true)
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.rpm.get(0).get(1)) ==~ /.*\.rpm\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.rpm).match() }
+
+            }
+        }
+    }
+}

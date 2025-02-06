@@ -1,0 +1,44 @@
+{
+    "Counts matrix - Raw counts": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "valid_groups": [
+                            1
+                        ]
+                    },
+                    "TEST_1.raw.tsv:md5,2b72981cfbcb01f87d9fa72016053606"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-06T12:32:18.22238"
+    },
+    "Counts matrix - RPM": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "valid_groups": [
+                            1
+                        ]
+                    },
+                    "TEST_1.rpm.tsv:md5,40cb4e309ce1efd4da5ab83919186fc6"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-06T12:59:28.712159"
+    }
+}
