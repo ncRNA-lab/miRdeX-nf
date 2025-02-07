@@ -20,13 +20,9 @@ include { BOWTIE_ALIGN  } from '../../../modules/local/bowtie/align'
 ========================================================================================
 */
 
-/// ATENCIÓN. ESTE SUBWORKFLOW ESTÁ SIENDO EDITADO. TERMINAR.
-// Specify DSL2
-// nextflow.enable.dsl=2
-
 workflow FILTERING {
     take:
-        input                   // channel: [[id:val(id), species:val(species), genome:val(genome)], file]
+        input                   // channel: [[id:val(id), project:val(projec), species:val(species), genome:val(genome)], file]
         mismatches              // value: number of mismatches
         type                    // value: 'database' or 'genome'
         database                // path: reference fasta file (optional)

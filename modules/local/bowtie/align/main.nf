@@ -1,6 +1,7 @@
 process BOWTIE_ALIGN {
     tag "$meta.id"
     label 'process_high'
+    debug true
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,8 +11,8 @@ process BOWTIE_ALIGN {
     input:
     tuple val(meta), path(reads)
     tuple val(meta2), path(index)
-    val (save_aligned) // quitar parentesis
-    val (save_unaligned) // quitar parentesis
+    val save_aligned
+    val save_unaligned
 
     output:
     tuple val(meta), path('*.bam')     , emit: bam
@@ -33,7 +34,10 @@ process BOWTIE_ALIGN {
     """
     # Decompress query files
     if [[ ${meta.single_end} == true ]]; then
-        gzip -d -f ${reads}
+        # Decompress file if it is required
+        if [[ ${reads} == *.gz ]]; then
+            gzip -d -f ${reads}
+        fi
     else
         # Decompress file 1
         if [[ ${reads[1]} == *.gz ]]; then
@@ -77,8 +81,6 @@ process BOWTIE_ALIGN {
         gzip ${prefix}.${meta.type}.unaligned_2.fastq
     fi
 
-
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         bowtie: \$(echo \$(bowtie --version 2>&1) | sed 's/^.*bowtie-align-s version //; s/ .*\$//')
@@ -111,3 +113,5 @@ process BOWTIE_ALIGN {
 
 
 }
+
+
