@@ -90,6 +90,8 @@ workflow ANNOTATION {
             .map{item -> return[item[1], item[2], item[4]]}
             .set{ch_group_miRNAs_input}
 
+        ch_group_miRNAs_input.view()
+        
         // Group miRNAs into families
         GROUP_BY_FAMILY(ch_group_miRNAs_input)
 

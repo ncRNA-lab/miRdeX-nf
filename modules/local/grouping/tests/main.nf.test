@@ -1,0 +1,45 @@
+nextflow_process {
+
+    name "Test Process GROUP_BY_FAMILY"
+    script "../main.nf"
+    process "GROUP_BY_FAMILY"
+
+    test("Group miRNAs by family") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1_0'],
+                    file(params.modules_testdata_base_path + 'modules/grouping/TEST_1_0.dea_sig.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/grouping/TEST_1_0.annot_filt.tsv', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.fam_annot.get(0).get(1)) ==~ /.*\.fam_annot\.tsv/ }
+                { assert path(process.out.fam_boxplot.get(0).get(1)) ==~ /.*\.fam_annot_boxplot\.png/ }
+                { assert path(process.out.fam_sum.get(0)) ==~ /.*\.fam_annot_summary\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.fam_annot,
+                        process.out.fam_boxplot,
+                        process.out.fam_sum,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

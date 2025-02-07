@@ -284,7 +284,7 @@ for (i in 1:length(files_annot_list)){
     # Save it in summary file
     miRNAs_txt <- paste(miRNAs_var, collapse = '/')
     text <- paste(id, length(miRNAs_v), num_miRNAs_d, miRNAs_txt, sep='\t')
-    cat(text, file=paste0(id,'.annot_fam_summary.tsv'), append=TRUE, sep='\n')
+    cat(text, file=paste0(id,'.fam_annot_summary.tsv'), append=TRUE, sep='\n')
   }
 }
 
