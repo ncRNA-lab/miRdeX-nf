@@ -376,6 +376,7 @@ workflow MIRPLAN {
                 ]
             }
             .set { pipeline_summary }
+            pipeline_summary.view()
         
         // Select only the valid libraries
         VALIDATION.out.files
@@ -388,45 +389,45 @@ workflow MIRPLAN {
         ============================================================================
         */
 
-        if (!params.skip_filt_db) {
+        // if (!params.skip_filt_db) {
 
-            // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-            FILTERING_DB(ch_fastq, params.filtering_db_mismatches, "database", params.filtering_db_file)
+        //     // Remove sequences that are not of interest (rRNA, tRNA, etc.)
+        //     FILTERING_DB(ch_fastq, params.filtering_db_mismatches, "database", params.filtering_db_file)
 
-            // Update ch_fastq channel
-            FILTERING_DB.out.unaligned.set{ ch_fastq }
+        //     // Update ch_fastq channel
+        //     FILTERING_DB.out.unaligned.set{ ch_fastq }
 
-            // Add the filtering_db data to the pipeline_summary channel
-            FILTERING_DB.out.unaligned
-                .map{ meta, file -> [meta.id, meta, file]}
-                .set{ filt_db_files_ch }
+        //     // Add the filtering_db data to the pipeline_summary channel
+        //     FILTERING_DB.out.unaligned
+        //         .map{ meta, file -> [meta.id, meta, file]}
+        //         .set{ filt_db_files_ch }
                 
-            pipeline_summary
-                .map{ item -> [item.sample, item]}
-                .groupTuple(by:0)
-                .join(filt_db_files_ch, remainder:true)
-                .flatMap { item ->
+        //     pipeline_summary
+        //         .map{ item -> [item.sample, item]}
+        //         .groupTuple(by:0)
+        //         .join(filt_db_files_ch, remainder:true)
+        //         .flatMap { item ->
 
-                    // Check if the last element of item is null
-                    def lastElement = item.last()
+        //             // Check if the last element of item is null
+        //             def lastElement = item.last()
 
-                    // Add the filtering summary data to the summary channel
-                    def additionalFields = (lastElement == null) ? [
-                        filtering_db_total: 'NA',
-                        filtering_db_only_align: 'NA',
-                        filtering_db_failed: 'NA',
-                    ] : [
-                        filtering_db_total: item[2].filtering_db_total,
-                        filtering_db_only_align: item[2].filtering_db_only_align,
-                        filtering_db_failed: item[2].filtering_db_failed,
-                    ]
-                    def updatedMeta = item[1].collect { elem ->
-                        elem + additionalFields
-                    }
+        //             // Add the filtering summary data to the summary channel
+        //             def additionalFields = (lastElement == null) ? [
+        //                 filtering_db_total: 'NA',
+        //                 filtering_db_only_align: 'NA',
+        //                 filtering_db_failed: 'NA',
+        //             ] : [
+        //                 filtering_db_total: item[2].filtering_db_total,
+        //                 filtering_db_only_align: item[2].filtering_db_only_align,
+        //                 filtering_db_failed: item[2].filtering_db_failed,
+        //             ]
+        //             def updatedMeta = item[1].collect { elem ->
+        //                 elem + additionalFields
+        //             }
 
-                    updatedMeta
-                }
-                .set{ pipeline_summary }
+        //             updatedMeta
+        //         }
+        //         .set{ pipeline_summary }
         }
 
         /*
@@ -436,336 +437,336 @@ workflow MIRPLAN {
         */
 
 
-        if (!params.skip_filt_genome) {
+    //     if (!params.skip_filt_genome) {
             
-            // Remove those sequences that do not align with the reference genome
-            FILTERING_GENOME(ch_fastq, params.filtering_genome_mismatches, "genome", null)
+    //         // Remove those sequences that do not align with the reference genome
+    //         FILTERING_GENOME(ch_fastq, params.filtering_genome_mismatches, "genome", null)
 
-            // Update ch_fastq channel
-            FILTERING_GENOME.out.aligned.set{ch_fastq}
+    //         // Update ch_fastq channel
+    //         FILTERING_GENOME.out.aligned.set{ch_fastq}
 
-            // Add the filtering_genome data to the pipeline_summary channel
-            FILTERING_GENOME.out.aligned
-                .map{ meta, file -> [meta.id, meta, file]}
-                .set{ filt_genome_files_ch }
+    //         // Add the filtering_genome data to the pipeline_summary channel
+    //         FILTERING_GENOME.out.aligned
+    //             .map{ meta, file -> [meta.id, meta, file]}
+    //             .set{ filt_genome_files_ch }
 
-            pipeline_summary
-                .map{ item -> [item.sample, item]}
-                .groupTuple(by:0)
-                .join(filt_genome_files_ch, remainder:true)
-                .flatMap { item ->
+    //         pipeline_summary
+    //             .map{ item -> [item.sample, item]}
+    //             .groupTuple(by:0)
+    //             .join(filt_genome_files_ch, remainder:true)
+    //             .flatMap { item ->
 
-                    // Check if the last element of item is null
-                    def lastElement = item.last()
+    //                 // Check if the last element of item is null
+    //                 def lastElement = item.last()
 
-                    // Add the filtering summary data to the summary channel
-                    def additionalFields = (lastElement == null) ? [
-                        filtering_genome_total: 'NA',
-                        filtering_genome_only_align: 'NA',
-                        filtering_genome_failed: 'NA',
-                    ] : [
-                        filtering_genome_total: item[2].filtering_genome_total,
-                        filtering_genome_only_align: item[2].filtering_genome_only_align,
-                        filtering_genome_failed: item[2].filtering_genome_failed,
-                    ]
-                    def updatedMeta = item[1].collect { elem ->
-                        elem + additionalFields
-                    }
+    //                 // Add the filtering summary data to the summary channel
+    //                 def additionalFields = (lastElement == null) ? [
+    //                     filtering_genome_total: 'NA',
+    //                     filtering_genome_only_align: 'NA',
+    //                     filtering_genome_failed: 'NA',
+    //                 ] : [
+    //                     filtering_genome_total: item[2].filtering_genome_total,
+    //                     filtering_genome_only_align: item[2].filtering_genome_only_align,
+    //                     filtering_genome_failed: item[2].filtering_genome_failed,
+    //                 ]
+    //                 def updatedMeta = item[1].collect { elem ->
+    //                     elem + additionalFields
+    //                 }
 
-                    updatedMeta
-                }
-                .set{ pipeline_summary }
-        }
+    //                 updatedMeta
+    //             }
+    //             .set{ pipeline_summary }
+    //     }
 
-        // Do not run this step when only pre-processing is to be done.
-        if (!params.only_preprocessing){
+    //     // Do not run this step when only pre-processing is to be done.
+    //     if (!params.only_preprocessing){
 
-            /*
-            ============================================================================
-                SUBWORKFLOW: Quantification of small RNA sequences
-            ============================================================================
-            */
+    //         /*
+    //         ============================================================================
+    //             SUBWORKFLOW: Quantification of small RNA sequences
+    //         ============================================================================
+    //         */
 
-            // Remove those specific fields of the sample except for the ID.
-            ch_fastq
-                .map { meta, file ->
-                    // Filtrar los campos no deseados
-                    def filteredMeta = meta.findAll { key, value ->
-                        !(key.startsWith('filtering_') || key in ['depth', 'depth_validity', 'replicates_validity'])
-                    }
-                    [filteredMeta, file]
-                }
-                .set { ch_fastq }
+    //         // Remove those specific fields of the sample except for the ID.
+    //         ch_fastq
+    //             .map { meta, file ->
+    //                 // Filtrar los campos no deseados
+    //                 def filteredMeta = meta.findAll { key, value ->
+    //                     !(key.startsWith('filtering_') || key in ['depth', 'depth_validity', 'replicates_validity'])
+    //                 }
+    //                 [filteredMeta, file]
+    //             }
+    //             .set { ch_fastq }
             
-            // Create count matrix
-            QUANTIFICATION(ch_fastq, 'raw')
+    //         // Create count matrix
+    //         QUANTIFICATION(ch_fastq, 'raw')
             
-            // Add the quantification data to the pipeline_summary channel
-            QUANTIFICATION.out.group_matrix
-                .map { meta, file ->
-                    id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
-                    return [id, meta, file]
-                }
-                .set{ quantification_subproject_ch }
+    //         // Add the quantification data to the pipeline_summary channel
+    //         QUANTIFICATION.out.group_matrix
+    //             .map { meta, file ->
+    //                 id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
+    //                 return [id, meta, file]
+    //             }
+    //             .set{ quantification_subproject_ch }
 
-            pipeline_summary
-                .map{ item -> [item.group, item]}
-                .groupTuple(by:0)
-                .join(quantification_subproject_ch, remainder:true)
-                .flatMap { item ->
-                    // Check if the last element of item is null
-                    def lastElement = item.last()
+    //         pipeline_summary
+    //             .map{ item -> [item.group, item]}
+    //             .groupTuple(by:0)
+    //             .join(quantification_subproject_ch, remainder:true)
+    //             .flatMap { item ->
+    //                 // Check if the last element of item is null
+    //                 def lastElement = item.last()
 
-                    // Set filteringGenomeValue based on conditions
-                    def quantification = (lastElement == null) ? "not-quantified" : "quantified"
+    //                 // Set filteringGenomeValue based on conditions
+    //                 def quantification = (lastElement == null) ? "not-quantified" : "quantified"
                     
-                    // Add the "Filtering_genome" value to each map
-                    def updatedItem = item[1].collect { element ->
-                        element + [quantification: quantification]
-                    }
+    //                 // Add the "Filtering_genome" value to each map
+    //                 def updatedItem = item[1].collect { element ->
+    //                     element + [quantification: quantification]
+    //                 }
                     
-                    return updatedItem
-                }
-                .set{pipeline_summary}
+    //                 return updatedItem
+    //             }
+    //             .set{pipeline_summary}
             
-            // Change the meta.id from project to subproject.
-            QUANTIFICATION.out.group_matrix
-                .map { meta, file ->
-                    def updatedMeta = meta.clone()
-                    updatedMeta.id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
-                    return [updatedMeta, file]
-                }
-                .set {ch_counts}
-        }
+    //         // Change the meta.id from project to subproject.
+    //         QUANTIFICATION.out.group_matrix
+    //             .map { meta, file ->
+    //                 def updatedMeta = meta.clone()
+    //                 updatedMeta.id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
+    //                 return [updatedMeta, file]
+    //             }
+    //             .set {ch_counts}
+    //     }
         
-    }
+    // }
 
-    // Do not run these steps when only pre-processing is to be done.
-    if (!params.only_preprocessing){
+    // // Do not run these steps when only pre-processing is to be done.
+    // if (!params.only_preprocessing){
 
 
-        /*
-        ============================================================================
-            UBWORKFLOW: Differential Expression Analysis
-        ============================================================================
-        */
+    //     /*
+    //     ============================================================================
+    //         UBWORKFLOW: Differential Expression Analysis
+    //     ============================================================================
+    //     */
         
-        // Perform exploratory and differential expression analyses.
-        DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
+    //     // Perform exploratory and differential expression analyses.
+    //     DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
         
-        // Add the EA data to the pipeline_summary channel
-        DIFFEXPANALYSIS.out.easum
-            .splitCsv( header: true, sep: '\t' )
-            .map{ item -> [item.Group, item]}
-            .set{ ea_summary_ch }
+    //     // Add the EA data to the pipeline_summary channel
+    //     DIFFEXPANALYSIS.out.easum
+    //         .splitCsv( header: true, sep: '\t' )
+    //         .map{ item -> [item.Group, item]}
+    //         .set{ ea_summary_ch }
         
-        pipeline_summary
-            .map { item -> [item.group, item] }
-            .groupTuple(by: 0)
-            .join(ea_summary_ch, remainder: true)
-            .flatMap { item ->
-                // Get the required variables
-                def pip_summary = item[1]
-                def easum = item.last()
+    //     pipeline_summary
+    //         .map { item -> [item.group, item] }
+    //         .groupTuple(by: 0)
+    //         .join(ea_summary_ch, remainder: true)
+    //         .flatMap { item ->
+    //             // Get the required variables
+    //             def pip_summary = item[1]
+    //             def easum = item.last()
 
-                // Check if there is any information about the subproject in
-                // the exploratory analysis.
-                def additionalFields = (easum == null) ? [
-                    pc1 : 'NA',
-                    pc2: 'NA',
-                    pc3: 'NA',
-                    pc4: 'NA',
-                    pc5: 'NA',
-                    pc6: 'NA',
-                    'p-value(mww)': 'NA'
-                ] : [
-                    pc1: easum.PC1,
-                    pc2: easum.PC2,
-                    pc3: easum.PC3,
-                    pc4: easum.PC4,
-                    pc5: easum.PC5,
-                    PC6: easum.PC6,
-                    'p-value(mww)': easum.'P-value(MWW)'
-                ]
+    //             // Check if there is any information about the subproject in
+    //             // the exploratory analysis.
+    //             def additionalFields = (easum == null) ? [
+    //                 pc1 : 'NA',
+    //                 pc2: 'NA',
+    //                 pc3: 'NA',
+    //                 pc4: 'NA',
+    //                 pc5: 'NA',
+    //                 pc6: 'NA',
+    //                 'p-value(mww)': 'NA'
+    //             ] : [
+    //                 pc1: easum.PC1,
+    //                 pc2: easum.PC2,
+    //                 pc3: easum.PC3,
+    //                 pc4: easum.PC4,
+    //                 pc5: easum.PC5,
+    //                 PC6: easum.PC6,
+    //                 'p-value(mww)': easum.'P-value(MWW)'
+    //             ]
 
-                // Merge each element of pip_summary with additionalFields
-                pip_summary.collect { summary ->
-                    summary + additionalFields
-                }
-            }
-            .set{pipeline_summary}
+    //             // Merge each element of pip_summary with additionalFields
+    //             pip_summary.collect { summary ->
+    //                 summary + additionalFields
+    //             }
+    //         }
+    //         .set{pipeline_summary}
 
-        // Add the DEA data to the pipeline_summary channel
-        DIFFEXPANALYSIS.out.deasum
-            .splitCsv( header: true, sep: '\t' )
-            .flatMap { item ->
-                def samples = item.Samples.split(',')
-                samples.collect { sample ->
-                    [sample, item + [sample: sample]]
-                }
-            }
-            .set{ dea_summary_ch }
+    //     // Add the DEA data to the pipeline_summary channel
+    //     DIFFEXPANALYSIS.out.deasum
+    //         .splitCsv( header: true, sep: '\t' )
+    //         .flatMap { item ->
+    //             def samples = item.Samples.split(',')
+    //             samples.collect { sample ->
+    //                 [sample, item + [sample: sample]]
+    //             }
+    //         }
+    //         .set{ dea_summary_ch }
 
-        pipeline_summary
-            .map{ item -> [item.sample, item]}
-            .join(dea_summary_ch, remainder:true)
-            .map { item ->
-                def pip_summary = item[1]
-                def dea_summary = item[2]
+    //     pipeline_summary
+    //         .map{ item -> [item.sample, item]}
+    //         .join(dea_summary_ch, remainder:true)
+    //         .map { item ->
+    //             def pip_summary = item[1]
+    //             def dea_summary = item[2]
 
-                // Campos adicionales a añadir
-                def additionalFields = dea_summary ? [
-                    comparison_id : dea_summary.Group,
-                    test: dea_summary.Test,
-                    'padj<alpha': dea_summary.'Padj<0.05', // CAMMBIAR LO DE 0.05 POR ALPHA
-                    total: dea_summary.Total,
-                    coefficient: dea_summary.Coefficient,
-                    contrast: dea_summary.Contrast,
-                    contrast_coefficient: dea_summary.Contrast_coefficient
-                ] : [
-                    comparison_id: 'NA',
-                    test: 'NA',
-                    'padj<0.05': 'NA',
-                    total: 'NA',
-                    coefficient: 'NA',
-                    contrast: 'NA',
-                    contrast_coefficient: 'NA'
-                ]
+    //             // Campos adicionales a añadir
+    //             def additionalFields = dea_summary ? [
+    //                 comparison_id : dea_summary.Group,
+    //                 test: dea_summary.Test,
+    //                 'padj<alpha': dea_summary.'Padj<0.05', // CAMMBIAR LO DE 0.05 POR ALPHA
+    //                 total: dea_summary.Total,
+    //                 coefficient: dea_summary.Coefficient,
+    //                 contrast: dea_summary.Contrast,
+    //                 contrast_coefficient: dea_summary.Contrast_coefficient
+    //             ] : [
+    //                 comparison_id: 'NA',
+    //                 test: 'NA',
+    //                 'padj<0.05': 'NA',
+    //                 total: 'NA',
+    //                 coefficient: 'NA',
+    //                 contrast: 'NA',
+    //                 contrast_coefficient: 'NA'
+    //             ]
 
-                // Combinar los campos originales del segundo elemento con los adicionales
-                pip_summary + additionalFields
-            }
-            .set{ pipeline_summary }
+    //             // Combinar los campos originales del segundo elemento con los adicionales
+    //             pip_summary + additionalFields
+    //         }
+    //         .set{ pipeline_summary }
         
-        // Change the meta.id from project to file.
-        DIFFEXPANALYSIS.out.sig
-            .map { meta, file ->
-                def updatedMeta = meta.clone()
-                updatedMeta.id = file.getName().replaceFirst(/\.dea_sig\.tsv$/, '')
-                return [updatedMeta, file]
-            }
-            .set { dea_sig_ch }
+    //     // Change the meta.id from project to file.
+    //     DIFFEXPANALYSIS.out.sig
+    //         .map { meta, file ->
+    //             def updatedMeta = meta.clone()
+    //             updatedMeta.id = file.getName().replaceFirst(/\.dea_sig\.tsv$/, '')
+    //             return [updatedMeta, file]
+    //         }
+    //         .set { dea_sig_ch }
 
 
-        // Execute the annotation step if params.skip_annotation is false.
-        if(!params.skip_annotation){
+    //     // Execute the annotation step if params.skip_annotation is false.
+    //     if(!params.skip_annotation){
 
-            /*
-            ============================================================================
-                SUBWORKFLOW: miRNA Annotation
-            ============================================================================
-            */
+    //         /*
+    //         ============================================================================
+    //             SUBWORKFLOW: miRNA Annotation
+    //         ============================================================================
+    //         */
 
-            // Identify which differentially expressed sRNA sequences are miRNAs.
-            ANNOTATION(
-                dea_sig_ch,
-                params.annotation_mirbase,
-                params.annotation_mirbase_taxon,
-                params.annotation_srnaanno,
-                params.annotation_pmiren,
-                params.annotation_mismatches,
-                DIFFEXPANALYSIS.out.easum,
-                params.ea_p_value,
-                params.annotation_min_db
-            )
+    //         // Identify which differentially expressed sRNA sequences are miRNAs.
+    //         ANNOTATION(
+    //             dea_sig_ch,
+    //             params.annotation_mirbase,
+    //             params.annotation_mirbase_taxon,
+    //             params.annotation_srnaanno,
+    //             params.annotation_pmiren,
+    //             params.annotation_mismatches,
+    //             DIFFEXPANALYSIS.out.easum,
+    //             params.ea_p_value,
+    //             params.annotation_min_db
+    //         )
 
-            ANNOTATION.out.annot_sum
-                .splitCsv(sep: '\t', skip: 1)
-                .map { [it[1], *it[2..-1]] }
-                .set{annot_summary_ch}
+    //         ANNOTATION.out.annot_sum
+    //             .splitCsv(sep: '\t', skip: 1)
+    //             .map { [it[1], *it[2..-1]] }
+    //             .set{annot_summary_ch}
 
-            // Join the general summary and the length summary
-            ANNOTATION.out.annot_sumlen
-                .splitCsv(sep: '\t', skip: 1)
-                .map { [it[1], *it[2..-1]] }
-                .join(annot_summary_ch, remainder:true)
-                .set {annot_summary_ch}
+    //         // Join the general summary and the length summary
+    //         ANNOTATION.out.annot_sumlen
+    //             .splitCsv(sep: '\t', skip: 1)
+    //             .map { [it[1], *it[2..-1]] }
+    //             .join(annot_summary_ch, remainder:true)
+    //             .set {annot_summary_ch}
 
-            // Join the information from the miRNA annotation with the information from family grouping
-            ANNOTATION.out.fam_sum
-                .splitCsv(sep: '\t' )
-                .join(annot_summary_ch, remainder:true)
-                .set { annot_and_group_summary_ch }
+    //         // Join the information from the miRNA annotation with the information from family grouping
+    //         ANNOTATION.out.fam_sum
+    //             .splitCsv(sep: '\t' )
+    //             .join(annot_summary_ch, remainder:true)
+    //             .set { annot_and_group_summary_ch }
 
-            // Add the Annotation data to the pipeline_summary channel
-            pipeline_summary
-                .map{ item -> [item.comparison_id, item]}
-                .groupTuple(by:0)
-                .join(annot_and_group_summary_ch, remainder:true)
-                .flatMap { item ->
+    //         // Add the Annotation data to the pipeline_summary channel
+    //         pipeline_summary
+    //             .map{ item -> [item.comparison_id, item]}
+    //             .groupTuple(by:0)
+    //             .join(annot_and_group_summary_ch, remainder:true)
+    //             .flatMap { item ->
 
-                    // Campos adicionales a añadir
-                    def additionalFields = item[6] ? [
-                        num_annotated_miRNA : item[17],
-                        num_annotated_miRNA_filt: item[18],
-                        num_annot_20nt: item[5],
-                        num_annot_21nt: item[6],
-                        num_annot_22nt: item[7],
-                        num_annot_23nt: item[8],
-                        num_annot_24nt: item[9],
-                        num_annot_25nt: item[10],
-                        num_annot_20nt_filt: item[11],
-                        num_annot_21nt_filt: item[12],
-                        num_annot_22nt_filt: item[13],
-                        num_annot_23nt_filt: item[14],
-                        num_annot_24nt_filt: item[15],
-                        num_annot_25nt_filt: item[16],
-                        num_miRNA_fam: item[2],
-                        num_miRNA_fam_divergent_ExpPatern: item[3],
-                        miRNA_fam_divergent_ExpPatern: item[4],
-                    ] : [
-                        num_annotated_miRNA : 'NA',
-                        num_annotated_miRNA_filt: 'NA',
-                        num_annot_20nt: 'NA',
-                        num_annot_21nt: 'NA',
-                        num_annot_22nt: 'NA',
-                        num_annot_23nt: 'NA',
-                        num_annot_24nt: 'NA',
-                        num_annot_25nt: 'NA',
-                        num_annot_20nt_filt: 'NA',
-                        num_annot_21nt_filt: 'NA',
-                        num_annot_22nt_filt: 'NA',
-                        num_annot_23nt_filt: 'NA',
-                        num_annot_24nt_filt: 'NA',
-                        num_annot_25nt_filt: 'NA',
-                        num_miRNA_fam: 'NA',
-                        num_miRNA_fam_divergent_ExpPatern: 'NA',
-                        miRNA_fam_divergent_ExpPatern: 'NA',
-                    ]
+    //                 // Campos adicionales a añadir
+    //                 def additionalFields = item[6] ? [
+    //                     num_annotated_miRNA : item[17],
+    //                     num_annotated_miRNA_filt: item[18],
+    //                     num_annot_20nt: item[5],
+    //                     num_annot_21nt: item[6],
+    //                     num_annot_22nt: item[7],
+    //                     num_annot_23nt: item[8],
+    //                     num_annot_24nt: item[9],
+    //                     num_annot_25nt: item[10],
+    //                     num_annot_20nt_filt: item[11],
+    //                     num_annot_21nt_filt: item[12],
+    //                     num_annot_22nt_filt: item[13],
+    //                     num_annot_23nt_filt: item[14],
+    //                     num_annot_24nt_filt: item[15],
+    //                     num_annot_25nt_filt: item[16],
+    //                     num_miRNA_fam: item[2],
+    //                     num_miRNA_fam_divergent_ExpPatern: item[3],
+    //                     miRNA_fam_divergent_ExpPatern: item[4],
+    //                 ] : [
+    //                     num_annotated_miRNA : 'NA',
+    //                     num_annotated_miRNA_filt: 'NA',
+    //                     num_annot_20nt: 'NA',
+    //                     num_annot_21nt: 'NA',
+    //                     num_annot_22nt: 'NA',
+    //                     num_annot_23nt: 'NA',
+    //                     num_annot_24nt: 'NA',
+    //                     num_annot_25nt: 'NA',
+    //                     num_annot_20nt_filt: 'NA',
+    //                     num_annot_21nt_filt: 'NA',
+    //                     num_annot_22nt_filt: 'NA',
+    //                     num_annot_23nt_filt: 'NA',
+    //                     num_annot_24nt_filt: 'NA',
+    //                     num_annot_25nt_filt: 'NA',
+    //                     num_miRNA_fam: 'NA',
+    //                     num_miRNA_fam_divergent_ExpPatern: 'NA',
+    //                     miRNA_fam_divergent_ExpPatern: 'NA',
+    //                 ]
 
-                    def updatedItem = item[1].collect { element ->
-                        element + additionalFields
-                    }
+    //                 def updatedItem = item[1].collect { element ->
+    //                     element + additionalFields
+    //                 }
 
-                    return updatedItem
-                }
-                .set{pipeline_summary}
-        }
+    //                 return updatedItem
+    //             }
+    //             .set{pipeline_summary}
+    //     }
         
-    }
+    // }
 
-    // Specify which samples have been discarded at any stage of the pipeline.
-    pipeline_summary
-        .map { item ->
+    // // Specify which samples have been discarded at any stage of the pipeline.
+    // pipeline_summary
+    //     .map { item ->
             
-            // Lista de valores inválidos
-            def invalidValues = ['NA', 'not-valid', 'not-quantified']
+    //         // Lista de valores inválidos
+    //         def invalidValues = ['NA', 'not-valid', 'not-quantified']
             
-            // Indicar si se ha encontrado un valor inválido
-            def stopProcessing = false
+    //         // Indicar si se ha encontrado un valor inválido
+    //         def stopProcessing = false
             
-            // Recorrer las claves del mapa y verificar los valores
-            item.each { key, value ->
-                // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
-                if (stopProcessing || invalidValues.contains(value)) {
-                    item[key] = 'NA'
-                    stopProcessing = true
-                }
-            }
+    //         // Recorrer las claves del mapa y verificar los valores
+    //         item.each { key, value ->
+    //             // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
+    //             if (stopProcessing || invalidValues.contains(value)) {
+    //                 item[key] = 'NA'
+    //                 stopProcessing = true
+    //             }
+    //         }
             
-            return item
-        }
-        .set{ pipeline_summary }
+    //         return item
+    //     }
+    //     .set{ pipeline_summary }
     
     // pipeline_summary.view()
 

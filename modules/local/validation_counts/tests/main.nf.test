@@ -1,0 +1,81 @@
+nextflow_process {
+
+    name "Test Process COUNTS_VALIDATION"
+    script "../main.nf"
+    process "COUNTS_VALIDATION"
+
+    test("Counts validation - Valid") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1_0', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test.counts.tsv', checkIfExists: true)
+                ])
+                input[1] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.valid.get(0).get(1)) ==~ /.*\.valid\.tsv/ }
+                { assert path(process.out.summary.get(0)) ==~ /.*\.sum\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.valid,
+                        process.out.notvalid,
+                        process.out.summary,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Counts validation - Not-valid") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1_0', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test_notvalid.counts.tsv', checkIfExists: true)
+                ])
+                input[1] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.notvalid.get(0).get(1)) ==~ /.*\.notvalid\.tsv/ }
+                { assert path(process.out.summary.get(0)) ==~ /.*\.sum\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.valid,
+                        process.out.notvalid,
+                        process.out.summary,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

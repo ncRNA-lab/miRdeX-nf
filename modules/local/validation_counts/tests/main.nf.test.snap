@@ -1,0 +1,52 @@
+{
+    "Counts validation - Not-valid": {
+        "content": [
+            [
+                
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1_0",
+                        "group_id": 1,
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                    },
+                    "TEST_1_0_1.notvalid.tsv:md5,e7fc05b953115f5a9305505c77e72afa"
+                ]
+            ],
+            [
+                "TEST_1_0_1.sum.tsv:md5,578d172ee55f5dbb22b8c639ab84bd7a"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-07T13:28:51.519516"
+    },
+    "Counts validation - Valid": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1_0",
+                        "group_id": 1,
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                    },
+                    "TEST_1_0_1.valid.tsv:md5,1f5e667e6f822b18ac50ea169f6e1481"
+                ]
+            ],
+            [
+                
+            ],
+            [
+                "TEST_1_0_1.sum.tsv:md5,6087886d467a1c1dca89d479221db4c0"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-07T13:28:48.65843"
+    }
+}

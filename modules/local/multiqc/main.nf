@@ -1,8 +1,3 @@
-#!/usr/bin/env nextflow
-
-// Specify DSL2
-nextflow.enable.dsl=2
-
 process MULTIQC {
     label 'process_single'
 
@@ -13,6 +8,7 @@ process MULTIQC {
 
     input:
     tuple val(meta), path(multiqc_files)
+
     output:
     path "*.html"              , emit: report
     path "*_data"              , optional:true, emit: data

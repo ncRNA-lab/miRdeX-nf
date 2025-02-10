@@ -357,8 +357,6 @@ def main():
                             (SRR10747100_tr.fastq.gz SRR10747101.fastq.gz...).')
     parser.add_argument('-j', '--project', type=str, nargs=1,
                         help='Project to which the libraries belong.')
-    parser.add_argument('-s', '--species', type=str, nargs=1,
-                        help='Species to which the libraries belong.')
     parser.add_argument('-m', '--metadata', type=str, nargs=1,
                         help='Path to the project metadata file.')
     parser.add_argument('-d', '--depth-threshold', type=int, nargs=1, 
@@ -380,7 +378,6 @@ def main():
     try:
         project_files = args.project_files
         project = args.project[0]
-        species = args.species[0]
         path_metadata = args.metadata[0]
         depth_threshold = args.depth_threshold[0]
         rep_threshold = args.rep_threshold[0]
@@ -393,8 +390,8 @@ def main():
         sys.exit()
 
     # Create output summary paths
-    results_s_path = f'{species}_{project}.sum_projects.tsv'
-    summary_s_path = f'{species}_{project}.sum_libraries.tsv'
+    results_s_path = f'{project}.sum_projects.tsv'
+    summary_s_path = f'{project}.sum_libraries.tsv'
 
 
     ## 2. CHECK AND FILTER BY SEQUENCING DEPTH
@@ -437,8 +434,7 @@ def main():
     ###################################################################
 
     # Get a list of valid libraries and groups
-    filtered_libraries, filtered_groups = get_valid_libraries_by_rep(lib_valid_names, project_metadata,rep_threshold)
-    print(filtered_groups)
+    filtered_libraries, filtered_groups = get_valid_libraries_by_rep(lib_valid_names, project_metadata, rep_threshold)
 
     # Get a list of discarded libraries
     discarded_libraries = list(set(total_libraries) - set(filtered_libraries))
@@ -502,9 +498,7 @@ def main():
 
         # Write the results to the file
         with open(results_s_path, 'a') as results:
-            results.write(f'{species}\t{project}\t{group}\t{num_valid_samples}\t{num_notvalid_samples}\t{validity}\n')
-     
-    print(f'{project} ({species}) done!')
+            results.write(f'{project}\t{group}\t{num_valid_samples}\t{num_notvalid_samples}\t{validity}\n')
 
 
 ## CALL THE MAIN PROGRAM

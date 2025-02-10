@@ -69,7 +69,7 @@ workflow QUALITY_CONTROL {
             // Prepare input channel for MULTIQC
             // [[Glycine max, PRJNA720229], [/paht/file1.zip, /paht/file1.zip...] ]
             ch_fastqc_meta_updated
-                .groupTuple(by:[0], sort:true)
+                .groupTuple(by:0, sort:true)
                 .set {ch_fastqc_zip_by_project}
 
             // Execute MULTIQC

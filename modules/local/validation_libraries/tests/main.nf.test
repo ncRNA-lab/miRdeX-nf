@@ -1,0 +1,147 @@
+nextflow_process {
+
+    name "Test Process LIBRARIES_VALIDATION"
+    script "../main.nf"
+    process "LIBRARIES_VALIDATION"
+
+    test("Libraries validation - Valid") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true)],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE5.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 500000
+                input[2] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.valid.get(0).get(1).get(0)) ==~ /.*\.valid\.fastq\.gz/ }
+                // { assert path(process.out.notvalid.get(0).get(1).get(0)) ==~ /.*\.notvalid\.fastq\.gz/ }
+                { assert path(process.out.sumprojects.get(0)) ==~ /.*\.sum_projects\.tsv/ }
+                { assert path(process.out.sumlibraries.get(0)) ==~ /.*\.sum_libraries\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.valid,
+                        process.out.notvalid,
+                        process.out.sumprojects,
+                        process.out.sumlibraries,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Libraries validation - Not-valid - Depth") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true)],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE5.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 100000000
+                input[2] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.notvalid.get(0).get(1).get(0)) ==~ /.*\.notvalid\.fastq\.gz/ }
+                { assert path(process.out.sumprojects.get(0)) ==~ /.*\.sum_projects\.tsv/ }
+                { assert path(process.out.sumlibraries.get(0)) ==~ /.*\.sum_libraries\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.valid,
+                        process.out.notvalid,
+                        process.out.sumprojects,
+                        process.out.sumlibraries,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Libraries validation - Not-valid - Replicates") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true)],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 500000
+                input[2] = 2
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.notvalid.get(0).get(1).get(0)) ==~ /.*\.notvalid\.fastq\.gz/ }
+                { assert path(process.out.sumprojects.get(0)) ==~ /.*\.sum_projects\.tsv/ }
+                { assert path(process.out.sumlibraries.get(0)) ==~ /.*\.sum_libraries\.tsv/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.valid,
+                        process.out.notvalid,
+                        process.out.sumprojects,
+                        process.out.sumlibraries,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+nextflow_process {
+
+    name "Test Process MULTIQC"
+    script "../main.nf"
+    process "MULTIQC"
+
+    test("Multiqc") {
+
+        when {
+
+            process {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST'],
+                    [file(params.modules_testdata_base_path + 'modules/multiqc/SRR1848803_Trimmed_fastqc.zip', checkIfExists: true)]
+                ])
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.report.get(0)) ==~ /.*\.html/ }
+                { assert path(process.out.versions.get(0)) ==~ /.*\.yml/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.report,
+                        process.out.versions,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

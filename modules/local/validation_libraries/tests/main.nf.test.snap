@@ -1,0 +1,102 @@
+{
+    "Libraries validation - Valid": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                    },
+                    [
+                        "SAMPLE1.valid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d",
+                        "SAMPLE2.valid.fastq.gz:md5,58a4d0a65bc2c7a51577f0d3fadaf024",
+                        "SAMPLE3.valid.fastq.gz:md5,c7143e30b71b177bd0270bfd279d7e3a",
+                        "SAMPLE4.valid.fastq.gz:md5,2ed91011385287cf14673a832f597068",
+                        "SAMPLE5.valid.fastq.gz:md5,0e7c3d9dcc1b0d92decbdb8234fb38da",
+                        "SAMPLE6.valid.fastq.gz:md5,ea12df280a4d46352dcf18aa1c7a05ce"
+                    ]
+                ]
+            ],
+            [
+                
+            ],
+            [
+                "TEST.sum_projects.tsv:md5,2db38735b3990219b98e6d26dc34eca2"
+            ],
+            [
+                "TEST.sum_libraries.tsv:md5,9c55b0009ce1b38ba4c22639a3102d3a"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-07T17:09:30.806351"
+    },
+    "Libraries validation - Not-valid - Depth": {
+        "content": [
+            [
+                
+            ],
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                    },
+                    [
+                        "SAMPLE1.notvalid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d",
+                        "SAMPLE2.notvalid.fastq.gz:md5,58a4d0a65bc2c7a51577f0d3fadaf024",
+                        "SAMPLE3.notvalid.fastq.gz:md5,c7143e30b71b177bd0270bfd279d7e3a",
+                        "SAMPLE4.notvalid.fastq.gz:md5,2ed91011385287cf14673a832f597068",
+                        "SAMPLE5.notvalid.fastq.gz:md5,0e7c3d9dcc1b0d92decbdb8234fb38da",
+                        "SAMPLE6.notvalid.fastq.gz:md5,ea12df280a4d46352dcf18aa1c7a05ce"
+                    ]
+                ]
+            ],
+            [
+                "TEST.sum_projects.tsv:md5,79abcceb8b7b852fb02f50fd27c37567"
+            ],
+            [
+                "TEST.sum_libraries.tsv:md5,6037f585943fe9fc4ce0e6d2377608ac"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-07T17:13:02.27578"
+    },
+    "Libraries validation - Not-valid - Replicates": {
+        "content": [
+            [
+                
+            ],
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                    },
+                    [
+                        "SAMPLE1.notvalid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d",
+                        "SAMPLE2.notvalid.fastq.gz:md5,58a4d0a65bc2c7a51577f0d3fadaf024",
+                        "SAMPLE3.notvalid.fastq.gz:md5,c7143e30b71b177bd0270bfd279d7e3a",
+                        "SAMPLE4.notvalid.fastq.gz:md5,2ed91011385287cf14673a832f597068"
+                    ]
+                ]
+            ],
+            [
+                "TEST.sum_projects.tsv:md5,79abcceb8b7b852fb02f50fd27c37567"
+            ],
+            [
+                "TEST.sum_libraries.tsv:md5,05ae7c4a39edd9c37108a9e1086bda14"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-07T17:19:28.665349"
+    }
+}

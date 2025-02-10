@@ -1,9 +1,3 @@
-#!/usr/bin/env nextflow
-
-// Specify DSL2
-nextflow.enable.dsl=2
-
-// Define the process to execute 03-Filter_by_depth_rep.py
 process COUNTS_VALIDATION {
 
     tag "$meta.species-$meta.project"

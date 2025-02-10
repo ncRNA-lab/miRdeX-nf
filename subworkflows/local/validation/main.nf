@@ -26,7 +26,7 @@ nextflow.enable.dsl=2
 
 workflow VALIDATION {
     take:
-        ch_input_validation         // channel: [[id:(lib_id), species:val(species), species_id:val(species_id), project:val(project), metadata:val(metadata), etc], [file1, file2...]]
+        ch_input_validation         // channel: [[id:(counts_id/project_id), species:val(species), species_id:val(species_id), project:val(project), metadata:val(metadata), etc], counts_file/[lib_file1, lib_file2...]]
         type                        // value: 'libraries' or 'counts'
         replicates_threshold        // integer: > 2
         depth_threshold             // integer: > 0 (It is not used when type = 'counts')
@@ -57,17 +57,16 @@ workflow VALIDATION {
                 .splitCsv(sep: '\t' )
                 .map{ item ->
                     // Create the subproject name
-                    def group_name = "${item[1]}_${item[2]}"
+                    def group_name = "${item[0]}_${item[1]}"
 
                     // Create a map with all the project information
                     [
-                        project: item[1],
+                        project: item[0],
                         group: group_name,
-                        group_id:item[2],
-                        species: item[0],
-                        num_valid_samples: item[3],
-                        num_notvalid_samples: item[4], 
-                        validity: item[5]
+                        group_id:item[1],
+                        num_valid_samples: item[2],
+                        num_notvalid_samples: item[3], 
+                        validity: item[4]
                     ]
                 }
                 .tap { ch_projects }
