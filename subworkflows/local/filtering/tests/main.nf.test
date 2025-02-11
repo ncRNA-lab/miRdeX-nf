@@ -1,0 +1,85 @@
+nextflow_workflow {
+
+    name "Test Subworkflow FILTERING"
+    script "../main.nf"
+    workflow "FILTERING"
+
+    test("Filtering - Database") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of(
+                    [ [id: 'sample1_test', species: 'Glycine max', project: 'TEST', single_end: true], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fastq.gz', checkIfExists: true) ]
+                )
+                input[1] = 0
+                input[2] = 'database'
+                input[3] = file(params.modules_testdata_base_path + 'modules/bowtie/database_test.fasta', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.bam.get(0).get(1)) ==~ /.*\.bam/ }
+                { assert path(workflow.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fastq\.gz/ }
+                { assert path(workflow.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.bam,
+                        workflow.out.aligned,
+                        workflow.out.unaligned
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Filtering - Genome") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of(
+                    [ [id: 'sample1_test', species: 'Glycine max', project: 'TEST', single_end: true, genome: file(params.modules_testdata_base_path + 'modules/bowtie/genome_test.fasta', checkIfExists: true)], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fastq.gz', checkIfExists: true) ]
+                )
+                input[1] = 0
+                input[2] = 'genome'
+                input[3] =  null
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.bam.get(0).get(1)) ==~ /.*\.bam/ }
+                { assert path(workflow.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fastq\.gz/ }
+                { assert path(workflow.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.bam,
+                        workflow.out.aligned,
+                        workflow.out.unaligned
+                    ).match() 
+                }
+            }
+        }
+    }
+}

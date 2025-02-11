@@ -1,0 +1,77 @@
+nextflow_workflow {
+
+    name "Test Subworkflow QUALITY_CONTROL"
+    script "../main.nf"
+    workflow "QUALITY_CONTROL"
+
+    test("Quality control - Raw") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of(
+                    [[id:'SAMPLE1', species: 'Glycine max', project: 'TEST', type: 'Raw'], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE2', species: 'Glycine max', project: 'TEST', type: 'Raw'], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true)]                   
+                )
+                input[1] = false
+                input[2] = 'Raw'
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.fastqc_zip,
+                        workflow.out.fastqc_html,
+                        workflow.out.multiqc_report,
+                        workflow.out.versions
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Quality control - Trimmed") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of(
+                    [[id:'SAMPLE1', species: 'Glycine max', project: 'TEST', type: 'Trimmed'], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE2', species: 'Glycine max', project: 'TEST', type: 'Trimmed'], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true)]                   
+                )
+                input[1] = false
+                input[2] = 'Trimmed'
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.fastqc_zip,
+                        workflow.out.fastqc_html,
+                        workflow.out.multiqc_report,
+                        workflow.out.versions
+                    ).match() 
+                }
+            }
+        }
+    }
+}

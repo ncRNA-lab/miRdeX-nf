@@ -1,0 +1,89 @@
+nextflow_workflow {
+
+    name "Test Functions"
+    script "../main.nf"
+
+    test("Test Function validateInputParameters") {
+
+        function "validateInputParameters"
+
+        when {
+
+            params {
+
+                // Parameters for filtering
+                filtering_db_mismatches = 0
+                filtering_genome_mismatches = 1
+
+                // Parameters for quantification.
+                min_counts = 5
+                min_samples = 3
+
+                // Parameters for DEA.
+                ea_p_value = 0.7 // CAMBIAAAAAAAAAAAAR A 0.05
+                dea_alpha = 0.05
+
+                // Parameters for annotation
+                annotation_mismatches = 1
+                annotation_mirbase = false
+                annotation_srnaanno = false
+                annotation_pmiren = false
+                annotation_unitas = false
+                annotation_min_db = 2
+                annotation_mirbase_taxon = 'Viridiplantae'
+            
+                // Optional outputs parameters
+                counts_project_matrix = false
+
+                // Skip parameters
+                skip_qc_trim = false
+                skip_fastqc = false
+                skip_multiqc = false
+                skip_filt_db = false
+                skip_filt_genome = false
+                skip_dea = false
+                skip_annotation = false
+                
+                // Only parameters
+                only_preprocessing = false
+                
+                // From parameters
+                from_counts = false
+
+                // Schema validation default options
+                validate_params = true
+
+            
+                fasta                  = "genome.fasta"
+                gtf                    = "genome.gtf"
+                gff                    = "genome.gff"
+                transcript_fasta       = "transcripts.fasta"
+                skip_bbsplit           = true
+                bbsplit_fasta_list     = null
+                remove_ribo_rna        = false
+                ribo_database_manifest = null
+                with_umi               = false
+                skip_umi_extract       = false
+                skip_alignment         = false
+                aligner                = "star"
+                skip_pseudo_alignment  = false
+                pseudo_aligner         = "salmon"
+                rsem_index             = "rsem_index"
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.valid\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.files ).match() }
+            }
+        }
+    }
+}

@@ -77,14 +77,13 @@ workflow QUALITY_CONTROL {
 
             // Save results in output channels
             multiqc_report = MULTIQC.out.report
-            ch_versions     = ch_versions.mix(MULTIQC.out.versions.first())
+            ch_versions    = ch_versions.mix(MULTIQC.out.versions.first())
 
         }
 
     emit:
-        FASTQC.out.zip                              // channel: [[species:val(species), project:val(project)], path(.zip file)]
-        FASTQC.out.html                             // channel: [[species:val(species), project:val(project)], path(.html file)]
-        multiqc_report.ifEmpty(null)                // channel: [ multiqc_report.html ]
-        versions = ch_versions.ifEmpty(null)        // channel: [ versions.yml ]
-
+        fastqc_zip = FASTQC.out.zip                                     // channel: [[species:val(species), project:val(project)], path(.zip file)]
+        fastqc_html = FASTQC.out.html                                   // channel: [[species:val(species), project:val(project)], path(.html file)]
+        multiqc_report = multiqc_report.ifEmpty(null)                   // channel: [ multiqc_report.html ]
+        versions = ch_versions.ifEmpty(null)                            // channel: [ versions.yml ]
 }

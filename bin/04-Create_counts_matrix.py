@@ -132,7 +132,6 @@ def insert_to_database (database_name: str, table_name: str, data_path: str,
         cursor.execute('PRAGMA synchronous = OFF')
         cursor.execute('PRAGMA journal_mode = OFF')
 
-        print(f'CREATE TABLE IF NOT EXISTS {table_name}{query_section}')
         # Create table
         cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name}{query_section}')
 

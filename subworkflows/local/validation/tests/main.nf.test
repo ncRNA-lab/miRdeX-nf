@@ -1,0 +1,187 @@
+nextflow_workflow {
+
+    name "Test Subworkflow VALIDATION"
+    script "../main.nf"
+    workflow "VALIDATION"
+
+    test("Libraries validation - Valid") {
+
+        when {
+
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true)],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE5.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 'libraries'
+                input[2] = 2
+                input[3] = 500000
+
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.valid\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.files ).match() }
+            }
+        }
+    }
+    test("Libraries validation - Not-valid - Depth") {
+
+        when {
+
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true)],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE5.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 'libraries'
+                input[2] = 2
+                input[3] = 100000000
+                
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.notvalid\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.files ).match() }
+            }
+        }
+    }
+    test("Libraries validation - Not-valid - Replicates") {
+
+        when {
+
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true)],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = 'libraries'
+                input[2] = 2
+                input[3] = 500000
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.notvalid\.fastq\.gz/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.files ).match() }
+            }
+        }
+    }
+    test("Validation - Counts - Valid") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1_0', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test.counts.tsv', checkIfExists: true)
+                ])
+                input[1] = 'counts'
+                input[2] = 2
+                input[3] = ''
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.valid\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.files ).match() }
+            }
+        }
+    }
+    test("Validation - Counts - Not-valid") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of([
+                    [id:'TEST_1_0', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test_notvalid.counts.tsv', checkIfExists: true)
+                ])
+                input[1] = 'counts'
+                input[2] = 2
+                input[3] = ''
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.notvalid\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.files ).match() }
+            }
+        }
+    }
+}

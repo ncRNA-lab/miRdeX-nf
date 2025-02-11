@@ -26,7 +26,7 @@ nextflow.enable.dsl=2
 
 workflow VALIDATION {
     take:
-        ch_input_validation         // channel: [[id:(counts_id/project_id), species:val(species), species_id:val(species_id), project:val(project), metadata:val(metadata), etc], counts_file/[lib_file1, lib_file2...]]
+        ch_input_validation         // channel: [[id:(counts_id/project_id), metadata:val(metadata)], counts_file/[lib_file1, lib_file2...]]
         type                        // value: 'libraries' or 'counts'
         replicates_threshold        // integer: > 2
         depth_threshold             // integer: > 0 (It is not used when type = 'counts')
@@ -47,7 +47,7 @@ workflow VALIDATION {
             LIBRARIES_VALIDATION.out.sumlibraries
                 .splitCsv(sep: '\t' )
                 .map { item ->
-                    def run = item[0].replaceFirst(/\.fastp\.fastq\.gz$/, '')
+                    def run = item[0].replaceFirst(/(\.fastp)?\.fastq(\.gz)?$/, '')
                     return [run, item[1], item[2], item [3]]
                 }
                 .set { ch_libraries_summary }
@@ -90,17 +90,18 @@ workflow VALIDATION {
                 }
                 .map { meta, file ->
                     def updatedMeta = meta.clone()
+                    idParent = meta.id
                     updatedMeta.id = file.getName().replaceFirst(/\.(valid|notvalid)\.(fastq(\.gz)?|fq(\.gz)?)$/, '')
-                    return [updatedMeta.id, updatedMeta, file]
+                    return [updatedMeta.id, updatedMeta, file, idParent]
                 }
                 // Add the summary_libraries_ch information to the metadata of the main channel.
                 .combine(ch_libraries_summary, by: 0)
-                .map{ id, meta, file, depth, valid1, valid2 ->
-                    [meta.project, meta + [depth: "${depth}", depth_validity: "${valid1}", replicates_validity: "${valid2}"], file]
+                .map { id, meta, file, idparent, depth, valid1, valid2 ->
+                    [idparent, meta + [depth: "${depth}", depth_validity: "${valid1}", replicates_validity: "${valid2}"], file]
                 }
                 // Add the lists of valid and non-valid subprojects to the meta.
                 .combine(ch_projects_to_lib, by: 0)
-                .map{ id, meta, file, lists ->
+                .map { id, meta, file, lists ->
                     [meta + [ 
                         valid_groups: lists.valid_groups,
                         notvalid_groups: lists.notvalid_groups
