@@ -2,6 +2,11 @@
 
 process DOWNLOADDB {
 
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/3b/3b54fa9135194c72a18d00db6b399c03248103f87e43ca75e4b50d61179994b3/data' :
+        'community.wave.seqera.io/library/wget:1.21.4--8b0fcde81c17be5e' }"
+        
     input:
     val mirbase
     val srnaanno
@@ -65,7 +70,6 @@ process DOWNLOADDB {
         touch pmiren/empty/EMPTY_pmiren.hairpin.fa
         """)
     }
-
 
     // Execute only the required lines
     script_lines.join("\n")

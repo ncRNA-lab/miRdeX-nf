@@ -8,6 +8,11 @@ process MIRNA_ANNOTATION {
     // Process tag
     tag "$meta.id"
 
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/72/723c5a6332465ca845288fcc75ae579d14fe9061d29a8f482910ec19a4f728a8/data' :
+        'community.wave.seqera.io/library/bowtie:1.3.1--671fcda71dd089d9' }"
+
     input:
     tuple val(meta), path(dea_files)
     path mirbase

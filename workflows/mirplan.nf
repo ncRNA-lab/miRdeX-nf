@@ -52,6 +52,7 @@ include { DIFFEXPANALYSIS   } from "../modules/local/diffexpanalysis"
 // SUBWORKFLOWS
 //
 
+include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS                      } from "../subworkflows/nf-core/fastq_download_prefetch_fasterqdump_sratools"
 include { ID_RESOLUTION                           } from "../subworkflows/local/idresolution"
 include { QUALITY_CONTROL as QUALITY_CONTROL_RAW  } from "../subworkflows/local/qualitycontrol"
 include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../subworkflows/local/qualitycontrol"
@@ -166,32 +167,32 @@ workflow MIRPLAN {
         }
         .set { ch_input_files }
     
-    // Check that the count matrices provided as input are valid.
-    if (params.from_counts){
+    // // Check that the count matrices provided as input are valid.
+    // if (params.from_counts){
 
-        // Check the counts matrices input files
-        VALIDATION(ch_input_files.counts, 'counts', params.validation_rep, 0)
+    //     // Check the counts matrices input files
+    //     VALIDATION(ch_input_files.counts, 'counts', params.validation_rep, 0)
 
-        // Assign the output channel to the ch_counts channel.
-        VALIDATION.out.files
-            // Select the valid files
-            .filter { tuple ->
-                tuple[1] =~ /.*\.valid\.tsv$/
-            }.set{ ch_counts }
+    //     // Assign the output channel to the ch_counts channel.
+    //     VALIDATION.out.files
+    //         // Select the valid files
+    //         .filter { tuple ->
+    //             tuple[1] =~ /.*\.valid\.tsv$/
+    //         }.set{ ch_counts }
 
-        // Create the pipeline_summary channel using the meta. OJO. COMO LAS TABLAS DE CONTEOS NO TIENEN LOS PASOS PREVIOS TIENEN NA EN PIPELINE_SUMMARY. ESO HACE QUE LUEGO AL FINAL SE PONGA TODO NA. COMPROBAR
-        VALIDATION.out.files
-            // Get the sample names from the matrix header 
-            .flatMap { meta, file ->
-                // Define the new elements of the channel
-                def newMeta = meta.findAll { it.key != 'id' }
-                def fileHeader = file.withReader { it.readLine() }
-                def samples = fileHeader?.split("\t").drop(1) 
+    //     // Create the pipeline_summary channel using the meta. OJO. COMO LAS TABLAS DE CONTEOS NO TIENEN LOS PASOS PREVIOS TIENEN NA EN PIPELINE_SUMMARY. ESO HACE QUE LUEGO AL FINAL SE PONGA TODO NA. COMPROBAR
+    //     VALIDATION.out.files
+    //         // Get the sample names from the matrix header 
+    //         .flatMap { meta, file ->
+    //             // Define the new elements of the channel
+    //             def newMeta = meta.findAll { it.key != 'id' }
+    //             def fileHeader = file.withReader { it.readLine() }
+    //             def samples = fileHeader?.split("\t").drop(1) 
 
-                // Crear un nuevo elemento por cada SRR, asignándolo a 'sample'
-                samples.collect { srr -> [sample: srr] + newMeta }
-            }.set{ pipeline_summary }
-    }
+    //             // Crear un nuevo elemento por cada SRR, asignándolo a 'sample'
+    //             samples.collect { srr -> [sample: srr] + newMeta }
+    //         }.set{ pipeline_summary }
+    // }
 
     /*
     ============================================================================
@@ -225,7 +226,7 @@ workflow MIRPLAN {
                     throw new RuntimeException("Invalid accession list files found:\n${invalid_files_list}")
                 }
             }
-
+        
         // Download the libraries
         DOWNLOADLIB(ch_input_files.acclist)
 
@@ -261,7 +262,43 @@ workflow MIRPLAN {
         ch_fastq
             .concat(ch_input_files.fastq)
             .set{ch_fastq}
+
+        ///////////////////////// ESTO ES LO BUENO ///////////////////////////////
+        // ch_input_files.acclist
+        //     .flatMap { meta, file ->
+
+        //         // Leer el archivo línea por línea y generar una nueva tupla por cada fila
+        //         return file.readLines().collect { line ->  
+        //             def updatedMeta = meta.clone()
+        //             updatedMeta.id = line
+        //             tuple(updatedMeta, line)  
+        //         }
+        //     }
+        //     .set { ch_samples_sra_id }
+
+        // // Download the libraries
+        // FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS(ch_samples_sra_id, [])
         
+        // // Add the Input information to the summary channel
+        // ch_input_files.fastq
+        //     .map { meta, _file ->
+        //         [meta.id, [sample: meta.id, species: meta.species, species_id: meta.species_id, project: meta.project, input: 'Local']]
+        //     }
+        //     .set{pipeline_summary}
+
+        // FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS.out.reads
+        //     .map { meta, _file ->
+        //         [meta.id, [sample: meta.id, species: meta.species, species_id: meta.species_id, project: meta.project, input: 'Downloaded']]
+        //     }
+        //     .concat(pipeline_summary)
+        //     .set{pipeline_summary}
+        
+        // // Combine the downloaded libraries with those provided by the user in the same channel.
+        // FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS.out.reads
+        //     .concat(ch_input_files.fastq)
+        //     .set{ch_fastq}
+        ////////////////////////////////////////////////////////////////////////
+
         /*
         ============================================================================
             SUBWORKFLOW: Perform quality control of RAW data
@@ -355,7 +392,7 @@ workflow MIRPLAN {
         VALIDATION.out.files
             .map{ meta, file -> [meta.id, meta, file]}
             .combine(pipeline_summary, by:0)
-            .map { id, meta_lib, file, meta_sum ->
+            .map { _id, meta_lib, _file, meta_sum ->
                 [meta_sum.project, meta_sum + [
                     depth: meta_lib.depth,
                     depth_validity: meta_lib.depth_validity,
@@ -366,7 +403,7 @@ workflow MIRPLAN {
             // sample may appear more than once if it belongs to multiple
             // subprojects).
             .combine(ch_validation_projects, by:0)
-            .map { lib_sum, lib_meta, projects_sum ->
+            .map { _lib_sum, lib_meta, projects_sum ->
                 lib_meta + [
                     group       : projects_sum.group,
                     group_id    : projects_sum.group_id,
@@ -376,11 +413,10 @@ workflow MIRPLAN {
                 ]
             }
             .set { pipeline_summary }
-            pipeline_summary.view()
         
         // Select only the valid libraries
         VALIDATION.out.files
-            .filter { meta, file -> meta.depth_validity == 'valid' && meta.replicates_validity == 'valid' }
+            .filter { meta, _file -> meta.depth_validity == 'valid' && meta.replicates_validity == 'valid' }
             .set{ ch_fastq }
 
         /*
@@ -389,45 +425,45 @@ workflow MIRPLAN {
         ============================================================================
         */
 
-        // if (!params.skip_filt_db) {
+        if (!params.skip_filt_db) {
 
-        //     // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-        //     FILTERING_DB(ch_fastq, params.filtering_db_mismatches, "database", params.filtering_db_file)
+            // Remove sequences that are not of interest (rRNA, tRNA, etc.)
+            FILTERING_DB(ch_fastq, params.filtering_db_mismatches, "database", params.filtering_db_file)
 
-        //     // Update ch_fastq channel
-        //     FILTERING_DB.out.unaligned.set{ ch_fastq }
+            // Update ch_fastq channel
+            FILTERING_DB.out.unaligned.set{ ch_fastq }
 
-        //     // Add the filtering_db data to the pipeline_summary channel
-        //     FILTERING_DB.out.unaligned
-        //         .map{ meta, file -> [meta.id, meta, file]}
-        //         .set{ filt_db_files_ch }
+            // Add the filtering_db data to the pipeline_summary channel
+            FILTERING_DB.out.unaligned
+                .map{ meta, file -> [meta.id, meta, file]}
+                .set{ filt_db_files_ch }
                 
-        //     pipeline_summary
-        //         .map{ item -> [item.sample, item]}
-        //         .groupTuple(by:0)
-        //         .join(filt_db_files_ch, remainder:true)
-        //         .flatMap { item ->
+            pipeline_summary
+                .map{ item -> [item.sample, item]}
+                .groupTuple(by:0)
+                .join(filt_db_files_ch, remainder:true)
+                .flatMap { item ->
 
-        //             // Check if the last element of item is null
-        //             def lastElement = item.last()
+                    // Check if the last element of item is null
+                    def lastElement = item.last()
 
-        //             // Add the filtering summary data to the summary channel
-        //             def additionalFields = (lastElement == null) ? [
-        //                 filtering_db_total: 'NA',
-        //                 filtering_db_only_align: 'NA',
-        //                 filtering_db_failed: 'NA',
-        //             ] : [
-        //                 filtering_db_total: item[2].filtering_db_total,
-        //                 filtering_db_only_align: item[2].filtering_db_only_align,
-        //                 filtering_db_failed: item[2].filtering_db_failed,
-        //             ]
-        //             def updatedMeta = item[1].collect { elem ->
-        //                 elem + additionalFields
-        //             }
+                    // Add the filtering summary data to the summary channel
+                    def additionalFields = (lastElement == null) ? [
+                        filtering_db_total: 'NA',
+                        filtering_db_only_align: 'NA',
+                        filtering_db_failed: 'NA',
+                    ] : [
+                        filtering_db_total: item[2].filtering_db_total,
+                        filtering_db_only_align: item[2].filtering_db_only_align,
+                        filtering_db_failed: item[2].filtering_db_failed,
+                    ]
+                    def updatedMeta = item[1].collect { elem ->
+                        elem + additionalFields
+                    }
 
-        //             updatedMeta
-        //         }
-        //         .set{ pipeline_summary }
+                    updatedMeta
+                }
+                .set{ pipeline_summary }
         }
 
         /*
@@ -437,109 +473,109 @@ workflow MIRPLAN {
         */
 
 
-    //     if (!params.skip_filt_genome) {
+        if (!params.skip_filt_genome) {
             
-    //         // Remove those sequences that do not align with the reference genome
-    //         FILTERING_GENOME(ch_fastq, params.filtering_genome_mismatches, "genome", null)
+            // Remove those sequences that do not align with the reference genome
+            FILTERING_GENOME(ch_fastq, params.filtering_genome_mismatches, "genome", null)
 
-    //         // Update ch_fastq channel
-    //         FILTERING_GENOME.out.aligned.set{ch_fastq}
+            // Update ch_fastq channel
+            FILTERING_GENOME.out.aligned.set{ch_fastq}
 
-    //         // Add the filtering_genome data to the pipeline_summary channel
-    //         FILTERING_GENOME.out.aligned
-    //             .map{ meta, file -> [meta.id, meta, file]}
-    //             .set{ filt_genome_files_ch }
+            // Add the filtering_genome data to the pipeline_summary channel
+            FILTERING_GENOME.out.aligned
+                .map{ meta, file -> [meta.id, meta, file]}
+                .set{ filt_genome_files_ch }
 
-    //         pipeline_summary
-    //             .map{ item -> [item.sample, item]}
-    //             .groupTuple(by:0)
-    //             .join(filt_genome_files_ch, remainder:true)
-    //             .flatMap { item ->
+            pipeline_summary
+                .map{ item -> [item.sample, item]}
+                .groupTuple(by:0)
+                .join(filt_genome_files_ch, remainder:true)
+                .flatMap { item ->
 
-    //                 // Check if the last element of item is null
-    //                 def lastElement = item.last()
+                    // Check if the last element of item is null
+                    def lastElement = item.last()
 
-    //                 // Add the filtering summary data to the summary channel
-    //                 def additionalFields = (lastElement == null) ? [
-    //                     filtering_genome_total: 'NA',
-    //                     filtering_genome_only_align: 'NA',
-    //                     filtering_genome_failed: 'NA',
-    //                 ] : [
-    //                     filtering_genome_total: item[2].filtering_genome_total,
-    //                     filtering_genome_only_align: item[2].filtering_genome_only_align,
-    //                     filtering_genome_failed: item[2].filtering_genome_failed,
-    //                 ]
-    //                 def updatedMeta = item[1].collect { elem ->
-    //                     elem + additionalFields
-    //                 }
+                    // Add the filtering summary data to the summary channel
+                    def additionalFields = (lastElement == null) ? [
+                        filtering_genome_total: 'NA',
+                        filtering_genome_only_align: 'NA',
+                        filtering_genome_failed: 'NA',
+                    ] : [
+                        filtering_genome_total: item[2].filtering_genome_total,
+                        filtering_genome_only_align: item[2].filtering_genome_only_align,
+                        filtering_genome_failed: item[2].filtering_genome_failed,
+                    ]
+                    def updatedMeta = item[1].collect { elem ->
+                        elem + additionalFields
+                    }
 
-    //                 updatedMeta
-    //             }
-    //             .set{ pipeline_summary }
-    //     }
+                    updatedMeta
+                }
+                .set{ pipeline_summary }
+        }
 
-    //     // Do not run this step when only pre-processing is to be done.
-    //     if (!params.only_preprocessing){
+        // Do not run this step when only pre-processing is to be done.
+        if (!params.only_preprocessing){
 
-    //         /*
-    //         ============================================================================
-    //             SUBWORKFLOW: Quantification of small RNA sequences
-    //         ============================================================================
-    //         */
+            /*
+            ============================================================================
+                SUBWORKFLOW: Quantification of small RNA sequences
+            ============================================================================
+            */
 
-    //         // Remove those specific fields of the sample except for the ID.
-    //         ch_fastq
-    //             .map { meta, file ->
-    //                 // Filtrar los campos no deseados
-    //                 def filteredMeta = meta.findAll { key, value ->
-    //                     !(key.startsWith('filtering_') || key in ['depth', 'depth_validity', 'replicates_validity'])
-    //                 }
-    //                 [filteredMeta, file]
-    //             }
-    //             .set { ch_fastq }
+            // Remove those specific fields of the sample except for the ID.
+            ch_fastq
+                .map { meta, file ->
+                    // Filtrar los campos no deseados
+                    def filteredMeta = meta.findAll { key, _value ->
+                        !(key.startsWith('filtering_') || key in ['depth', 'depth_validity', 'replicates_validity'])
+                    }
+                    [filteredMeta, file]
+                }
+                .set { ch_fastq }
             
-    //         // Create count matrix
-    //         QUANTIFICATION(ch_fastq, 'raw')
+            // Create count matrix
+            QUANTIFICATION(ch_fastq, 'raw')
             
-    //         // Add the quantification data to the pipeline_summary channel
-    //         QUANTIFICATION.out.group_matrix
-    //             .map { meta, file ->
-    //                 id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
-    //                 return [id, meta, file]
-    //             }
-    //             .set{ quantification_subproject_ch }
+            // // Add the quantification data to the pipeline_summary channel
+            // QUANTIFICATION.out.group_matrix
+            //     .map { meta, file ->
+            //         def id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
+            //         return [id, meta, file]
+            //     }
+            //     .set{ quantification_subproject_ch }
 
-    //         pipeline_summary
-    //             .map{ item -> [item.group, item]}
-    //             .groupTuple(by:0)
-    //             .join(quantification_subproject_ch, remainder:true)
-    //             .flatMap { item ->
-    //                 // Check if the last element of item is null
-    //                 def lastElement = item.last()
+            // pipeline_summary
+            //     .map{ item -> [item.group, item]}
+            //     .groupTuple(by:0)
+            //     .join(quantification_subproject_ch, remainder:true)
+            //     .flatMap { item ->
+            //         // Check if the last element of item is null
+            //         def lastElement = item.last()
 
-    //                 // Set filteringGenomeValue based on conditions
-    //                 def quantification = (lastElement == null) ? "not-quantified" : "quantified"
+            //         // Set filteringGenomeValue based on conditions
+            //         def quantification = (lastElement == null) ? "not-quantified" : "quantified"
                     
-    //                 // Add the "Filtering_genome" value to each map
-    //                 def updatedItem = item[1].collect { element ->
-    //                     element + [quantification: quantification]
-    //                 }
+            //         // Add the "Filtering_genome" value to each map
+            //         def updatedItem = item[1].collect { element ->
+            //             element + [quantification: quantification]
+            //         }
                     
-    //                 return updatedItem
-    //             }
-    //             .set{pipeline_summary}
+            //         return updatedItem
+            //     }
+            //     .set{pipeline_summary}
             
-    //         // Change the meta.id from project to subproject.
-    //         QUANTIFICATION.out.group_matrix
-    //             .map { meta, file ->
-    //                 def updatedMeta = meta.clone()
-    //                 updatedMeta.id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
-    //                 return [updatedMeta, file]
-    //             }
-    //             .set {ch_counts}
-    //     }
+            // // Change the meta.id from project to subproject.
+            // QUANTIFICATION.out.group_matrix
+            //     .map { meta, file ->
+            //         def updatedMeta = meta.clone()
+            //         updatedMeta.id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
+            //         return [updatedMeta, file]
+            //     }
+            //     .set {ch_counts}
+        }
         
-    // }
+    }
 
     // // Do not run these steps when only pre-processing is to be done.
     // if (!params.only_preprocessing){
@@ -646,7 +682,6 @@ workflow MIRPLAN {
     //             return [updatedMeta, file]
     //         }
     //         .set { dea_sig_ch }
-
 
     //     // Execute the annotation step if params.skip_annotation is false.
     //     if(!params.skip_annotation){
@@ -767,8 +802,6 @@ workflow MIRPLAN {
     //         return item
     //     }
     //     .set{ pipeline_summary }
-    
-    // pipeline_summary.view()
 
 
 

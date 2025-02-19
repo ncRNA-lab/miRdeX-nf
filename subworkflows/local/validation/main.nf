@@ -32,10 +32,6 @@ workflow VALIDATION {
         depth_threshold             // integer: > 0 (It is not used when type = 'counts')
 
     main:
-        
-        // Output channels
-        ch_files = channel.empty()
-        ch_projects  = channel.empty()
 
         // Branch the workflow based on the value of "type"
         if (type == 'libraries') {

@@ -711,7 +711,9 @@ def main():
     samples_groups = {}                 # t_1_r = ["SRRXXXXX1", "SRRXXXXX2", "SRRXXXXX3"]
     mode = 'outer'                      # Join mode
 
-
+    # Create the name of the SQLite database
+    db_name = f'{project}_{mode}_{data_type}.db' # e.g. db_outer.db
+    
     # 1.1 Find out which sample group each sample belongs to
     #####################################################################
 
@@ -774,10 +776,7 @@ def main():
 
         # Save shortened_sample_name into a list
         shortened_sample_list.append(shortened_sample_name)
-
-        # Create the name of the SQLite database
-        db_name = f'db_{mode}_{data_type}.db' # e.g. db_outer.db
-
+        
         # Insert absolute counts of each sample in db (1 sample = 1 table in db)
         insert_to_database(db_name, shortened_sample_name, counts_file, data_type, sep='\t')
 

@@ -10,6 +10,11 @@ nextflow.enable.dsl=2
 
 process DB_ID_RESOLVER {
 
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/4e/4e63ee3931d2e9db0b876dcbb3afaa456e57251a665edec3d44811990f06fa55/data' :
+        'community.wave.seqera.io/library/seqkit:2.9.0--e0e29e1f5c28842a' }"
+
     input:
         val input_species_names
         path mirbase

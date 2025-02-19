@@ -44,19 +44,20 @@ workflow QUANTIFICATION {
            RPM(COUNTS.out.raw)
            RPM.out.rpm.set{ch_counts}
         }
-
+ 
         // Change the meta.id from file to project.
         ch_counts
             .map { meta, file ->
                 def updatedMeta = meta.clone()
                 updatedMeta.id = meta.project
-                tuple(meta.species, meta.project, updatedMeta, file)
+                tuple(meta.project, updatedMeta, file)
             }
             .groupTuple(by: [0,1])
-            .map{ item ->
-                [item[2][0], item[3]]
+            .map { _project, meta, files -> 
+                def sortedFiles = files.sort()
+                [meta, sortedFiles] 
             }
-            .set{ch_counts}
+            .set{ ch_counts }
 
         // Create the count matrix
         COUNTS_MATRIX(ch_counts, type)

@@ -1,9 +1,9 @@
-name: download
 channels:
-  - conda-forge
-  - bioconda
-  - defaults
+- conda-forge
+- bioconda
 dependencies:
-  - bioconda::sra-tools=2.11.2
+- pip
+- pip:
+  - wget==3.2
 
 

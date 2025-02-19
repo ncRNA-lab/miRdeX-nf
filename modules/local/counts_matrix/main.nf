@@ -1,8 +1,11 @@
 process COUNTS_MATRIX {
 
     tag "$meta.id"
-    conda "${modulesDir}/environment.yml"
-    debug true
+
+    //conda "${modulesDir}/environment.yml"
+    //container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    //   'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/70/70135ad1633874b556e06df70a86b8529ba96e2f43e7dcd1284f01489e3e4141/data' :
+    //    'community.wave.seqera.io/library/python_pip_numpy_pandas:5731791ee246815e' }"
 
     input:
     tuple val(meta), path(counts)
@@ -12,24 +15,20 @@ process COUNTS_MATRIX {
     tuple val(meta), path("${meta.id}_*.{raw,rpm}.tsv"), emit: matrix
 
     script:
-    // RPM matrix
-    if (type == 'rpm') {
-        """
+    """
+    if [ "${type}" == "raw" ]; then
+        04-Create_counts_matrix.py \
+            --project ${meta.id} \
+            --counts-tsv ${counts} \
+            --metadata ${meta.metadata} \
+            --valid-groups ${meta.valid_groups}
+    else
         04-Create_counts_matrix.py \
             --project ${meta.id} \
             --counts-tsv ${counts} \
             --metadata ${meta.metadata} \
             --valid-groups ${meta.valid_groups} \
             --rpm
-        """
-    // Raw counts matrix
-    } else {
-        """
-        04-Create_counts_matrix.py \
-            --project ${meta.id} \
-            --counts-tsv ${counts} \
-            --metadata ${meta.metadata} \
-            --valid-groups ${meta.valid_groups}
-        """
-    }
+    fi
+    """
 }

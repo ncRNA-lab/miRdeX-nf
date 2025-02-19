@@ -2,7 +2,10 @@ process DOWNLOADLIB {
 
     tag "$meta.id"
 
-    //conda "${modulesDir}/environment.yml"
+    // conda "${moduleDir}/environment.yml"
+    // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+    //     'https://depot.galaxyproject.org/singularity/mulled-v2-5f89fe0cd045cb1d615630b9261a1d17943a9b6a:6a9ff0e76ec016c3d0d27e0c0d362339f2d787e6-0' :
+    //     'quay.io/biocontainers/mulled-v2-e0ce9899a3647606dd0b362ef3b857b2f7297da2:0c3da3c7939a976b926534fca505e6d2d4713bae-0' }"
 
     input:
     tuple val(meta), path(accession_list)
@@ -13,6 +16,7 @@ process DOWNLOADLIB {
 
     script:
     """
+
     DownloadAndFastqc () {
 
         local srr="\${1}"
