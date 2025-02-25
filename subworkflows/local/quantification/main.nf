@@ -37,30 +37,27 @@ workflow QUANTIFICATION {
         COUNTS(libraries)
 
         // Change the meta.id from file to project.
-        COUNTS.out.raw.set{ch_counts}
+        ch_counts = COUNTS.out.raw
     
         // Calculate the RPM
         if (type == 'rpm') {
            RPM(COUNTS.out.raw)
-           RPM.out.rpm.set{ch_counts}
+           ch_counts = RPM.out.rpm
         }
  
         // Change the meta.id from file to project.
-        ch_counts
-            .map { meta, file ->
-                def updatedMeta = meta.clone()
-                updatedMeta.id = meta.project
-                tuple(meta.project, updatedMeta, file)
+        ch_counts_by_project = ch_counts
+            .map { meta, file -> 
+                def updatedMeta = meta + [ id: meta.project ]
+                return [updatedMeta.id, updatedMeta, file]
             }
             .groupTuple(by: [0,1])
-            .map { _project, meta, files -> 
-                def sortedFiles = files.sort()
-                [meta, sortedFiles] 
-            }
-            .set{ ch_counts }
+            .map { it -> [it[1], it[2]] }
+
+        ch_counts_by_project.view()
 
         // Create the count matrix
-        COUNTS_MATRIX(ch_counts, type)
+        COUNTS_MATRIX(ch_counts_by_project, type)
 
         // Create a new ID and set the group_id
         COUNTS_MATRIX.out.matrix

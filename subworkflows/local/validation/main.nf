@@ -86,18 +86,18 @@ workflow VALIDATION {
                 }
                 .map { meta, file ->
                     def updatedMeta = meta.clone()
-                    idParent = meta.id
+                    def idParent = meta.id
                     updatedMeta.id = file.getName().replaceFirst(/\.(valid|notvalid)\.(fastq(\.gz)?|fq(\.gz)?)$/, '')
                     return [updatedMeta.id, updatedMeta, file, idParent]
                 }
                 // Add the summary_libraries_ch information to the metadata of the main channel.
                 .combine(ch_libraries_summary, by: 0)
-                .map { id, meta, file, idparent, depth, valid1, valid2 ->
+                .map { _id, meta, file, idparent, depth, valid1, valid2 ->
                     [idparent, meta + [depth: "${depth}", depth_validity: "${valid1}", replicates_validity: "${valid2}"], file]
                 }
                 // Add the lists of valid and non-valid subprojects to the meta.
                 .combine(ch_projects_to_lib, by: 0)
-                .map { id, meta, file, lists ->
+                .map { _id, meta, file, lists ->
                     [meta + [ 
                         valid_groups: lists.valid_groups,
                         notvalid_groups: lists.notvalid_groups
@@ -141,7 +141,7 @@ workflow VALIDATION {
                     return [updatedMeta.id, updatedMeta, file]
                 }
                 .combine(ch_projects_to_file, by: 0)
-                .map{ id, meta, file, meta_group ->
+                .map{ _id, meta, file, meta_group ->
                     [ meta +
                         [
                         depth: "NULL",

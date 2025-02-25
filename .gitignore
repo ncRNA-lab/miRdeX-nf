@@ -22,6 +22,9 @@ work/
 .nf-test*
 testdata/
 
+# Containers
+Singularity/
+
 # Ignore nextflow log files
 .nextflow*
 
