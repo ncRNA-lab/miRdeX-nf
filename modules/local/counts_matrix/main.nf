@@ -12,7 +12,7 @@ process COUNTS_MATRIX {
     val type
 
     output:
-    tuple val(meta), path("${meta.id}_*.{raw,rpm}.tsv"), emit: matrix
+    tuple val(meta), path("${meta.id}*.{raw,rpm}.tsv"), emit: matrix
 
     script:
     """
@@ -31,21 +31,9 @@ process COUNTS_MATRIX {
         --rpm
     fi
     """
+    stub:
+    """
+    # CAMBIAR AL TERMINAR LA PRUEBA DE RESUME
+    touch ${meta.id}_3.${type}.tsv
+    """
 }
-
-// """
-// if [ "${type}" == "raw" ]; then
-// 04-Create_counts_matrix.py \
-//     --project ${meta.id} \
-//     --counts-tsv ${counts} \
-//     --metadata ${meta.metadata} \
-//     --valid-groups ${meta.valid_groups}
-// else
-// 04-Create_counts_matrix.py \
-//     --project ${meta.id} \
-//     --counts-tsv ${counts} \
-//     --metadata ${meta.metadata} \
-//     --valid-groups ${meta.valid_groups} \
-//     --rpm
-// fi
-// """

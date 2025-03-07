@@ -10,29 +10,32 @@ process MIRNA_ANNOTATION {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/72/723c5a6332465ca845288fcc75ae579d14fe9061d29a8f482910ec19a4f728a8/data' :
-        'community.wave.seqera.io/library/bowtie:1.3.1--671fcda71dd089d9' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/85/85c083c5e9b2c93a87c941de745f9c7a0497a842219ad328dc4ec11afd5753cb/data' :
+        'community.wave.seqera.io/library/bowtie_bc:1b7543aadb5dcbcd' }"
 
     input:
-    tuple val(meta), path(dea_files)
+    tuple val(meta), path(dea_files), path(ea_file)
     path mirbase
     path pmiren
     path srnaanno
     val mismatches
-    path ea_sum_table
     val mww_pvalue
     val min_num_db
 
     output:
-    tuple val(meta), path("*.annot_all.tsv"), emit: annot
-    tuple val(meta), path("*.annot_filt.tsv"), emit: annotfilt
+    tuple val(meta), path("*.annot_all.tsv"), emit: annot, optional: true
+    tuple val(meta), path("*.annot_filt.tsv"), emit: annotfilt, optional: true
     path "*_summary.tsv", emit: sum
-    path "*_summary_len.tsv", emit: sumlen
+    path "*_summary_len.tsv", emit: sumlen, optional: true
 
     script:
     def mirbase_in = mirbase.name != 'EMPTY_mirbase_mature.fa' ? "--mirbase ${mirbase}" : ""
     def srnaanno_in = srnaanno.name != 'EMPTY_srnaanno_mature.fa' ? "--srnaanno ${srnaanno}" : ""
     def pmiren_in = pmiren.name != 'EMPTY_pmiren_mature.fa' ? "--pmiren ${pmiren}" : ""
+    //PROBAR ESTO PARA PERMITIR HAIRPIN ADEMAS DE MATURE
+    //def mirbase_in = mirbase.name.matches('EMPTY_.*\\.fa') ? "" : "--mirbase ${mirbase}"
+    //def srnaanno_in = srnaanno.name.matches('EMPTY_.*\\.fa') ? "" : "--srnaanno ${srnaanno}"
+    //def pmiren_in = pmiren.name.matches('EMPTY_.*\\.fa') ? "" : "--pmiren ${pmiren}"
     """
     ## Create a string to include all files in the 'input' argument
     input_files=''
@@ -58,9 +61,22 @@ process MIRNA_ANNOTATION {
         $srnaanno_in \
         --mismatches ${mismatches} \
         --threads ${task.cpus} \
-        --ea-table ${ea_sum_table} \
+        --ea-table ${ea_file} \
         --mww-pvalue ${mww_pvalue} \
         --min-num-db ${min_num_db} 
+    """
+
+    stub:
+    """
+    # Create the main output files
+    touch ${meta.id}.annot_all.tsv
+    touch ${meta.id}.annot_filt.tsv
+
+    # Create the summary files
+    file_name=\$(basename "${mirbase}")
+    reference_name=\$(echo "\$file_name" | grep -oE "mature|hairpin")
+    touch ${meta.id}.\$reference_name"_summary.tsv"
+    touch ${meta.id}.\$reference_name"_summary_len.tsv"
     """
 }
 

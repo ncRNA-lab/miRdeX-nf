@@ -90,18 +90,28 @@ process BOWTIE_ALIGN {
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     def aligned = save_aligned ?
-                    meta.single_end ? "echo '' | gzip > ${prefix}.aligned.fastq.gz" :
-                        "echo '' | gzip > ${prefix}.aligned_1.fastq.gz; echo '' | gzip > ${prefix}.aligned_2.fastq.gz"
+                    meta.single_end ? "echo '' | gzip > ${prefix}.${meta.type}.aligned.fastq.gz" :
+                        "echo '' | gzip > ${prefix}.${meta.type}.aligned_1.fastq.gz; echo '' | gzip > ${prefix}.${meta.type}.aligned_2.fastq.gz"
                     : ''
     def unaligned = save_unaligned ?
-                    meta.single_end ? "echo '' | gzip > ${prefix}.unaligned.fastq.gz" :
-                        "echo '' | gzip > ${prefix}.unaligned_1.fastq.gz; echo '' | gzip > ${prefix}.unaligned_2.fastq.gz"
+                    meta.single_end ? "echo '' | gzip > ${prefix}.${meta.type}.unaligned.fastq.gz" :
+                        "echo '' | gzip > ${prefix}.${meta.type}.unaligned_1.fastq.gz; echo '' | gzip > ${prefix}.${meta.type}.unaligned_2.fastq.gz"
                     : ''
     """
     touch ${prefix}.bam
-    touch ${prefix}.out
-    $aligned
-    $unaligned
+
+    if [ "${meta.type}" == "genome"]; then
+        $aligned
+    else
+        $unaligned
+    fi
+
+    # Create the log file
+    echo "# reads processed: 921451" > ${prefix}.out
+    echo "# reads with at least one alignment: 640255 (69.48%)" >> ${prefix}.out
+    echo "# reads that failed to align: 281196 (30.52%)" >> ${prefix}.out
+    echo "# reads with alignments suppressed due to -m: 2459 (0.27%)" >> ${prefix}.out
+    echo "# Reported 637796 alignments" >> ${prefix}.out
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

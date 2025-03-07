@@ -47,14 +47,13 @@ workflow QUANTIFICATION {
  
         // Change the meta.id from file to project.
         ch_counts_by_project = ch_counts
-            .map { meta, file -> 
-                def updatedMeta = meta + [ id: meta.project ]
+            .map { meta, file ->
+                def updatedMeta = meta.clone()
+                updatedMeta.id = updatedMeta.project
                 return [updatedMeta.id, updatedMeta, file]
             }
-            .groupTuple(by: [0,1])
+            .groupTuple(by:[0,1])
             .map { it -> [it[1], it[2]] }
-
-        ch_counts_by_project.view()
 
         // Create the count matrix
         COUNTS_MATRIX(ch_counts_by_project, type)

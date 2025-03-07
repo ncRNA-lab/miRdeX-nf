@@ -373,13 +373,15 @@ merge_tsv_files () {
     filename2_path=${path_file_2%.tsv}
 
     # Sort files to be joined
-    LANG=en_EN sort -k $key_file_1 -t$'\t' $path_file_1 -o $filename1_path"_sort.tsv"
-    LANG=en_EN sort -k $key_file_2 -t$'\t' $path_file_2 -o $filename2_path"_sort.tsv"
+    LANG=C.UTF-8 sort -k $key_file_1 -t$'\t' $path_file_1 -o $filename1_path"_sort.tsv"
+    LANG=C.UTF-8 sort -k $key_file_2 -t$'\t' $path_file_2 -o $filename2_path"_sort.tsv"
     
     # Inner join
     if [ $outer_join == "FALSE" ]
     then
-        LANG=en_EN join -1 $key_file_1 -2 $key_file_2 -t$'\t' \
+        echo "LANG=C.UTF-8 join -1 $key_file_1 -2 $key_file_2 -t\$'\t' -o $output_cols -e \"NULL\" $filename1_path\"_sort.tsv\" $filename2_path\"_sort.tsv\" > $output_file"
+
+        LANG=C.UTF-8 join -1 $key_file_1 -2 $key_file_2 -t$'\t' \
             -o $output_cols -e "NULL" \
             $filename1_path"_sort.tsv" \
             $filename2_path"_sort.tsv"  > $output_file
@@ -388,7 +390,9 @@ merge_tsv_files () {
     # Full outer join
     elif [ $outer_join == "TRUE" ]
     then
-        LANG=en_EN join -1 $key_file_1 -2 $key_file_2 -t$'\t' \
+        echo "LANG=C.UTF-8 join -1 $key_file_1 -2 $key_file_2 -t\$'\t' -o $output_cols -e \"NULL\" -a 1 -a 2 $filename1_path\"_sort.tsv\" $filename2_path\"_sort.tsv\" > $output_file"
+
+        LANG=C.UTF-8 join -1 $key_file_1 -2 $key_file_2 -t$'\t' \
             -o $output_cols -e "NULL" \
             -a 1 -a 2 \
             $filename1_path"_sort.tsv" \
@@ -508,6 +512,7 @@ get_miRNAs_annotation () {
     # Create an array to know which files must be merged
     declare -A files_to_merge
 
+    echo "IMPORTANTEEE"
     # Iterate through the array elements
     for db in "${!array[@]}"; do
         

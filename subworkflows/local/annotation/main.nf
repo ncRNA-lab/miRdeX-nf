@@ -17,7 +17,7 @@ nextflow.enable.dsl=2
 
 include { ID_RESOLUTION     } from "../idresolution"
 include { MIRNA_ANNOTATION  } from "../../../modules/local/annotation"
-include { GROUP_BY_FAMILY   } from "../../../modules/local/grouping"
+include { GROUP_MIRNAS_BY_FAMILY   } from "../../../modules/local/group_mirnas_by_family"
 
 /*
 ========================================================================================
@@ -28,20 +28,19 @@ include { GROUP_BY_FAMILY   } from "../../../modules/local/grouping"
 
 workflow ANNOTATION {
     take:
-        dea_files
+        dea_ea_files
         mirbase_annot
         mirbase_taxon
         srnaanno_annot
         pmiren_annot
         mismatches
-        ea_summary_file
         mww_pvalue_thrshld
         min_num_db
 
     main:
 
         // Get the input species names
-        dea_files
+        dea_ea_files
             .map{it[0].species}
             .unique()
             .collect()
@@ -56,51 +55,50 @@ workflow ANNOTATION {
             pmiren_annot
         )
         
-        dea_files
-            .map{ item -> [item[0].species, item[0], item[1]]}
+        dea_ea_files
+            .map{ item -> [item[0].species, item[0], item[1], item[2]]}
             .combine(ID_RESOLUTION.out.species_ids, by: 0)
-            .map{_, meta, file, species_id ->
-                [meta + [species_id: species_id], file]
+            .map{_, meta, file, ea_file, species_id ->
+                return [meta + [species_id: species_id], file, ea_file]
             }
-            .set{dea_files}
+            .set{ dea_ea_files }
 
         // Identify which differentially expressed sRNA sequences are miRNAs.
         MIRNA_ANNOTATION(
-            dea_files,
+            dea_ea_files,
             ID_RESOLUTION.out.mirbase_mature,
             ID_RESOLUTION.out.pmiren_mature,
             ID_RESOLUTION.out.srnaanno_mature,
             mismatches,
-            ea_summary_file,
             mww_pvalue_thrshld,
             min_num_db
         )
         
-        // Combine both dea_files and miRNA_annot_filt channel
         // Prepare ch_miRNA_annot_filt channel
         MIRNA_ANNOTATION.out.annotfilt
             .map{meta, file -> return[meta.id, meta, file]}
             .set{ch_mirna_annot_filt}
+
         // Prepate dea_files channel
-        dea_files
-            .map{meta, file -> return[meta.id, meta, file]}
-            .set{dea_files_ch}
+        dea_ea_files
+            .map{meta, file, ea_file -> return[meta.id, meta, file, ea_file]}
+            .set{ dea_ea_files }
+
         // Combine both channels
-        dea_files_ch.combine(ch_mirna_annot_filt, by:0)
-            .map{item -> return[item[1], item[2], item[4]]}
+        dea_ea_files
+            .combine(ch_mirna_annot_filt, by:0)
+            .map{item -> return[item[1], item[2], item[5]]}
             .set{ch_group_miRNAs_input}
 
-        ch_group_miRNAs_input.view()
-        
         // Group miRNAs into families
-        GROUP_BY_FAMILY(ch_group_miRNAs_input)
+        GROUP_MIRNAS_BY_FAMILY(ch_group_miRNAs_input)
 
     emit:
         annot = MIRNA_ANNOTATION.out.annot
         annotfilt = MIRNA_ANNOTATION.out.annotfilt
         annot_sum = MIRNA_ANNOTATION.out.sum
         annot_sumlen = MIRNA_ANNOTATION.out.sumlen
-        fam_annot = GROUP_BY_FAMILY.out.fam_annot
-        fam_boxplot = GROUP_BY_FAMILY.out.fam_boxplot
-        fam_sum = GROUP_BY_FAMILY.out.fam_sum
+        fam_annot = GROUP_MIRNAS_BY_FAMILY.out.fam_annot
+        fam_boxplot = GROUP_MIRNAS_BY_FAMILY.out.fam_boxplot
+        fam_sum = GROUP_MIRNAS_BY_FAMILY.out.fam_sum
 }

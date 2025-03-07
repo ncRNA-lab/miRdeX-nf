@@ -1,11 +1,12 @@
-process GROUP_BY_FAMILY {
+process GROUP_MIRNAS_BY_FAMILY {
 
     // Process tag
     tag "$meta.id"
+    debug true
 
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'library://antoglz/mirnas_analysis/group_mirnas:latest' :
-        'community.wave.seqera.io/library/r-argparse_r-base_r-tidyverse:42442b9eccf28874' }"
+        'docker.io/antoglz/group_mirnas:latest' }"
 
     input:
     tuple val(meta), path(dea_file), path(annot_file)

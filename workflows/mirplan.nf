@@ -44,7 +44,6 @@ include { validateAccessionList      } from "../subworkflows/local/utils_mirplan
 //
 // MODULES
 //
-// include { DOWNLOADLIB       } from '../modules/local/downloadlib'
 include { DIFFEXPANALYSIS   } from "../modules/local/diffexpanalysis"
 
 
@@ -241,7 +240,7 @@ workflow MIRPLAN {
 
         // Download the libraries
         FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS(ch_samples_sra_id, [])
-        
+
         // Add the Input information to the summary channel
         ch_input_files.fastq
             .map { meta, _file ->
@@ -344,9 +343,7 @@ workflow MIRPLAN {
 
         // Prepare the projects results channel for the summary channel.
         VALIDATION.out.projects
-        .map{ item ->
-            [item.project, item]
-        }
+        .map{ item -> [item.project, item] }
         .set{ ch_validation_projects }
 
         // Add the validation information to the summary channel.
@@ -374,7 +371,7 @@ workflow MIRPLAN {
                 ]
             }
             .set { pipeline_summary }
-        
+
         // Select only the valid libraries
         ch_fastq = VALIDATION.out.files
             .filter { meta, _file -> meta.depth_validity == 'valid' && meta.replicates_validity == 'valid' }
@@ -533,8 +530,6 @@ workflow MIRPLAN {
                     return [updatedMeta, file]
                 }
                 .set {ch_counts}
-            
-            ch_counts.view()
         }
         
     }
@@ -554,6 +549,7 @@ workflow MIRPLAN {
         
         // Add the EA data to the pipeline_summary channel
         DIFFEXPANALYSIS.out.easum
+            .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .map{ item -> [item.Group, item]}
             .set{ ea_summary_ch }
@@ -596,6 +592,7 @@ workflow MIRPLAN {
 
         // Add the DEA data to the pipeline_summary channel
         DIFFEXPANALYSIS.out.deasum
+            .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .flatMap { item ->
                 def samples = item.Samples.split(',')
@@ -635,7 +632,7 @@ workflow MIRPLAN {
                 pip_summary + additionalFields
             }
             .set{ pipeline_summary }
-        
+                
         // Change the meta.id from project to file.
         DIFFEXPANALYSIS.out.sig
             .map { meta, file ->
@@ -643,7 +640,7 @@ workflow MIRPLAN {
                 updatedMeta.id = file.getName().replaceFirst(/\.dea_sig\.tsv$/, '')
                 return [updatedMeta, file]
             }
-            .set { dea_sig_ch }
+            .set { ch_dea_sig }
 
         // Execute the annotation step if params.skip_annotation is false.
         if(!params.skip_annotation){
@@ -653,16 +650,30 @@ workflow MIRPLAN {
                 SUBWORKFLOW: miRNA Annotation
             ============================================================================
             */
+            DIFFEXPANALYSIS.out.easum
+                .map{ meta, file -> [meta.id, meta, file] }
+                .set{ ch_easum }
+
+            //DIFFEXPANALYSIS.out.easum.view()
+            ch_dea_sig
+                .map { meta, file ->
+                    def key = "${meta.project}_${meta.group_id}"
+                    return [key, meta, file]
+                }
+                .combine(ch_easum, by:0)
+                .map { _project, dea_meta, dea_file, ea_meta, ea_file ->
+                    return [dea_meta, dea_file, ea_file]
+                }
+                .set{ ch_dea_ea_sig}
 
             // Identify which differentially expressed sRNA sequences are miRNAs.
             ANNOTATION(
-                dea_sig_ch,
+                ch_dea_ea_sig,
                 params.annotation_mirbase,
                 params.annotation_mirbase_taxon,
                 params.annotation_srnaanno,
                 params.annotation_pmiren,
                 params.annotation_mismatches,
-                DIFFEXPANALYSIS.out.easum,
                 params.ea_p_value,
                 params.annotation_min_db
             )
@@ -742,28 +753,30 @@ workflow MIRPLAN {
         
     }
 
+    pipeline_summary.view()
     // Specify which samples have been discarded at any stage of the pipeline.
-    pipeline_summary
-        .map { item ->
+    // pipeline_summary
+    //     .map { item ->
             
-            // Lista de valores inválidos
-            def invalidValues = ['NA', 'not-valid', 'not-quantified']
+    //         // Lista de valores inválidos
+    //         def invalidValues = ['NA', 'not-valid', 'not-quantified']
             
-            // Indicar si se ha encontrado un valor inválido
-            def stopProcessing = false
+    //         // Indicar si se ha encontrado un valor inválido
+    //         def stopProcessing = false
             
-            // Recorrer las claves del mapa y verificar los valores
-            item.each { key, value ->
-                // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
-                if (stopProcessing || invalidValues.contains(value)) {
-                    item[key] = 'NA'
-                    stopProcessing = true
-                }
-            }
+    //         // Recorrer las claves del mapa y verificar los valores
+    //         item.each { key, value ->
+    //             // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
+    //             if (stopProcessing || invalidValues.contains(value)) {
+    //                 item[key] = 'NA'
+    //                 stopProcessing = true
+    //             }
+    //         }
             
-            return item
-        }
-        .set{ pipeline_summary }
+    //         return item
+    //     }
+    //     .set{ pipeline_summary }
+    // pipeline_summary.view()
 
 
 

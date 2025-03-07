@@ -21,8 +21,8 @@ process DIFFEXPANALYSIS {
     output:
     tuple val(meta), path("*_raw.tsv")  , emit: raw
     tuple val(meta), path("*_sig.tsv")  , emit: sig
-    path "${meta.id}.ea_summary.tsv"    , emit: easum
-    path "${meta.id}.dea_summary.tsv"   , emit: deasum
+    tuple val(meta), path("${meta.id}.ea_summary.tsv"), emit: easum
+    tuple val(meta), path("${meta.id}.dea_summary.tsv")   , emit: deasum
 
     script:
     """
@@ -34,5 +34,13 @@ process DIFFEXPANALYSIS {
         --alpha ${alpha} \
         --min_counts ${min_counts} \
         --min_samples ${min_samples}
+    """
+
+    stub:
+    """
+    # CAMBIAR AL TERMINAR LA PRUEBA DE RESUME
+    touch ${meta.project}_3.${type}.tsv
+    touch ${meta.project}_3.${type}.tsv
+    touch ${meta.project}_3.${type}.tsv
     """
 }

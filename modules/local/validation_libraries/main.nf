@@ -31,9 +31,23 @@ process LIBRARIES_VALIDATION {
 
     stub:
     """
-    touch ${meta.id}_1.filt.fastq.gz
-    touch ${meta.id}_1.sum_projects.tsv'
-    touch ${meta.id}_1.sum_libraries.tsv'
+    # Iterate through the input files
+    for file in ${fastq_files}; do
+        # Get the input file name
+        filename=\$(basename \$file)
+        name=\${filename%%.*}
+
+        # Create a valid empty file
+        touch \$name.valid.fastq.gz
+
+        # Create the libraries summary file
+        echo -e "\$name.fastq.gz\t\$name\tvalid\tvalid" >> ${meta.id}.sum_libraries.tsv
+    done
+
+    #!/bin/bash
+
+    # Create the project summary files
+    echo -e "${meta.id}\t1\t50\t10\tvalid" > ${meta.id}.sum_projects.tsv
     """
 }
 
