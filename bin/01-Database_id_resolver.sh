@@ -583,7 +583,10 @@ main () {
             # Create database file using species files
             cat $pmiren > 01-Mod_databases/PmiREN/pmiren_mature.fa
             cat $pmiren_hairpin > 01-Mod_databases/PmiREN/pmiren_hairpin.fa
-            
+
+            # Modify miR names (MIR -> miR)
+            sed -i 's/[Mm][Ii][Rr]/miR/g' 01-Mod_databases/PmiREN/pmiren_hairpin.fa
+                
             # Add a NULL column in the positions corresponding to the sRNAanno
             # and miRBase databases
             awk -F, '{OFS=","; print $1,"NULL",$3,"NULL",$3}' $file_to_merge > $final_ids_file_out
@@ -597,7 +600,7 @@ main () {
     ## 2. miRBase
     ############################################################################
 
-    # Execute only if pmiren is provided
+    # Execute only if miRBase is provided
     if [ -n "$mirbase" ]; then
 
         # Filter the mirbase database to select only plant sequences.
@@ -631,6 +634,9 @@ main () {
             cp tmp/viridiplantae_mirbase_mature.fa 01-Mod_databases/miRBase/mirbase_mature.fa
             cp tmp/viridiplantae_mirbase_hairpin.fa 01-Mod_databases/miRBase/mirbase_hairpin.fa
 
+            # Modify miR names (MIR -> miR)
+            sed -i 's/[Mm][Ii][Rr]/miR/g' 01-Mod_databases/miRBase/mirbase_hairpin.fa
+            
             # Add a NULL column in the positions corresponding to the sRNAanno
             # and PmiREN databases
             awk -F, '{OFS=","; print $1,$3,"NULL","NULL",$3}' $file_to_merge > $final_ids_file_out
@@ -733,9 +739,15 @@ main () {
         replace_mismatched_ids tmp/temporal_mature.fa $output_pmiren/pmiren_mature.fa 3 4 "$file_to_merge_diff"
         replace_mismatched_ids tmp/temporal_hairpin.fa $output_pmiren/pmiren_hairpin.fa 3 4 "$file_to_merge_diff"
 
+        # Modify miR names (MIR -> miR)
+        sed -i 's/[Mm][Ii][Rr]/miR/g' $output_pmiren/pmiren_hairpin.fa
+
         # Replace identifiers in PmiREN so that both databases match (miRBase)
-        replace_mismatched_ids $mirbase $output_mirbase/mirbase_mature.fa 2 4 "$file_to_merge_diff"
-        replace_mismatched_ids $mirbase_hairpin $output_mirbase/mirbase_hairpin.fa 2 4 "$file_to_merge_diff"
+        replace_mismatched_ids tmp/viridiplantae_mirbase_mature.fa $output_mirbase/mirbase_mature.fa 2 4 "$file_to_merge_diff"
+        replace_mismatched_ids tmp/viridiplantae_mirbase_hairpin.fa $output_mirbase/mirbase_hairpin.fa 2 4 "$file_to_merge_diff"
+
+        # Modify miR names (MIR -> miR)
+        sed -i 's/[Mm][Ii][Rr]/miR/g' $output_mirbase/mirbase_hairpin.fa
 
         # Delete temporary directory
         rm -rf tmp/temporal_*
@@ -788,6 +800,9 @@ main () {
             sed -i -E 's/^>([A-Z])/>\L\1/' 01-Mod_databases/PmiREN/pmiren_mature.fa
             sed -i -E 's/^>([A-Z])/>\L\1/' 01-Mod_databases/PmiREN/pmiren_hairpin.fa
 
+            # Modify miR names (MIR -> miR)
+            sed -i 's/[Mm][Ii][Rr]/miR/g' 01-Mod_databases/PmiREN/pmiren_hairpin.fa
+
             # If mirbase has not been provided, remove the third column from the
             # table (which in this case is associated with the mirbase hairpin)
             # and add a column of NAs in the second position.
@@ -804,6 +819,9 @@ main () {
             # Create the output mirbase files
             cp tmp/viridiplantae_mirbase_mature.fa 01-Mod_databases/miRBase/mirbase_mature.fa
             cp tmp/viridiplantae_mirbase_hairpin.fa 01-Mod_databases/miRBase/mirbase_hairpin.fa
+
+            # Modify miR names (MIR -> miR)
+            sed -i 's/[Mm][Ii][Rr]/miR/g' 01-Mod_databases/miRBase/mirbase_hairpin.fa
 
             # If pmiren has not been provided, replace the third column of the
             # ID file with NAs (The third column corresponds to this database).
@@ -842,6 +860,6 @@ main () {
         fi
     done
 
-    rm -r tmp
+    #rm -r tmp
 }
 main "$@"

@@ -414,8 +414,9 @@ sort_table_by_colnames() {
 
     # Read the file paths and desired order
     local path_in="${1}"
-    local -n order="${2}"
-    local path_out="${3}"
+    local path_out="${2}"
+    shift
+    local order=("$@")
 
     # Read the header to get the index of each column
     read -r header < "$path_in"
@@ -620,7 +621,7 @@ get_miRNAs_annotation () {
     ## Order the columns: miRBase, sRNAanno, PmiREN
     # Desired column order (by name)
     order=("seq" "mirbase_species" "mirbase_others" "srnaanno_species" "srnaanno_others" "pmiren_species" "pmiren_others")
-    sort_table_by_colnames $path_out/$out_name"_annot_tmp.tsv" order $path_out/$out_name"_annot.tsv"
+    sort_table_by_colnames $path_out/$out_name"_annot_tmp.tsv" $path_out/$out_name"_annot.tsv" "${order[@]}"
 }
 
 
@@ -799,7 +800,7 @@ main () {
             # Save results in summary file and pass to the next subproject.
             if [[ $valid == "false" ]]
             then
-                echo -e "$species\t$id\tNA\tNA" >> tmp/$reference_name/$id"."$reference_name"_summary.tsv"
+                echo -e "$species\t$id\tNA\tNA" >> $id"."$reference_name"_summary.tsv"
                 continue
             fi
 
@@ -815,7 +816,7 @@ main () {
             # Save results in summary file and pass to the next subproject.
             if [[ $valid == "false" ]]
             then
-                echo -e "$species\t$id\tNA\tNA" >> tmp/$reference_name/$id"."$reference_name"_summary.tsv"
+                echo -e "$species\t$id\tNA\tNA" >> $id"."$reference_name"_summary.tsv"
                 continue
             fi
         fi
@@ -900,6 +901,18 @@ main () {
                 # Save it in summary file
                 echo -e "$species\t$id\t$num_miRNAs\t$num_miRNAs_filtered" >> $id"."$reference_name"_summary.tsv"
                 sed -i '1i\Species_id\tGroup_comparison\tNum_seq_all\tNum_seq_filt' $id"."$reference_name"_summary.tsv"
+
+                # Delete the files if they are empty.
+                if [ $(wc -l < $id".annot_all.tsv") -le 1 ]; then
+                    rm $id".annot_all.tsv"
+                fi
+                if [ $(wc -l < $id".annot_filt.tsv") -le 1 ]; then
+                    rm $id".annot_filt.tsv"
+                fi
+
+                # [ $(wc -l < $id".annot_all.tsv") -le 1 ] && rm $id".annot_all.tsv"
+                # [ $(wc -l < $id".annot_filt.tsv") -le 1 ] && rm $id".annot_filt.tsv"
+
                 
                 
             else
