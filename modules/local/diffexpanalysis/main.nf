@@ -38,9 +38,23 @@ process DIFFEXPANALYSIS {
 
     stub:
     """
-    # CAMBIAR AL TERMINAR LA PRUEBA DE RESUME
-    touch ${meta.project}_3.${type}.tsv
-    touch ${meta.project}_3.${type}.tsv
-    touch ${meta.project}_3.${type}.tsv
+    # Create raw and sig tables
+    touch ${meta.id}_1.dea_raw.tsv
+    touch ${meta.id}_1.dea_sig.tsv
+    
+    # Create EA summary file
+    ea_summary=${meta.id}.ea_summary.tsv
+    echo -e "Group_id\tGroup\tPC1\tPC2\tPC3\tPC4\tPC5\tPC6\tP-value(MWW)" > \$ea_summary
+    echo -e "1\t${meta.id}\t37.93\t22.45\t15.52\t13.8\t10.3\t0\t0.00759240759240759" >> \$ea_summary
+    
+    # Get the sample names from the matrix file (column names excluding 'seq')
+    sample_names=\$(head -n 1 ${matrix} | tr '\\t' '\\n' | grep -v '^seq\$' | tr '\\n' ',' | sed 's/,\$//')
+
+    # Create DEA summary file
+    dea_summary=${meta.id}.dea_summary.tsv
+    echo -e "Group\tTest\tPadj<alpha\tTotal\tCoefficient\tContrast\tContrast_coefficient\tSamples" > \$dea_summary
+    echo -e "${meta.id}_1\tWald\t4503\t91672\tTime_24h_vs_0h\tNo contrast\tNo contrast\t\$sample_names" >> \$dea_summary
     """
+
+
 }

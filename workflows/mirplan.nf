@@ -59,7 +59,7 @@ include { VALIDATION                              } from "../subworkflows/local/
 include { FILTERING as FILTERING_DB               } from "../subworkflows/local/filtering"
 include { FILTERING as FILTERING_GENOME           } from "../subworkflows/local/filtering"
 include { QUANTIFICATION                          } from "../subworkflows/local/quantification"
-include { ANNOTATION                              } from "../subworkflows/local/annotation"
+include { ANNOTATION                              } from "../subworkflows/local/annotation_isomirs"
 include { RESULTS_GENERATION                      } from "../subworkflows/local/results"
 
 
@@ -74,6 +74,32 @@ include { RESULTS_GENERATION                      } from "../subworkflows/local/
 // FUNCTIONS
 //
 include { samplesheetToList } from 'plugin/nf-schema'
+
+def filterByMwwPvalue(ch_input, threshold) {
+
+    // Filter comparisons using the threshold
+    valid_mww_comparisons = ch_input
+        .map{ meta, dea_file, ea_file -> ea_file }
+        .splitCsv(sep: '\t', skip: 1)
+        .map { item ->
+            def mww_p_value = item[8].toDouble()
+            if (mww_p_value <= threshold) {
+                return [item[1], item[8]]
+            }
+        }
+
+    // Remove those comparisons that do not meet the threshold
+    ch_valid_comparisons = ch_input
+        .map{ meta, dea_file, ea_file ->
+            def group_id = meta.id.replaceAll(/_\d+$/, '')
+            [group_id, meta, dea_file, ea_file]
+        }
+        .join(valid_mww_comparisons)
+        .map{item -> [item[1], item[2], item[3]]}
+    
+    return ch_valid_comparisons
+}
+
 
 
 //
@@ -650,12 +676,18 @@ workflow MIRPLAN {
                 SUBWORKFLOW: miRNA Annotation
             ============================================================================
             */
-            DIFFEXPANALYSIS.out.easum
-                .map{ meta, file -> [meta.id, meta, file] }
-                .set{ ch_easum }
 
-            //DIFFEXPANALYSIS.out.easum.view()
-            ch_dea_sig
+
+            // Filter dea results using a mww p-value threshold
+            if (params.ea_p_value != null) {
+
+                // Prepare ea summary channel
+                DIFFEXPANALYSIS.out.easum
+                    .map{ meta, file -> [meta.id, meta, file] }
+                    .set{ ch_easum }
+                
+                // Add the ea summay data to the dea data channel
+                ch_dea_sig
                 .map { meta, file ->
                     def key = "${meta.project}_${meta.group_id}"
                     return [key, meta, file]
@@ -666,94 +698,108 @@ workflow MIRPLAN {
                 }
                 .set{ ch_dea_ea_sig}
 
+                // Filter the groups using the exploratory analysis results
+                ch_dea_ea_sig = filterByMwwPvalue(ch_dea_ea_sig, params.ea_p_value)
+
+                // Remove the ea data from the channel dea data channel
+                ch_dea_ea_sig
+                    .map{item -> [item[0], item[1]]}
+                    .set{ch_dea_sig}
+            }
+
             // Identify which differentially expressed sRNA sequences are miRNAs.
             ANNOTATION(
-                ch_dea_ea_sig,
-                params.annotation_mirbase,
-                params.annotation_mirbase_taxon,
-                params.annotation_srnaanno,
-                params.annotation_pmiren,
-                params.annotation_mismatches,
-                params.ea_p_value,
-                params.annotation_min_db
+                ch_dea_sig,
+                'mirbase,pmiren',
+                params.annotation_mirbase_taxon
             )
 
-            ANNOTATION.out.annot_sum
-                .splitCsv(sep: '\t', skip: 1)
-                .map { [it[1], *it[2..-1]] }
-                .set{annot_summary_ch}
+            // ANNOTATION(
+            //     ch_dea_ea_sig,
+            //     params.annotation_mirbase,
+            //     params.annotation_mirbase_taxon,
+            //     params.annotation_srnaanno,
+            //     params.annotation_pmiren,
+            //     params.annotation_mismatches,
+            //     params.ea_p_value,
+            //     params.annotation_min_db
+            // )
 
-            // Join the general summary and the length summary
-            ANNOTATION.out.annot_sumlen
-                .splitCsv(sep: '\t', skip: 1)
-                .map { [it[1], *it[2..-1]] }
-                .join(annot_summary_ch, remainder:true)
-                .set {annot_summary_ch}
+            // ANNOTATION.out.annot_sum
+            //     .splitCsv(sep: '\t', skip: 1)
+            //     .map { [it[1], *it[2..-1]] }
+            //     .set{annot_summary_ch}
 
-            // Join the information from the miRNA annotation with the information from family grouping
-            ANNOTATION.out.fam_sum
-                .splitCsv(sep: '\t' )
-                .join(annot_summary_ch, remainder:true)
-                .set { annot_and_group_summary_ch }
+            // // Join the general summary and the length summary
+            // ANNOTATION.out.annot_sumlen
+            //     .splitCsv(sep: '\t', skip: 1)
+            //     .map { [it[1], *it[2..-1]] }
+            //     .join(annot_summary_ch, remainder:true)
+            //     .set {annot_summary_ch}
 
-            // Add the Annotation data to the pipeline_summary channel
-            pipeline_summary
-                .map{ item -> [item.comparison_id, item]}
-                .groupTuple(by:0)
-                .join(annot_and_group_summary_ch, remainder:true)
-                .flatMap { item ->
+            // // Join the information from the miRNA annotation with the information from family grouping
+            // ANNOTATION.out.fam_sum
+            //     .splitCsv(sep: '\t' )
+            //     .join(annot_summary_ch, remainder:true)
+            //     .set { annot_and_group_summary_ch }
 
-                    // Campos adicionales a añadir
-                    def additionalFields = item[6] ? [
-                        num_annotated_miRNA : item[17],
-                        num_annotated_miRNA_filt: item[18],
-                        num_annot_20nt: item[5],
-                        num_annot_21nt: item[6],
-                        num_annot_22nt: item[7],
-                        num_annot_23nt: item[8],
-                        num_annot_24nt: item[9],
-                        num_annot_25nt: item[10],
-                        num_annot_20nt_filt: item[11],
-                        num_annot_21nt_filt: item[12],
-                        num_annot_22nt_filt: item[13],
-                        num_annot_23nt_filt: item[14],
-                        num_annot_24nt_filt: item[15],
-                        num_annot_25nt_filt: item[16],
-                        num_miRNA_fam: item[2],
-                        num_miRNA_fam_divergent_ExpPatern: item[3],
-                        miRNA_fam_divergent_ExpPatern: item[4],
-                    ] : [
-                        num_annotated_miRNA : 'NA',
-                        num_annotated_miRNA_filt: 'NA',
-                        num_annot_20nt: 'NA',
-                        num_annot_21nt: 'NA',
-                        num_annot_22nt: 'NA',
-                        num_annot_23nt: 'NA',
-                        num_annot_24nt: 'NA',
-                        num_annot_25nt: 'NA',
-                        num_annot_20nt_filt: 'NA',
-                        num_annot_21nt_filt: 'NA',
-                        num_annot_22nt_filt: 'NA',
-                        num_annot_23nt_filt: 'NA',
-                        num_annot_24nt_filt: 'NA',
-                        num_annot_25nt_filt: 'NA',
-                        num_miRNA_fam: 'NA',
-                        num_miRNA_fam_divergent_ExpPatern: 'NA',
-                        miRNA_fam_divergent_ExpPatern: 'NA',
-                    ]
+            // // Add the Annotation data to the pipeline_summary channel
+            // pipeline_summary
+            //     .map{ item -> [item.comparison_id, item]}
+            //     .groupTuple(by:0)
+            //     .join(annot_and_group_summary_ch, remainder:true)
+            //     .flatMap { item ->
 
-                    def updatedItem = item[1].collect { element ->
-                        element + additionalFields
-                    }
+            //         // Campos adicionales a añadir
+            //         def additionalFields = item[6] ? [
+            //             num_annotated_miRNA : item[17],
+            //             num_annotated_miRNA_filt: item[18],
+            //             num_annot_20nt: item[5],
+            //             num_annot_21nt: item[6],
+            //             num_annot_22nt: item[7],
+            //             num_annot_23nt: item[8],
+            //             num_annot_24nt: item[9],
+            //             num_annot_25nt: item[10],
+            //             num_annot_20nt_filt: item[11],
+            //             num_annot_21nt_filt: item[12],
+            //             num_annot_22nt_filt: item[13],
+            //             num_annot_23nt_filt: item[14],
+            //             num_annot_24nt_filt: item[15],
+            //             num_annot_25nt_filt: item[16],
+            //             num_miRNA_fam: item[2],
+            //             num_miRNA_fam_divergent_ExpPatern: item[3],
+            //             miRNA_fam_divergent_ExpPatern: item[4],
+            //         ] : [
+            //             num_annotated_miRNA : 'NA',
+            //             num_annotated_miRNA_filt: 'NA',
+            //             num_annot_20nt: 'NA',
+            //             num_annot_21nt: 'NA',
+            //             num_annot_22nt: 'NA',
+            //             num_annot_23nt: 'NA',
+            //             num_annot_24nt: 'NA',
+            //             num_annot_25nt: 'NA',
+            //             num_annot_20nt_filt: 'NA',
+            //             num_annot_21nt_filt: 'NA',
+            //             num_annot_22nt_filt: 'NA',
+            //             num_annot_23nt_filt: 'NA',
+            //             num_annot_24nt_filt: 'NA',
+            //             num_annot_25nt_filt: 'NA',
+            //             num_miRNA_fam: 'NA',
+            //             num_miRNA_fam_divergent_ExpPatern: 'NA',
+            //             miRNA_fam_divergent_ExpPatern: 'NA',
+            //         ]
 
-                    return updatedItem
-                }
-                .set{pipeline_summary}
+            //         def updatedItem = item[1].collect { element ->
+            //             element + additionalFields
+            //         }
+
+            //         return updatedItem
+            //     }
+            //     .set{pipeline_summary}
         }
         
     }
 
-    pipeline_summary.view()
     // Specify which samples have been discarded at any stage of the pipeline.
     // pipeline_summary
     //     .map { item ->

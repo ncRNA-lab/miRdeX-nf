@@ -593,7 +593,7 @@ main () {
 
             # Sort and add header to IDs file
             sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
-            sed -i '1i\Species_name,miRBase_id,PmiREN_id,sRNAanno_id,Final_id' $final_ids_file_out
+            sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
         fi
     fi
 
@@ -643,7 +643,7 @@ main () {
 
             # Sort and add header to IDs file
             sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
-            sed -i '1i\Species_name,miRBase_id,PmiREN_id,sRNAanno_id,Final_id' $final_ids_file_out
+            sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
         fi
 
     fi
@@ -761,7 +761,7 @@ main () {
 
             # Sort and add header to IDs file
             sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
-            sed -i '1i\Species_name,miRBase_id,PmiREN_id,sRNAanno_id,Final_id' $final_ids_file_out
+            sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
         fi
     fi
 
@@ -831,7 +831,7 @@ main () {
 
         # Sort and add header to IDs file
         sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
-        sed -i '1i\Species_name,miRBase_id,PmiREN_id,sRNAanno_id,Final_id' $final_ids_file_out
+        sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
     fi
 
     # 7. Check input species names

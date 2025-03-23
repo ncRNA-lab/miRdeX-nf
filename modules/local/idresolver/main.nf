@@ -371,4 +371,100 @@ process DB_ID_RESOLVER {
 
         """
     }
+
+    stub:
+    def mirbase_validity = mirbase.name != 'EMPTY_mirbase.mature.fa' ? true : false
+    def pmiren_validity = pmiren[0].name != 'EMPTY_pmiren.mature.fa' ? true : false
+    def srnaanno_validity = srnaanno[0].name != 'EMPTY_srnaanno.miRNA.gff3' ? true : false
+
+    """
+    # Create the output directories
+    mkdir -p 01-Mod_databases/miRBase/
+    mkdir -p 01-Mod_databases/sRNAanno/
+    mkdir -p 01-Mod_databases/PmiREN/
+
+    # Define booleans for the validity of each database
+    mirbase_validity=${mirbase_validity}
+    pmiren_validity=${pmiren_validity}
+    srnaanno_validity=${srnaanno_validity}
+
+    # Define the databases and their specific species
+    declare -A species_db=(
+        ["miRBase"]="ath bna bol"    # Species for miRBase
+        ["sRNAanno"]="ath bna bol"   # Species for sRNAanno
+        ["PmiREN"]="ath bna bol"     # Species for PmiREN
+    )
+
+    # Function to generate files for a given database
+    generate_files() {
+        # Arguments
+        local db=\$1
+
+        # Define dummy sequences
+        mature_seq="ATGCATGCATGCATGCATGC"
+        hairpin_seq="TGCAATGCAATGCAAAGCTAAAGGTTTGCATAGCTG"
+        
+        # Define the databases and their specific species
+        declare -A species_db=(
+            ["miRBase"]="ath bna bol"    # Species for miRBase
+            ["sRNAanno"]="ath tae bol"   # Species for sRNAanno
+            ["PmiREN"]="gma bna ttu"     # Species for PmiREN
+        )
+
+        # Create necessary directories
+        mkdir -p "01-Mod_databases/\$db"
+
+        # Get the species for the current database
+        species_list=(\${species_db[\$db]})
+
+        # Generate sequences for each species in the database
+        for species_code in "\${species_list[@]}"; do
+            echo \$species_code
+            # Create the sequences for mature.fa
+            echo -e ">\$species_code-miR1\n\$mature_seq" >> "01-Mod_databases/\$db/\${db,,}_mature.fa"
+            echo -e ">\$species_code-miR2\n\$mature_seq" >> "01-Mod_databases/\$db/\${db,,}_mature.fa"
+
+            # Create the sequences for hairpin.fa
+            echo -e ">\$species_code-miR1\n\$hairpin_seq" >> "01-Mod_databases/\$db/\${db,,}_hairpin.fa"
+            echo -e ">\$species_code-miR2\n\$hairpin_seq" >> "01-Mod_databases/\$db/\${db,,}_hairpin.fa"
+        done
+    }
+
+    # Only generate files for the databases that are valid (true)
+    if [ "\$mirbase_validity" = true ]; then
+        # Pass the species for miRBase as arguments to generate_files
+        generate_files "miRBase" \${species_db["miRBase"]}
+    else
+        touch 01-Mod_databases/miRBase/EMPTY_mirbase_mature.fa
+        touch 01-Mod_databases/miRBase/EMPTY_mirbase_hairpin.fa
+    fi
+
+    if [ "\$srnaanno_validity" = true ]; then
+        # Pass the species for sRNAanno as arguments to generate_files
+        generate_files "sRNAanno" \${species_db["sRNAanno"]}
+    else
+        touch 01-Mod_databases/sRNAanno/EMPTY_srnaanno_mature.fa
+        touch 01-Mod_databases/sRNAanno/EMPTY_srnaanno_hairpin.fa
+    fi
+
+    if [ "\$pmiren_validity" = true ]; then
+        # Pass the species for PmiREN as arguments to generate_files
+        generate_files "PmiREN" \${species_db["PmiREN"]}
+    else
+        # Create an empty PmiREN database
+        touch 01-Mod_databases/PmiREN/EMPTY_pmiren_mature.fa
+        touch 01-Mod_databases/PmiREN/EMPTY_pmiren_hairpin.fa
+    fi
+
+    # Create species_ids_db.csv file
+    echo "species,mirbase,pmiren,srnaanno,final_id" > "species_ids_db.csv"
+    echo "Arabidopsis thaliana,ath,NULL,ath,ath" >> "species_ids_db.csv"
+    echo "Glycine max,NULL,gma,NULL,gma" >> "species_ids_db.csv"
+    echo "Brassica napus,bna,bna,NULL,bna" >> "species_ids_db.csv"
+    echo "Brassica olaracea,bol,NULL,bol,bol" >> "species_ids_db.csv"
+    echo "Triticum aestivum,NULL,NULL,tae,tae" >> "species_ids_db.csv"
+    echo "Triticum turgidum,NULL,ttu,NULL,ttu" >> "species_ids_db.csv"
+
+    """
+
 }

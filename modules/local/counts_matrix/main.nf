@@ -33,7 +33,36 @@ process COUNTS_MATRIX {
     """
     stub:
     """
-    # CAMBIAR AL TERMINAR LA PRUEBA DE RESUME
-    touch ${meta.id}_3.${type}.tsv
-    """
+    # Extract the filenames without the extension
+    columns="seq"
+    for file in ${counts}; do
+        name=\$(echo "\$file" | cut -d'.' -f1)  # Remove the file extension
+        columns="\$columns	\$name"  # Add filenames as columns
+    done
+
+    # Generate the output filename dynamically
+    output_file="${meta.id}_1.${type}.tsv"
+    echo -e "\$columns" > "\$output_file"
+
+    # Function to generate random DNA sequences
+    generate_dna_sequence() {
+        local length=\$((RANDOM % 6 + 20))  # Random length between 20 and 25
+        local sequence=""
+        for i in \$(seq 1 \$length); do
+            sequence="\$sequence\$(echo 'ATCG' | fold -w1 | shuf -n1)"  # Choose random nucleotide
+        done
+        echo "\$sequence"
+    }
+
+    # Generate fake count data for 10 rows
+    for i in {1..10}; do
+        seq_id=\$(generate_dna_sequence)  # Generate a random DNA sequence
+        row="\$seq_id"  # Add the sequence in the first column
+        for file in ${counts}; do
+            row="\$row	\$((RANDOM % 100))"  # Generate random count values
+        done
+        echo -e "\$row" >> "\$output_file"
+    done
+"""
+
 }

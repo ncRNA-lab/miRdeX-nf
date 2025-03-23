@@ -1,0 +1,323 @@
+nextflow_workflow {
+
+    name "Test Subworkflow ID_RESOLUTION"
+    script "../main.nf"
+    workflow "ID_RESOLUTION"
+
+    test("Id resolution - all databases") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = true
+                input[2] = 'Viridiplantae'
+                input[3] = true
+                input[4] = true
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Id resolution - miRBase - PmiRENs") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = true
+                input[2] = 'Viridiplantae'
+                input[3] = false
+                input[4] = true
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Id resolution - miRBase - sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = true
+                input[2] = 'Viridiplantae'
+                input[3] = true
+                input[4] = false
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*EMPTY_pmiren_hairpin\.fa/ }
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Id resolution - PmiREN - sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = false
+                input[2] = ''
+                input[3] = true
+                input[4] = true
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Id resolution - miRBase") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = true
+                input[2] = 'Viridiplantae'
+                input[3] = false
+                input[4] = false
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*EMPTY_pmiren_hairpin\.fa/ }
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Id resolution - sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = false
+                input[2] = ''
+                input[3] = true
+                input[4] = false
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*EMPTY_pmiren_hairpin\.fa/ }
+
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Id resolution - PmiREN") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of('Glycine max')
+                input[1] = false
+                input[2] = ''
+                input[3] = false
+                input[4] = true
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.mirbase_mature.get(0)) ==~ /.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(workflow.out.mirbase_hairpin.get(0)) ==~ /.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(workflow.out.srnaanno_mature.get(0)) ==~ /.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(workflow.out.srnaanno_hairpin.get(0)) ==~ /.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(workflow.out.pmiren_mature.get(0)) ==~ /.*pmiren_mature\.fa/ }
+                { assert path(workflow.out.pmiren_hairpin.get(0)) ==~ /.*pmiren_hairpin\.fa/ }
+                
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        workflow.out.mirbase_mature,
+                        workflow.out.mirbase_hairpin,
+                        workflow.out.srnaanno_mature,
+                        workflow.out.srnaanno_hairpin,
+                        workflow.out.pmiren_mature,
+                        workflow.out.pmiren_hairpin,
+                        workflow.out.species_ids
+                    ).match() 
+                }
+            }
+        }
+    }
+}

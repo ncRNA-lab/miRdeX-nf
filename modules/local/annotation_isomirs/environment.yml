@@ -1,0 +1,10 @@
+channels:
+- conda-forge
+- bioconda
+dependencies:
+- bioconda::blast=2.16.0
+- conda-forge::python=3.8.20
+- pip
+- pip:
+  - biopython==1.83
+  - pandas==1.4.1

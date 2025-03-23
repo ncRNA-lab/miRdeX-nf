@@ -1,0 +1,266 @@
+{
+    "miRNA annotation - PmiREN - sRNAanno - min2": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,fd19504e2a17106471f06daeebad3b7d"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,200d273f249fa8a2b4c0749c950ef553"
+                ]
+            ],
+            [
+                "TEST_1._summary.tsv:md5,fdc4be8748ba128b0d6cf6a60defd232"
+            ],
+            [
+                "TEST_1._summary_len.tsv:md5,3e925db94e82c466c4dc317f880ba54c"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T16:55:52.004154"
+    },
+    "miRNA annotation - miRBase - sRNAanno - min2": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,6fbe9c41add794bd98188c86eccb9da3"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,804e18551f1f6fd5b2d56156a48ceb0e"
+                ]
+            ],
+            [
+                "TEST_1.mature_summary.tsv:md5,9982c245de84523dd2d921c6b939909b"
+            ],
+            [
+                "TEST_1.mature_summary_len.tsv:md5,176816cb1b61d42041c5236f8fb583fb"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T16:50:40.370001"
+    },
+    "miRNA annotation - miRBase - min1": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,7252448fdcbc6c4ebc5564f83df51c3b"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,7252448fdcbc6c4ebc5564f83df51c3b"
+                ]
+            ],
+            [
+                "TEST_1.mature_summary.tsv:md5,839c46cc779aeb65313268b42c863666"
+            ],
+            [
+                "TEST_1.mature_summary_len.tsv:md5,e403c5afe5ec8eb40671914d5dfafc10"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T16:56:01.546017"
+    },
+    "miRNA annotation - miRBase - PmiREN - min2": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,a20bf83587acf5b5ac25b428290b92b7"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,b901095fc1b5a4380fba29e5f281e636"
+                ]
+            ],
+            [
+                "TEST_1.mature_summary.tsv:md5,6f282ec4562842d1dbd75c956efbab81"
+            ],
+            [
+                "TEST_1.mature_summary_len.tsv:md5,712afd1fb1bc18e6c9a432fadc3026b9"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T16:50:22.3044"
+    },
+    "miRNA annotation - mature - all databases - min2": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,e86e6da636ba6194c3ad6ba261c55010"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,f9c3d893f59e4150f0dd9eb41abd3278"
+                ]
+            ],
+            [
+                "TEST_1.mature_summary.tsv:md5,bd5ead32fe2a268e98592cf0d4113d5a"
+            ],
+            [
+                "TEST_1.mature_summary_len.tsv:md5,86292f8554e2a537a48bdca3615722fc"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T13:59:37.874923"
+    },
+    "miRNA annotation - PmiREN - min1": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,95b6469e102b6c3ca92ddd3326994859"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,95b6469e102b6c3ca92ddd3326994859"
+                ]
+            ],
+            [
+                "TEST_1._summary.tsv:md5,e0db1adf226ef1a2a36520eefd1c45e7"
+            ],
+            [
+                "TEST_1._summary_len.tsv:md5,9ae511ef51d5415e505c4f2e0988c96e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T17:01:02.849259"
+    },
+    "miRNA annotation - sRNAanno - min1": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,0d8107d8c67990f9be4ee6f34ca1368a"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,0d8107d8c67990f9be4ee6f34ca1368a"
+                ]
+            ],
+            [
+                "TEST_1._summary.tsv:md5,ff614785b10635acf6e8ee296a264213"
+            ],
+            [
+                "TEST_1._summary_len.tsv:md5,a15501d17a3ceafa0fcb1d780be2b6e9"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T16:56:27.078395"
+    },
+    "miRNA annotation - all databases - min2": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_all.tsv:md5,e86e6da636ba6194c3ad6ba261c55010"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species_id": "gma"
+                    },
+                    "TEST_1.annot_filt.tsv:md5,f9c3d893f59e4150f0dd9eb41abd3278"
+                ]
+            ],
+            [
+                "TEST_1.mature_summary.tsv:md5,bd5ead32fe2a268e98592cf0d4113d5a"
+            ],
+            [
+                "TEST_1.mature_summary_len.tsv:md5,86292f8554e2a537a48bdca3615722fc"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.4"
+        },
+        "timestamp": "2025-02-04T16:45:05.424232"
+    }
+}

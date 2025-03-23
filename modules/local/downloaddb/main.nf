@@ -74,4 +74,42 @@ process DOWNLOADDB {
     // Execute only the required lines
     script_lines.join("\n")
 
+    stub:
+    """
+    # Create directories for mirbase, srnaanno, and pmiren
+    mkdir -p mirbase srnaanno pmiren/Arabidopsis_thaliana_Ath
+
+    # Simulate mirbase files (empty files if mirbase is not selected)
+    if [ "${mirbase}" == "true" ]; then
+        # Create db files
+        touch mirbase/mature.fa
+        touch mirbase/hairpin.fa
+        touch mirbase/mirbase_species.txt
+
+    else
+        touch mirbase/EMPTY_mirbase.mature.fa
+        touch mirbase/EMPTY_mirbase.hairpin.fa
+        touch mirbase/EMPTY_mirbase_species.txt
+    fi
+
+    # Simulate srnaanno files (empty files if srnaanno is not selected)
+    if [ "${srnaanno}" == "true" ]; then
+        # Create db files
+        touch srnaanno/Arabidopsis_thaliana.miRNA.gff3
+        touch srnaanno/Brassica_napus.miRNA.gff3
+    else
+        touch srnaanno/EMPTY_srnaanno.miRNA.gff3
+    fi
+
+    # Simulate pmiren files (empty files if pmiren is not selected)
+    if [ "${pmiren}" == "true" ]; then
+        # Create db files
+        touch pmiren/Arabidopsis_thaliana_Ath/Arabidopsis_thaliana_mature.fa
+        touch pmiren/Arabidopsis_thaliana_Ath/Arabidopsis_thaliana_hairpin.fa
+    else
+        echo "Simulating empty files for pmiren..."
+        touch pmiren/empty/EMPTY_pmiren.mature.fa
+        touch pmiren/empty/EMPTY_pmiren.hairpin.fa
+    fi
+    """
 }
