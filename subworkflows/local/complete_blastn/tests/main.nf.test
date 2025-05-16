@@ -1,0 +1,63 @@
+nextflow_workflow {
+
+    name "Test Workflow COMPLETE_BLASTN"
+    script "subworkflows/local/complete_blastn/main.nf"
+    workflow "COMPLETE_BLASTN"
+
+    test("Complete Blastn") {
+
+        when {
+
+            workflow  {
+                 """
+                input[0] = [
+                    [id: 'file'],
+                    file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/file.fasta', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/mature.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.blast.get(0)[1]) ==~ /.*\.blast\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.blast).match() }
+            }
+        }
+    }
+    test("Complete Blastn - Compressed input file") {
+
+        when {
+
+            workflow  {
+                 """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/file.fasta.gz', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/mature.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.blast.get(0)[1]) ==~ /.*\.blast\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.blast).match() }
+            }
+        }
+    }
+}

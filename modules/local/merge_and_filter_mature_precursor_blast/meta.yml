@@ -1,0 +1,44 @@
+name: merge_and_filter_mature_precursor_blast
+description: |
+  Combine BLAST results from the alignment of sequences with mature miRNAs and
+  miRNA precursors, selecting the best references for each sequence.
+keywords:
+  - miRNA
+  - precursor
+  - merge
+  - filter
+  - blast
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - mature:
+        type: file
+        description: |
+          TSV file with BLAST results from the alignment of sequences with
+          mature miRNAs, including both query and reference sequences.
+    - precursor:
+        type: file
+        description: |
+          TSV file with BLAST results from the alignment of sequences with
+          miRNA precursors, including both query and reference sequences.
+output:
+  - mpblast:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*mpblast.tsv":
+          type: file
+          description: |
+            TSV file with BLAST results from the alignment of sequences with
+            mature miRNAs and miRNA precursors, including only query canonical
+            sequences.
+          pattern: "*mpblast.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

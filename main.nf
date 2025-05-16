@@ -42,12 +42,9 @@ workflow MAIN_MIRPLAN {
     //
     // WORKFLOW: Run mirplan workflow
     //
-
-    // Check if the input file exists
-    ch_samplesheet = Channel.value(file(params.input, checkIfExists: true))
     
     // Run the workflow
-    MIRPLAN ()
+    MIRPLAN (params.input, ch_versions)
 
     // // Get the versions channel from the main workflow
     // ch_versions = ch_versions.mix(MIRPLAN.out.versions)

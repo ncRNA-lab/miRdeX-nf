@@ -1,0 +1,61 @@
+nextflow_process {
+
+    name "Test Process TSV_TO_FASTA"
+    script "modules/local/tsv_to_fasta/main.nf"
+    process "TSV_TO_FASTA"
+
+    test("TSV to FASTA - Input file with header") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/tsv_to_fasta/file.tsv', checkIfExists: true)
+                ]
+                input[1] = 1
+                input[2] = 2
+                input[3] = true
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.fasta.get(0)[1]) ==~ /.*\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.fasta).match() }
+        }
+    }
+    test("TSV to FASTA - Input file without header") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/tsv_to_fasta/file_wo_header.tsv', checkIfExists: true)
+                ]
+                input[1] = 1
+                input[2] = 2
+                input[3] = false
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.fasta.get(0)[1]) ==~ /.*\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.fasta).match() }
+        }
+    }
+}

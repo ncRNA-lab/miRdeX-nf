@@ -1,0 +1,28 @@
+name: concat_tsv
+description: Concatenate TSV files
+keywords:
+  - concatenate
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - tsv_files:
+        type: list
+        description: List of TSV files.
+output:
+  - concat:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.tsv":
+          type: file
+          description: Concatenated TSV file.
+          pattern: "*.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

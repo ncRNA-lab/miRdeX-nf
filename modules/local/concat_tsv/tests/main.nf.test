@@ -1,0 +1,71 @@
+nextflow_process {
+
+    name "Test Process CONCAT_TSV"
+    script "modules/local/concat_tsv/main.nf"
+    process "CONCAT_TSV"
+
+    test("Concat TSV files - 3 Files with header") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/concat_tsv/file_canonical.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_tsv/file_nontemplated.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_tsv/file_templated.tsv', checkIfExists: true)
+                    ]
+                ]
+                input[1] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.concat.get(0)[1]) ==~ /.*\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.concat).match() }
+            }
+        }
+    }
+    test("Concat TSV files - 3 Files without header") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/concat_tsv/file_canonical_wo_header.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_tsv/file_nontemplated_wo_header.tsv', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_tsv/file_templated_wo_header.tsv', checkIfExists: true)
+                    ]
+                ]
+                input[1] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.concat.get(0)[1]) ==~ /.*\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.concat).match() }
+            }
+        }
+    }
+}

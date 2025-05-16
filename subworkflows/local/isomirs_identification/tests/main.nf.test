@@ -1,0 +1,69 @@
+nextflow_workflow {
+
+    name "Test Workflow ISOMIRS_IDENTIFICATION"
+    script "subworkflows/local/isomirs_identification/main.nf"
+    workflow "ISOMIRS_IDENTIFICATION"
+
+    test("IsomiRs identification") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = [
+                    [ id: 'file', single_end: true],
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/file.fasta', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/mature.fa', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/precursor.fa', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/genome.fna', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.iso.get(0)[1]) ==~ /.*\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.iso).match() }
+            }
+        }
+    }
+    test("IsomiRs identification - Compressed input file") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = [
+                    [ id: 'file', single_end: true],
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/file.fasta.gz', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/mature.fa', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/precursor.fa', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/genome.fna', checkIfExists: true)
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.iso.get(0)[1]) ==~ /.*\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.iso).match() }
+            }
+        }
+    }
+}

@@ -1,0 +1,38 @@
+name: split_db_by_species
+description: |
+  Split miRNA/precursor FASTA file by species using species ID to create
+  individual FASTA files.
+keywords:
+  - split
+  - species
+  - fasta
+  - miRNA
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - species_id:
+        type: val
+        description: Species id (e.g 'ath')
+    - file:
+        type: file
+        description: miRNA/precursor FASTA file.
+output:
+  - species_db:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.{${species_id},EMPTY}.{fa,fasta}":
+          type: file
+          description: |
+            FASTA file with mature miRNA / miRNA precursor sequences of the
+            species specified by the species_id.
+          pattern: "*.{${species_id},EMPTY}.{fa,fasta}"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

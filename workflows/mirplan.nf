@@ -44,24 +44,24 @@ include { validateAccessionList      } from "../subworkflows/local/utils_mirplan
 //
 // MODULES
 //
+include { DEA_TO_FASTA      } from "../modules/local/dea_to_fasta"
 include { DIFFEXPANALYSIS   } from "../modules/local/diffexpanalysis"
-
+include { ANNOTATE_DEA_RESULTS                    } from "../modules/local/annotate_dea_results"
+include { BUILD_MIRNA_EVENT_MATRIX } from "../modules/local/build_mirna_event_matrix"
 
 //
 // SUBWORKFLOWS
 //
 
 include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS                      } from "../subworkflows/nf-core/fastq_download_prefetch_fasterqdump_sratools"
-include { ID_RESOLUTION                           } from "../subworkflows/local/idresolution"
+//include { ID_RESOLUTION                           } from "../subworkflows/local/idresolution"
 include { QUALITY_CONTROL as QUALITY_CONTROL_RAW  } from "../subworkflows/local/qualitycontrol"
 include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../subworkflows/local/qualitycontrol"
 include { VALIDATION                              } from "../subworkflows/local/validation"
 include { FILTERING as FILTERING_DB               } from "../subworkflows/local/filtering"
 include { FILTERING as FILTERING_GENOME           } from "../subworkflows/local/filtering"
 include { QUANTIFICATION                          } from "../subworkflows/local/quantification"
-include { ANNOTATION                              } from "../subworkflows/local/annotation_isomirs"
-include { RESULTS_GENERATION                      } from "../subworkflows/local/results"
-
+include { MIRNOTE as ANNOTATION                   } from "../subworkflows/local/mirnote"
 
 /*
 ========================================================================================
@@ -78,8 +78,8 @@ include { samplesheetToList } from 'plugin/nf-schema'
 def filterByMwwPvalue(ch_input, threshold) {
 
     // Filter comparisons using the threshold
-    valid_mww_comparisons = ch_input
-        .map{ meta, dea_file, ea_file -> ea_file }
+    def valid_mww_comparisons = ch_input
+        .map{ _meta, _dea_file, ea_file -> ea_file }
         .splitCsv(sep: '\t', skip: 1)
         .map { item ->
             def mww_p_value = item[8].toDouble()
@@ -89,7 +89,7 @@ def filterByMwwPvalue(ch_input, threshold) {
         }
 
     // Remove those comparisons that do not meet the threshold
-    ch_valid_comparisons = ch_input
+    def ch_valid_comparisons = ch_input
         .map{ meta, dea_file, ea_file ->
             def group_id = meta.id.replaceAll(/_\d+$/, '')
             [group_id, meta, dea_file, ea_file]
@@ -117,16 +117,21 @@ include { FASTP } from '../modules/nf-core/fastp'
 
 workflow MIRPLAN {
 
+    take:
+    samplesheet             // string: "path/to/sample_sheet.csv"
+    ch_versions             // channel: [ path(versions.yml) ]
+
     main:
 
     // Fastq files empty channels
     ch_fastq         = Channel.empty()
-    pipeline_summary = Channel.empty()
+    ch_pipeline_summary = Channel.empty()
     ch_counts        = Channel.empty()
+    ch_versions      = Channel.empty()
 
     // Create a channel from input file using params.input
     Channel
-        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
+        .fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_input.json"))
         .set{ch_input}
     
     /*
@@ -205,7 +210,7 @@ workflow MIRPLAN {
                 tuple[1] =~ /.*\.valid\.tsv$/
             }.set{ ch_counts }
 
-        // Create the pipeline_summary channel using the meta. OJO. COMO LAS TABLAS DE CONTEOS NO TIENEN LOS PASOS PREVIOS TIENEN NA EN PIPELINE_SUMMARY. ESO HACE QUE LUEGO AL FINAL SE PONGA TODO NA. COMPROBAR
+        // Create the ch_pipeline_summary channel using the meta. OJO. COMO LAS TABLAS DE CONTEOS NO TIENEN LOS PASOS PREVIOS TIENEN NA EN ch_pipeline_summary. ESO HACE QUE LUEGO AL FINAL SE PONGA TODO NA. COMPROBAR
         VALIDATION.out.files
             // Get the sample names from the matrix header 
             .flatMap { meta, file ->
@@ -216,7 +221,7 @@ workflow MIRPLAN {
 
                 // Crear un nuevo elemento por cada SRR, asignándolo a 'sample'
                 samples.collect { srr -> [sample: srr] + newMeta }
-            }.set{ pipeline_summary }
+            }.set{ ch_pipeline_summary }
     }
 
     /*
@@ -272,14 +277,14 @@ workflow MIRPLAN {
             .map { meta, _file ->
                 [meta.id, [sample: meta.id, species: meta.species, species_id: meta.species_id, project: meta.project, input: 'Local']]
             }
-            .set{pipeline_summary}
+            .set{ch_pipeline_summary}
 
         FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS.out.reads
             .map { meta, _file ->
                 [meta.id, [sample: meta.id, species: meta.species, species_id: meta.species_id, project: meta.project, input: 'Downloaded']]
             }
-            .concat(pipeline_summary)
-            .set{pipeline_summary}
+            .concat(ch_pipeline_summary)
+            .set{ch_pipeline_summary}
         
         // Combine the downloaded libraries with those provided by the user in the same channel.
         FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS.out.reads
@@ -315,12 +320,12 @@ workflow MIRPLAN {
             false
         )
 
-        // Add the trimming data to the pipeline_summary channel
+        // Add the trimming data to the ch_pipeline_summary channel
         FASTP.out.reads
             .map{meta, file ->
                 [meta.id, meta, file]
             }
-            .join(pipeline_summary, remainder: true)
+            .join(ch_pipeline_summary, remainder: true)
             .map { item ->
                 // Define new_meta variable
                 def new_meta = item.last()
@@ -332,7 +337,7 @@ workflow MIRPLAN {
                 }
                 return [item[0], new_meta]
             }
-            .set{pipeline_summary}
+            .set{ch_pipeline_summary}
         
         // Change the meta.id from file to project.
         ch_fastq = FASTP.out.reads
@@ -375,7 +380,7 @@ workflow MIRPLAN {
         // Add the validation information to the summary channel.
         VALIDATION.out.files
             .map{ meta, file -> [meta.id, meta, file]}
-            .combine(pipeline_summary, by:0)
+            .combine(ch_pipeline_summary, by:0)
             .map { _id, meta_lib, _file, meta_sum ->
                 [meta_sum.project, meta_sum + [
                     depth: meta_lib.depth,
@@ -396,7 +401,7 @@ workflow MIRPLAN {
                     group_validity: projects_sum.validity
                 ]
             }
-            .set { pipeline_summary }
+            .set { ch_pipeline_summary }
 
         // Select only the valid libraries
         ch_fastq = VALIDATION.out.files
@@ -411,17 +416,17 @@ workflow MIRPLAN {
         if (!params.skip_filt_db) {
 
             // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-            FILTERING_DB(ch_fastq, params.filtering_db_mismatches, "database", params.filtering_db_file)
+            FILTERING_DB(ch_fastq, "database", params.filtering_db_file)
 
             // Update ch_fastq channel
             ch_fastq = FILTERING_DB.out.unaligned
 
-            // Add the filtering_db data to the pipeline_summary channel
+            // Add the filtering_db data to the ch_pipeline_summary channel
             FILTERING_DB.out.unaligned
                 .map{ meta, file -> [meta.id, meta, file]}
                 .set{ filt_db_files_ch }
                 
-            pipeline_summary
+            ch_pipeline_summary
                 .map{ item -> [item.sample, item]}
                 .groupTuple(by:0)
                 .join(filt_db_files_ch, remainder:true)
@@ -446,7 +451,7 @@ workflow MIRPLAN {
 
                     updatedMeta
                 }
-                .set{ pipeline_summary }
+                .set{ ch_pipeline_summary }
         }
 
         /*
@@ -455,21 +460,20 @@ workflow MIRPLAN {
         ============================================================================
         */
 
-
         if (!params.skip_filt_genome) {
             
             // Remove those sequences that do not align with the reference genome
-            FILTERING_GENOME(ch_fastq, params.filtering_genome_mismatches, "genome", null)
+            FILTERING_GENOME(ch_fastq, "genome", null)
 
             // Update ch_fastq channel
             ch_fastq = FILTERING_GENOME.out.aligned
 
-            // Add the filtering_genome data to the pipeline_summary channel
+            // Add the filtering_genome data to the ch_pipeline_summary channel
             FILTERING_GENOME.out.aligned
                 .map{ meta, file -> [meta.id, meta, file]}
                 .set{ filt_genome_files_ch }
 
-            pipeline_summary
+            ch_pipeline_summary
                 .map{ item -> [item.sample, item]}
                 .groupTuple(by:0)
                 .join(filt_genome_files_ch, remainder:true)
@@ -494,7 +498,7 @@ workflow MIRPLAN {
 
                     updatedMeta
                 }
-                .set{ pipeline_summary }
+                .set{ ch_pipeline_summary }
         }
 
         // Do not run this step when only pre-processing is to be done.
@@ -520,7 +524,7 @@ workflow MIRPLAN {
             // Create count matrix
             QUANTIFICATION(ch_fastq, 'raw')
             
-            // Add the quantification data to the pipeline_summary channel
+            // Add the quantification data to the ch_pipeline_summary channel
             QUANTIFICATION.out.group_matrix
                 .map { meta, file ->
                     def id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
@@ -528,7 +532,7 @@ workflow MIRPLAN {
                 }
                 .set{ quantification_subproject_ch }
 
-            pipeline_summary
+            ch_pipeline_summary
                 .map{ item -> [item.group, item]}
                 .groupTuple(by:0)
                 .join(quantification_subproject_ch, remainder:true)
@@ -546,7 +550,7 @@ workflow MIRPLAN {
                     
                     return updatedItem
                 }
-                .set{pipeline_summary}
+                .set{ch_pipeline_summary}
             
             // Change the meta.id from project to subproject.
             QUANTIFICATION.out.group_matrix
@@ -573,14 +577,14 @@ workflow MIRPLAN {
         // Perform exploratory and differential expression analyses.
         DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
         
-        // Add the EA data to the pipeline_summary channel
+        // Add the EA data to the ch_pipeline_summary channel
         DIFFEXPANALYSIS.out.easum
             .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .map{ item -> [item.Group, item]}
             .set{ ea_summary_ch }
         
-        pipeline_summary
+        ch_pipeline_summary
             .map { item -> [item.group, item] }
             .groupTuple(by: 0)
             .join(ea_summary_ch, remainder: true)
@@ -614,9 +618,9 @@ workflow MIRPLAN {
                     summary + additionalFields
                 }
             }
-            .set{pipeline_summary}
+            .set{ch_pipeline_summary}
 
-        // Add the DEA data to the pipeline_summary channel
+        // Add the DEA data to the ch_pipeline_summary channel
         DIFFEXPANALYSIS.out.deasum
             .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
@@ -628,7 +632,7 @@ workflow MIRPLAN {
             }
             .set{ dea_summary_ch }
 
-        pipeline_summary
+        ch_pipeline_summary
             .map{ item -> [item.sample, item]}
             .join(dea_summary_ch, remainder:true)
             .map { item ->
@@ -657,14 +661,25 @@ workflow MIRPLAN {
                 // Combinar los campos originales del segundo elemento con los adicionales
                 pip_summary + additionalFields
             }
-            .set{ pipeline_summary }
-                
+            .set{ ch_pipeline_summary }
+            
+        // Prepare the channel for the next steps of the workflow.
+        DIFFEXPANALYSIS.out.deasum
+            .map{it -> it[1]}
+            .splitCsv( header: true, sep: '\t' )
+            .map{ item -> [item.Group, item]}
+            .set{ ch_dea_summ_to_sig }
+
         // Change the meta.id from project to file.
         DIFFEXPANALYSIS.out.sig
             .map { meta, file ->
                 def updatedMeta = meta.clone()
                 updatedMeta.id = file.getName().replaceFirst(/\.dea_sig\.tsv$/, '')
-                return [updatedMeta, file]
+                return [updatedMeta.id, updatedMeta, file]
+            }
+            .combine(ch_dea_summ_to_sig, by:0)
+            .map{ _id, meta, file, dea_sig ->
+                return [meta + [coefficient:dea_sig.Coefficient, samples:dea_sig.Samples], file]
             }
             .set { ch_dea_sig }
 
@@ -693,7 +708,7 @@ workflow MIRPLAN {
                     return [key, meta, file]
                 }
                 .combine(ch_easum, by:0)
-                .map { _project, dea_meta, dea_file, ea_meta, ea_file ->
+                .map { _project, dea_meta, dea_file, _ea_meta, ea_file ->
                     return [dea_meta, dea_file, ea_file]
                 }
                 .set{ ch_dea_ea_sig}
@@ -707,243 +722,175 @@ workflow MIRPLAN {
                     .set{ch_dea_sig}
             }
 
-            // Identify which differentially expressed sRNA sequences are miRNAs.
+            // Create fasta files from the DESeq2 results
+            DEA_TO_FASTA(ch_dea_sig)
+
+            // Identify miRNA sequences
             ANNOTATION(
-                ch_dea_sig,
-                'mirbase,pmiren',
-                params.annotation_mirbase_taxon
+                DEA_TO_FASTA.out.fasta,
+                'mirbase',
+                1,
+                0,
+                3,
+                4,
+                ch_versions
             )
 
-            // ANNOTATION(
-            //     ch_dea_ea_sig,
-            //     params.annotation_mirbase,
-            //     params.annotation_mirbase_taxon,
-            //     params.annotation_srnaanno,
-            //     params.annotation_pmiren,
-            //     params.annotation_mismatches,
-            //     params.ea_p_value,
-            //     params.annotation_min_db
-            // )
+            // Prepare the summary channel
+            ANNOTATION.out.summary
+                .map{item -> [item.id, item]}
+                .set{ch_annot_summary}
+            
+            // Add the Annotation data to the ch_pipeline_summary channel
+            ch_pipeline_summary
+                .map{ item -> [item.comparison_id, item]}
+                .groupTuple(by:0)
+                .join(ch_annot_summary, remainder:true)
+                .flatMap { item ->
+                    // Additional fields to add
+                    def additionalFields = item[2] ? [
+                        species_db : item[2].species_db,
+                        database : item[2].database,
+                        num_pot_isomirs : item[2].num_pot_isomirs,
+                        num_isomirs : item[2].num_isomirs,
+                        ref_miRNA : item[2].ref_miRNA,
+                        iso_5p : item[2].iso_5p,
+                        iso_3p : item[2].iso_3p,
+                        iso_add5p : item[2].iso_add5p,
+                        iso_add3p : item[2].iso_add3p,
+                        iso_snv_seed : item[2].iso_snv_seed,
+                        iso_snv_central : item[2].iso_snv_central,
+                        iso_snv_central_offset : item[2].iso_snv_central_offset,
+                        iso_snv_central_supp : item[2].iso_snv_central_supp,
+                        mixed : item[2].mixed,
+                        mixed_shift : item[2].mixed_shift,
+                        undefined : item[2].undefined
+                    ] : [
+                        species_db : 'NA',
+                        database : 'NA',
+                        num_pot_isomirs : 'NA',
+                        num_isomirs : 'NA',
+                        ref_miRNA : 'NA',
+                        iso_5p : 'NA',
+                        iso_3p : 'NA',
+                        iso_add5p : 'NA',
+                        iso_add3p : 'NA',
+                        iso_snv_seed : 'NA',
+                        iso_snv_central : 'NA',
+                        iso_snv_central_offset : 'NA',
+                        iso_snv_central_supp : 'NA',
+                        mixed : 'NA',
+                        mixed_shift : 'NA',
+                        undefined : 'NA'
+                    ]
 
-            // ANNOTATION.out.annot_sum
-            //     .splitCsv(sep: '\t', skip: 1)
-            //     .map { [it[1], *it[2..-1]] }
-            //     .set{annot_summary_ch}
+                    def updatedItem = item[1].collect { element ->
+                        element + additionalFields
+                    }
 
-            // // Join the general summary and the length summary
-            // ANNOTATION.out.annot_sumlen
-            //     .splitCsv(sep: '\t', skip: 1)
-            //     .map { [it[1], *it[2..-1]] }
-            //     .join(annot_summary_ch, remainder:true)
-            //     .set {annot_summary_ch}
+                    return updatedItem
+                }.set{ch_pipeline_summary}
 
-            // // Join the information from the miRNA annotation with the information from family grouping
-            // ANNOTATION.out.fam_sum
-            //     .splitCsv(sep: '\t' )
-            //     .join(annot_summary_ch, remainder:true)
-            //     .set { annot_and_group_summary_ch }
+            // Prepare annotation channel
+            ANNOTATION.out.annotation
+                .map{meta, file -> return[meta.id, meta, file]}
+                .set{ch_mirna_annot}
 
-            // // Add the Annotation data to the pipeline_summary channel
-            // pipeline_summary
-            //     .map{ item -> [item.comparison_id, item]}
-            //     .groupTuple(by:0)
-            //     .join(annot_and_group_summary_ch, remainder:true)
-            //     .flatMap { item ->
+            // Prepate dea_files channel
+            ch_dea_ea_sig
+                .map{meta, file, ea_file -> return[meta.id, meta, file, ea_file]}
+                .set{ dea_ea_files }
 
-            //         // Campos adicionales a añadir
-            //         def additionalFields = item[6] ? [
-            //             num_annotated_miRNA : item[17],
-            //             num_annotated_miRNA_filt: item[18],
-            //             num_annot_20nt: item[5],
-            //             num_annot_21nt: item[6],
-            //             num_annot_22nt: item[7],
-            //             num_annot_23nt: item[8],
-            //             num_annot_24nt: item[9],
-            //             num_annot_25nt: item[10],
-            //             num_annot_20nt_filt: item[11],
-            //             num_annot_21nt_filt: item[12],
-            //             num_annot_22nt_filt: item[13],
-            //             num_annot_23nt_filt: item[14],
-            //             num_annot_24nt_filt: item[15],
-            //             num_annot_25nt_filt: item[16],
-            //             num_miRNA_fam: item[2],
-            //             num_miRNA_fam_divergent_ExpPatern: item[3],
-            //             miRNA_fam_divergent_ExpPatern: item[4],
-            //         ] : [
-            //             num_annotated_miRNA : 'NA',
-            //             num_annotated_miRNA_filt: 'NA',
-            //             num_annot_20nt: 'NA',
-            //             num_annot_21nt: 'NA',
-            //             num_annot_22nt: 'NA',
-            //             num_annot_23nt: 'NA',
-            //             num_annot_24nt: 'NA',
-            //             num_annot_25nt: 'NA',
-            //             num_annot_20nt_filt: 'NA',
-            //             num_annot_21nt_filt: 'NA',
-            //             num_annot_22nt_filt: 'NA',
-            //             num_annot_23nt_filt: 'NA',
-            //             num_annot_24nt_filt: 'NA',
-            //             num_annot_25nt_filt: 'NA',
-            //             num_miRNA_fam: 'NA',
-            //             num_miRNA_fam_divergent_ExpPatern: 'NA',
-            //             miRNA_fam_divergent_ExpPatern: 'NA',
-            //         ]
+            // Combine both channels
+            dea_ea_files
+                .combine(ch_mirna_annot, by:0)
+                .map{item -> return[item[1], item[2], item[5]]}
+                .set{ch_group_miRNAs_input}
 
-            //         def updatedItem = item[1].collect { element ->
-            //             element + additionalFields
-            //         }
+            // Add annotation to DEA results dataframe
+            ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, 'ref_miRNA')
 
-            //         return updatedItem
-            //     }
-            //     .set{pipeline_summary}
-        }
-        
+            // Prepare the summary channel
+            ANNOTATE_DEA_RESULTS.out.fam_sum
+                .splitCsv(sep: '\t')
+                .set{ch_annotate_dea_results_sum}
+            
+            // Add the Annotation data to the ch_pipeline_summary channel
+            ch_pipeline_summary
+                .map{ item -> [item.comparison_id, item]}
+                .groupTuple(by:0)
+                .join(ch_annotate_dea_results_sum, remainder:true)
+                .flatMap { item ->
+
+                    // Additional fields to add
+                    def additionalFields = item[2] ? [
+                        fam_members_same_pattern : item[2],
+                        fam_members_diff_pattern : item[3],
+                        names_members_diff_pattern : item[4]
+                    ] : [
+                        fam_members_same_pattern : 'NA',
+                        fam_members_diff_pattern : 'NA',
+                        names_members_diff_pattern : 'NA'
+                    ]
+
+                    def updatedItem = item[1].collect { element ->
+                        element + additionalFields
+                    }
+
+                    return updatedItem
+                }.set{ch_pipeline_summary}
+
+            // AÑADIR AQUI UN CONDICIONAL PARA COMPROBAR SI SE QUIERE HACER ESTE ANALISSI GLOBAL O NO
+            // Prepare the channel to create the absence-presence matrix
+            ANNOTATE_DEA_RESULTS.out.unique
+                .map{meta, file -> [file, meta.metadata, meta.samples]}
+                .collect()
+                .map{ list ->
+                    // Files lists
+                    def files = []
+                    def metas = []
+                    def samples = []
+
+                    list.eachWithIndex { item, idx ->
+                        if (idx % 3 == 0) {
+                            files << item
+                        } else if (idx % 3 == 1) {
+                            metas << item
+                        } else {
+                            samples << item
+                        }
+                    }
+
+                    return [files, metas, samples]
+                }
+                .set{ch_to_create_pa_matrix}
+        }        
     }
 
     // Specify which samples have been discarded at any stage of the pipeline.
-    // pipeline_summary
-    //     .map { item ->
-            
-    //         // Lista de valores inválidos
-    //         def invalidValues = ['NA', 'not-valid', 'not-quantified']
-            
-    //         // Indicar si se ha encontrado un valor inválido
-    //         def stopProcessing = false
-            
-    //         // Recorrer las claves del mapa y verificar los valores
-    //         item.each { key, value ->
-    //             // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
-    //             if (stopProcessing || invalidValues.contains(value)) {
-    //                 item[key] = 'NA'
-    //                 stopProcessing = true
-    //             }
-    //         }
-            
-    //         return item
-    //     }
-    //     .set{ pipeline_summary }
-    // pipeline_summary.view()
+    ch_pipeline_summary
+        .map { item ->
+            // Lista de valores inválidos
+            def invalidValues = ['NA', 'not-valid', 'not-quantified']
+            // Indicar si se ha encontrado un valor inválido
+            def stopProcessing = false
+            // Recorrer las claves del mapa y verificar los valores
+            item.each { key, value ->
+                // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
+                if (stopProcessing || invalidValues.contains(value)) {
+                    item[key] = 'NA'
+                    stopProcessing = true
+                }
+            }
+            return item
+        }
+        .set{ ch_pipeline_summary }
+    
+
+    emit:
+    summary        = ch_pipeline_summary                     // channel: [id:, sample:, etc]
+    versions       = ch_versions                             // channel: [ path(versions.yml) ]
 
 
-
-
-
-    // INFORME HTML.
-    // def skip_filtering_db = false
-
-    // Channel
-    //     .of(
-    //         [sample: 'SRR14182749', species: 'Glycine max', species_id: 'gma', project: 'PRJNA720229', input: 'Downloaded', Trimming: 'Trimmed', Depth: 17600922, Depth_validity: 'valid', Replicates_validity: 'valid', Subproject: 'PRJNA720229_3', Subproject_id: 3, Num_valid_samples: 6, Num_notvalid_samples: 12, Subproject_validity: 'valid', Filtering_db_total: 17600922, Filtering_db_only_align: '6699112 (38.06%)', Filtering_db_failed: '10901810 (61.94%)', Filtering_genome_total: 10901810, Filtering_genome_only_align: '9150456 (83.94%)', Filtering_genome_failed: '1751354 (16.06%)'],
-    //         [sample: 'ERR4078852', species: 'Amaranthus hypochondriacus', species_id: 'ahp', project: 'PRJEB38055', input: 'Downloaded', Trimming: 'Trimmed', Depth: 318829, Depth_validity: 'not-valid', Replicates_validity: 'not-valid', Subproject: 'PRJEB38055_1', Subproject_id: 1, Num_valid_samples: 0, Num_notvalid_samples: 6, Subproject_validity: 'NA', Filtering_db_total: 'NA', Filtering_db_only_align: 'NA', Filtering_db_failed: 'NA', Filtering_genome_total: 'NA', Filtering_genome_only_align: 'NA', Filtering_genome_failed: 'NA']
-    //     )
-    //     .map { task ->
-    //         [task]
-    //     }
-    //     .collect()
-    //     .map { tasks ->
-    //         def template = new File('/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/report-template.html').text
-
-    //         def sampleLevelRows = tasks.collect { task ->
-    //             """
-    //             <tr>
-    //                 <td>${task.sample}</td>
-    //                 <td>${task.species}</td>
-    //                 <td>${task.species_id}</td>
-    //                 <td>${task.Depth}</td>
-    //                 <td>${task.Depth_validity}</td>
-    //                 <td>${task.Replicates_validity}</td>
-    //                 <td>${task.project}</td>
-    //                 <td>${task.Subproject}</td>
-    //             </tr>
-    //             """
-    //         }.join("\n")
-
-    //         def subprojectLevelRows = tasks.collect { task ->
-    //             """
-    //             <tr>
-    //                 <td>${task.species}</td>
-    //                 <td>${task.species_id}</td>
-    //                 <td>${task.project}</td>
-    //                 <td>${task.Subproject}</td>
-    //                 <td>${task.Num_valid_samples}</td>
-    //                 <td>${task.Num_notvalid_samples}</td>
-    //                 <td>${task.Subproject_validity}</td>
-    //             </tr>
-    //             """
-    //         }.join("\n")
-
-    //         def dbFilteringRows = tasks.collect { task ->
-    //             """
-    //             <tr>
-    //                 <td>${task.sample}</td>
-    //                 <td>${task.species}</td>
-    //                 <td>${task.species_id}</td>
-    //                 <td>${task.project}</td>
-    //                 <td>${task.Subproject}</td>
-    //                 <td>${task.Filtering_db_total}</td>
-    //                 <td>${task.Filtering_db_only_align}</td>
-    //                 <td>${task.Filtering_db_failed}</td>
-    //             </tr>
-    //             """
-    //         }.join("\n")
-
-    //         def genomeFilteringRows = tasks.collect { task ->
-    //             """
-    //             <tr>
-    //                 <td>${task.sample}</td>
-    //                 <td>${task.species}</td>
-    //                 <td>${task.species_id}</td>
-    //                 <td>${task.project}</td>
-    //                 <td>${task.Subproject}</td>
-    //                 <td>${task.Filtering_genome_total}</td>
-    //                 <td>${task.Filtering_genome_only_align}</td>
-    //                 <td>${task.Filtering_genome_failed}</td>
-    //             </tr>
-    //             """
-    //         }.join("\n")
-
-    //         def htmlContent = template
-    //             .replace('$sample_level_validation', sampleLevelRows)
-    //             .replace('$subproject_level_validation', subprojectLevelRows)
-    //             .replace('$database_filtering', dbFilteringRows)
-    //             .replace('$genome_filtering', genomeFilteringRows)
-        
-    //         // ESTA PARTE ES PARA MOSTRAR O NO PARTE DEL CONTENIDO DEL HTML. EN
-    //         // ESTE CASO, SI SKIP_FILTERING_DB ES true, NO SE MOSTRARÁ LA PARTE
-    //         // DEL FILTRADO. CAMBIAR ESTO PARA PONER EL PARAMETRO DE ENTRADA QUE
-    //         // ESPECIFICA SI SE SKIPEA O NO.
-    //         // Solo insertamos el bloque de filtering_rnacentral si skip_filtering_db es falso
-    //         if (skip_filtering_db) {
-    //             htmlContent = htmlContent.replace('$filtering_rnacentral', '')  // Eliminar sección de filtrado si es verdadero
-    //         } else {
-    //             htmlContent = htmlContent.replace('$filtering_rnacentral', 'Contenido de filtrado aquí')  // Mostrar contenido si es falso
-    //         }
-            
-    //     }
-    //     .subscribe { htmlContent ->
-    //         new File("/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/execution-report.html").text = htmlContent
-    //     }
-
-
-
-
-    /// AHORA TENGO QUE VER COMO HACER PARA ESTABLECER LOS NA CUANDO EN ALGUNO
-    /// DE LOS PASOS NO HA PASADO LA MUESTA Y GESTIONAR AQUELLOS CASOS EN LOS
-    // QUE SE SALTE PASOS DEL PIPELINE. YA QUE AL SALTARSE PASOS NO HABRA SUMMARY.
-    /// LUEGO TENGO QUE VER COMO DEVOLVER UNA TABLA Y/O UN INFORME DE RESULTADOS.
-
-
-
-
-
-
-    // // #########################################################################
-    // // #################### Build miRNA_vs_stress matrix #######################
-    // // #########################################################################
-
-    // RESULTS_GENERATION(
-    //     DIFFEXPANALYSIS.out.dea_sum,
-    //     ANNOTATION.out.fam_annot.collect()
-    // )
 
 }

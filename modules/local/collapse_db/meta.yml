@@ -1,0 +1,33 @@
+name: collapse_db
+description: |
+  Removes duplicate sequences from a FASTA file, retaining only one copy of each
+  sequence.
+keywords:
+  - duplicates
+  - unique
+  - fasta
+  - collapse
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - fasta:
+        type: file
+        description: Fasta file.
+output:
+  - coldb:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*collapsed.{fa,fasta}":
+          type: file
+          description: FASTA file with unique sequences.
+          pattern: "*collapsed.{fa,fasta}"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

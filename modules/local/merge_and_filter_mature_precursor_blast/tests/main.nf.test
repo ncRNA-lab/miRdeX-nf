@@ -1,0 +1,32 @@
+nextflow_process {
+
+    name "Test Process merge_and_filter_mature_precursor_blast"
+    script "modules/local/merge_and_filter_mature_precursor_blast/main.nf"
+    process "MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST"
+
+    test("Merge mature and precursor blast results") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/merge_and_filter_mature_precursor_blast/file_mature.blast.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/merge_and_filter_mature_precursor_blast/file_precursor.blast.tsv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.mpblast.get(0)[1]) ==~ /.*\.mpblast\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.mpblast).match() }
+        }
+    }
+}

@@ -1,0 +1,65 @@
+name: isomirs_precursor_classification
+description: |
+  Classify the sequences based on miRNA precursor sequences.
+keywords:
+  - miRNA
+  - precursor
+  - merge
+  - filter
+  - blast
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - mpblast_tsv:
+        type: file
+        description: |
+          TSV file with BLAST results from the alignment of sequences with
+          mature miRNAs and miRNA precursors, including both query and reference
+          sequences
+output:
+  - canon:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.{EMPTY_canonical,canonical}.tsv":
+          type: file
+          description: |
+            TSV file with BLAST results from the alignment of sequences with
+            mature miRNAs and miRNA precursors, including only query canonical
+            sequences.
+          pattern: "*mpblast.tsv"
+  - templated:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.{EMPTY_templated,templated}.tsv":
+          type: file
+          description: |
+            TSV file with BLAST results from the alignment of sequences with
+            mature miRNAs and miRNA precursors, including only query non-canonical
+            and templated sequences.
+          pattern: "*mpblast.tsv"
+  - nontemplated:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.{EMPTY_non_templated,non_templated}.tsv":
+          type: file
+          description: |
+            TSV file with BLAST results from the alignment of sequences with
+            mature miRNAs and miRNA precursors, including only query non-canonical
+            and non-templated sequences.
+          pattern: "*.{EMPTY_non_templated,non_templated}.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

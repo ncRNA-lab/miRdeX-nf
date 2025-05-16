@@ -1,0 +1,223 @@
+nextflow_process {
+
+    name "Test Process DNA_RNA_CONVERTER"
+    script "modules/local/dna_rna_converter/main.nf"
+    process "DNA_RNA_CONVERTER"
+
+    test("DNA to RNA - .fa extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_dna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_dna.fa', checkIfExists: true)
+                ]
+                input[1] = false
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.rna\.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("DNA to RNA - .fasta extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_dna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_dna.fasta', checkIfExists: true)
+                ]
+                input[1] = false
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.rna\.fasta/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("RNA to DNA - .fa extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_rna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_rna.fa', checkIfExists: true)
+                ]
+                input[1] = true
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.dna\.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("RNA to DNA - .fasta extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_rna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_rna.fasta', checkIfExists: true)
+                ]
+                input[1] = true
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.dna\.fasta/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("DNA to RNA - .fq extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_dna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_dna.fq', checkIfExists: true)
+                ]
+                input[1] = false
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.rna\.fq/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("DNA to RNA - .fastq extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_dna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_dna.fastq', checkIfExists: true)
+                ]
+                input[1] = false
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.rna\.fastq/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("RNA to DNA - .fq extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_rna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_rna.fq', checkIfExists: true)
+                ]
+                input[1] = true
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.dna\.fq/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+    test("RNA to DNA - .fastq extension") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file_rna' ], 
+                    file(params.modules_testdata_base_path + 'modules/dna_rna_converter/file_rna.fastq', checkIfExists: true)
+                ]
+                input[1] = true
+                """
+            }
+        }
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.file_conv.get(0)[1]) ==~ /.*\.dna\.fastq/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.file_conv).match() }
+            }
+        }
+    }
+}

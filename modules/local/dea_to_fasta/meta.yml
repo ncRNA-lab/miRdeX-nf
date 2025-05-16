@@ -1,0 +1,28 @@
+name: rpm
+description: Calculate the RPM for each sequence in a TSV file
+keywords:
+  - concatenate
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - file:
+        type: file
+        description: TSV file with two columns, sequence and raw.
+output:
+  - rpm:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.rpm.tsv":
+          type: file
+          description: TSV file with two columns, sequence and RPM.
+          pattern: "*.rpm.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

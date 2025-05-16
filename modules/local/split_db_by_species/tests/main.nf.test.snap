@@ -1,0 +1,104 @@
+{
+    "Arabidopsis thaliana - PmiREN": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "pmiren_mature"
+                    },
+                    "pmiren_mature.ath.fa:md5,f866df050ed1e7b10b6bfd21e704a4fa"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:22:21.53328506"
+    },
+    "Non-existing species - PmiREN": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "pmiren_mature"
+                    },
+                    "pmiren_mature.EMPTY.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:22:24.792717644"
+    },
+    "Arabidopsis thaliana - miRBase": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "mirbase_mature"
+                    },
+                    "mirbase_mature.ath.fa:md5,e49a6edbfaecb7646669674ff910aa72"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:22:09.285627544"
+    },
+    "Arabidopsis thaliana - sRNAanno": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "srnaanno_mature"
+                    },
+                    "srnaanno_mature.ath.fa:md5,a9b315b9bba642fae022ad6a6cf303d2"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:22:15.514060488"
+    },
+    "Non-existing species - miRBase": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "mirbase_mature"
+                    },
+                    "mirbase_mature.EMPTY.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:22:12.392502181"
+    },
+    "Non-existing species - sRNAanno": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "srnaanno_mature"
+                    },
+                    "srnaanno_mature.EMPTY.fa:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:22:18.468728363"
+    }
+}

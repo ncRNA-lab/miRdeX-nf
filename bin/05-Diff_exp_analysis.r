@@ -476,7 +476,9 @@ exploratory_analysis <- function(dds, file_name) {
 
   # Absolute counts normalization for mean vs variance plot (blind = FALSE)
   deseqds <- suppressMessages(DESeq2::estimateSizeFactors(dds))
+  print(counts(deseqds))
   assay(deseqds, 'counts.norm.VST.false') <- as.data.frame(assay(varianceStabilizingTransformation(deseqds, blind = FALSE)))
+  print("Adios")
   
   ### 1.2 MEAN VS VARIANCE PLOT
   png(file = paste(path_dir_mvv_out, '/', file_name, '_meanvsvar.ea.png', sep = ''),

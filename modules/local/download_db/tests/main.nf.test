@@ -1,0 +1,411 @@
+nextflow_process {
+
+    name "Test Process DOWNLOAD_DB"
+    script "modules/local/download_db/main.nf"
+    process "DOWNLOAD_DB"
+
+    test("Download Databases - all databases") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = true
+                    input[2] = true
+                    input[3] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - miRBase - sRNAanno") {
+
+        when {
+
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = true
+                    input[2] = true
+                    input[3] = false
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated. /.*\.species_ids_db\.csv/
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.mirbase_mature,
+                        process.out.mirbase_hairpin,
+                        process.out.mirbase_species,
+                        process.out.srnaanno_all,
+                        process.out.pmiren_mature,
+                        process.out.pmiren_hairpin
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - miRBase - PmiREN") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = true
+                    input[2] = false
+                    input[3] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - sRNAanno - PmiREN") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = false
+                    input[2] = true
+                    input[3] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - miRBase") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = true
+                    input[2] = false
+                    input[3] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - sRNAanno") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = false
+                    input[2] = true
+                    input[3] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - PmiREN") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Arabidopsis thaliana', 'Glycine max']
+                    input[1] = false
+                    input[2] = false
+                    input[3] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - miRBase - Species not found ") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Utricularia gibba']
+                    input[1] = true
+                    input[2] = false
+                    input[3] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - sRNAanno - Species not found") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Utricularia gibba']
+                    input[1] = false
+                    input[2] = true
+                    input[3] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*EMPTY_pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*EMPTY_pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Download Databases - PmiREN - Species not found") {
+
+        when {
+            process {
+                """
+                    input[0] = ['Utricularia gibba']
+                    input[1] = false
+                    input[2] = false
+                    input[3] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.species_ids.get(0)) ==~ /.*species_ids\.csv/ }
+                { assert path(process.out.mirbase.get(0)[0]) ==~ /.*miRBase\/.*EMPTY_mirbase_mature\.fa/ }
+                { assert path(process.out.mirbase.get(0)[1]) ==~ /.*miRBase\/.*EMPTY_mirbase_hairpin\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[0]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_mature\.fa/ }
+                { assert path(process.out.srnaanno.get(0)[1]) ==~ /.*sRNAanno\/.*EMPTY_srnaanno_hairpin\.fa/ }
+                { assert path(process.out.pmiren.get(0)[0]) ==~ /.*PmiREN\/.*pmiren_mature\.fa/ }
+                { assert path(process.out.pmiren.get(0)[1]) ==~ /.*PmiREN\/.*pmiren_hairpin\.fa/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.species_ids,
+                        process.out.mirbase,
+                        process.out.srnaanno,
+                        process.out.pmiren,
+                    ).match() 
+                }
+            }
+        }
+    }
+}

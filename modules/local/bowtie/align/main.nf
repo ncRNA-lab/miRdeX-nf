@@ -14,11 +14,11 @@ process BOWTIE_ALIGN {
     val save_unaligned
 
     output:
-    tuple val(meta), path('*.bam')     , emit: bam
-    tuple val(meta), path('*.out')     , emit: log
-    tuple val(meta), path("*.${meta.type}.aligned.fastq.gz") , emit: aligned, optional : true
-    tuple val(meta), path("*.${meta.type}.unaligned.fastq.gz") , emit: unaligned, optional : true
-    path  "versions.yml"               , emit: versions
+    tuple val(meta), path('*.bam') , emit: bam
+    tuple val(meta), path('*.out') , emit: log
+    tuple val(meta), path("*.aligned*.{fa,fasta,fq,fastq}.gz")   , emit: aligned, optional : true
+    tuple val(meta), path("*.unaligned*.{fa,fasta,fq,fastq}.gz") , emit: unaligned, optional : true
+    path  "versions.yml"           , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -27,8 +27,10 @@ process BOWTIE_ALIGN {
     def args = task.ext.args ?: ''
     def args2 = task.ext.args2 ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def aligned = save_aligned ? "--al ${prefix}.${meta.type}.aligned.fastq" : ''
-    def unaligned = save_unaligned ? "--un ${prefix}.${meta.type}.unaligned.fastq" : ''
+    def ref = task.ext.ref ?: ''
+    def ext = meta.single_end ? reads.name.replaceAll(/\.gz$/, '').tokenize('.')[-1] : reads[0].name.replaceAll(/\.gz$/, '').tokenize('.')[-1]
+    def aligned = save_aligned ? "--al ${prefix}.${ref}.aligned.${ext}" : ''
+    def unaligned = save_unaligned ? "--un ${prefix}.${ref}.unaligned.${ext}" : ''
     def endedness = meta.single_end ? "$reads".toString().replaceAll('.gz$', '') : "-1 ${reads[0].toString().replaceAll('.gz$', '')} -2  ${reads[1].toString().replaceAll('.gz$', '')}"
     """
     # Decompress query files
@@ -63,39 +65,40 @@ process BOWTIE_ALIGN {
         | samtools view $args2 -@ $task.cpus -bS -o ${prefix}.bam -
 
     # Compress aligned sequences file
-    if [ -f ${prefix}.${meta.type}.aligned.fastq ]; then
-        gzip ${prefix}.${meta.type}.aligned.fastq
+    if [ -f ${prefix}.${ref}.aligned.${ext} ]; then
+        gzip ${prefix}.${ref}.aligned.${ext}
     fi
-    if [ -f ${prefix}.${meta.type}.aligned_1.fastq ]; then
-        gzip ${prefix}.${meta.type}.aligned_1.fastq
-        gzip ${prefix}.${meta.type}.aligned_2.fastq
+    if [ -f ${prefix}.${ref}.aligned_1.${ext} ]; then
+        gzip ${prefix}.${ref}.aligned_1.${ext}
+        gzip ${prefix}.${ref}.aligned_2.${ext}
     fi
 
     # Compress unaligned sequences file
-    if [ -f ${prefix}.${meta.type}.unaligned.fastq ]; then
-        gzip ${prefix}.${meta.type}.unaligned.fastq
+    if [ -f ${prefix}.${ref}.unaligned.${ext} ]; then
+        gzip ${prefix}.${ref}.unaligned.${ext}
     fi
-    if [ -f ${prefix}.${meta.type}.unaligned_1.fastq ]; then
-        gzip ${prefix}.${meta.type}.unaligned_1.fastq
-        gzip ${prefix}.${meta.type}.unaligned_2.fastq
+    if [ -f ${prefix}.${ref}.unaligned_1.${ext} ]; then
+        gzip ${prefix}.${ref}.unaligned_1.${ext}
+        gzip ${prefix}.${ref}.unaligned_2.${ext}
     fi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         bowtie: \$(echo \$(bowtie --version 2>&1) | sed 's/^.*bowtie-align-s version //; s/ .*\$//')
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
+        samtools: \$(echo \$(samtools --version) | head -n 1 | awk '{print \$2}')
     END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def ext = meta.single_end ? reads.name.replaceAll(/\.gz$/, '').tokenize('.')[-1] : reads[0].name.replaceAll(/\.gz$/, '').tokenize('.')[-1]
     def aligned = save_aligned ?
-                    meta.single_end ? "echo '' | gzip > ${prefix}.${meta.type}.aligned.fastq.gz" :
-                        "echo '' | gzip > ${prefix}.${meta.type}.aligned_1.fastq.gz; echo '' | gzip > ${prefix}.${meta.type}.aligned_2.fastq.gz"
+                    meta.single_end ? "echo '' | gzip > ${prefix}.aligned.${ext}.gz" :
+                        "echo '' | gzip > ${prefix}.aligned_1.${ext}.gz; echo '' | gzip > ${prefix}.aligned_2.${ext}.gz"
                     : ''
     def unaligned = save_unaligned ?
-                    meta.single_end ? "echo '' | gzip > ${prefix}.${meta.type}.unaligned.fastq.gz" :
-                        "echo '' | gzip > ${prefix}.${meta.type}.unaligned_1.fastq.gz; echo '' | gzip > ${prefix}.${meta.type}.unaligned_2.fastq.gz"
+                    meta.single_end ? "echo '' | gzip > ${prefix}.unaligned.${ext}.gz" :
+                        "echo '' | gzip > ${prefix}.unaligned_1.${ext}.gz; echo '' | gzip > ${prefix}.unaligned_2.${ext}.gz"
                     : ''
     """
     touch ${prefix}.bam
@@ -122,5 +125,3 @@ process BOWTIE_ALIGN {
 
 
 }
-
-

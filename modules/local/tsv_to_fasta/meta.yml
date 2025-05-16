@@ -1,0 +1,38 @@
+name: tsv_to_fasta
+description: Create a FASTA file using a TSV file.
+keywords:
+  - FASTA
+  - TSV
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - file:
+        type: file
+        description: TSV file.
+  - - col1:
+        type: integer
+        description: Header column.
+  - - col2:
+        type: integer
+        description: Sequence column.
+  - - header:
+        type: bool
+        description: Specify true if the input TSV file has a header.
+output:
+  - fasta:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.fa":
+          type: file
+          description: FASTA file.
+          pattern: "*.fa"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

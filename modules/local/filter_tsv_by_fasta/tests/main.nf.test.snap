@@ -1,0 +1,70 @@
+{
+    "Filter TSV by FASTA - FASTA file compressed - Keep matches": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.filtered.tsv:md5,36862200b6bf2d295aa5ac63ea8fa855"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:16:18.241400651"
+    },
+    "Filter TSV by FASTA - FASTA file - Keep matches": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.filtered.tsv:md5,36862200b6bf2d295aa5ac63ea8fa855"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:16:25.469825955"
+    },
+    "Filter TSV by FASTA - FASTA file - Discard matches": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.filtered.tsv:md5,5c044e174cf6232701c070f586c04fb8"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:16:29.151323052"
+    },
+    "Filter TSV by FASTA - FASTA file compressed - Discard matches": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.filtered.tsv:md5,5c044e174cf6232701c070f586c04fb8"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:16:21.814405682"
+    }
+}

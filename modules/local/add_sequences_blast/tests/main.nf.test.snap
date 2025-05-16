@@ -1,0 +1,19 @@
+{
+    "Add sequences to Blast results": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.blast.tsv:md5,7d35ad5d8ea9fc26c2c9496784c9ba2c"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:45:13.161701615"
+    }
+}

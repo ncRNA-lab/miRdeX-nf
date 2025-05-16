@@ -1,0 +1,103 @@
+nextflow_process {
+
+    name "Test Process ISOMIRS_MIRNA_CLASSIFICATION"
+    script "modules/local/isomirs_mirna_classification/main.nf"
+    process "ISOMIRS_MIRNA_CLASSIFICATION"
+
+    test("Classify IsomiRs - Input file without counts") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file', database: 'example_database'],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_mirna_classification/file_wo_counts.tsv', checkIfExists: true)
+                ]
+                input[1] = 1
+                input[2] = 0
+                input[3] = 3
+                input[4] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.gff3.get(0)[1]) ==~ /.*\.gff3/ }
+                { assert path(process.out.sum.get(0)[1]) ==~ /.*\.summary\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.iso).match() }
+            }
+        }
+    }
+    test("Classify IsomiRs - Input file with raw counts") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file', database: 'example_database'],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_mirna_classification/file_raw.tsv', checkIfExists: true)
+                ]
+                input[1] = 1
+                input[2] = 0
+                input[3] = 3
+                input[4] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.gff3.get(0)[1]) ==~ /.*\.gff3/ }
+                { assert path(process.out.sum.get(0)[1]) ==~ /.*\.summary\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.iso).match() }
+            }
+        }
+    }
+    test("Classify IsomiRs - Input file with raw counts and RPM") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file', database: 'example_database'],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_mirna_classification/file_raw_rpm.tsv', checkIfExists: true)
+                ]
+                input[1] = 1
+                input[2] = 0
+                input[3] = 3
+                input[4] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.gff3.get(0)[1]) ==~ /.*\.gff3/ }
+                { assert path(process.out.sum.get(0)[1]) ==~ /.*\.summary\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.iso).match() }
+            }
+        }
+    }
+}

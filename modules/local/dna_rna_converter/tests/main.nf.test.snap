@@ -1,0 +1,138 @@
+{
+    "DNA to RNA - .fq extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_dna"
+                    },
+                    "file_dna.rna.fq:md5,65eafe6b269f5527255dcf52e2e5421d"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:53:01.410986594"
+    },
+    "RNA to DNA - .fq extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_rna"
+                    },
+                    "file_rna.dna.fq:md5,c8a1504d782fd0cac13f177baad2ed55"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:53:07.497606964"
+    },
+    "RNA to DNA - .fasta extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_rna"
+                    },
+                    "file_rna.dna.fasta:md5,6f0df492beddb326771151a8e2f73c42"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:52:58.070363554"
+    },
+    "DNA to RNA - .fastq extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_dna"
+                    },
+                    "file_dna.rna.fastq:md5,65eafe6b269f5527255dcf52e2e5421d"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:53:04.523561689"
+    },
+    "RNA to DNA - .fa extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_rna"
+                    },
+                    "file_rna.dna.fa:md5,6f0df492beddb326771151a8e2f73c42"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:52:55.188135375"
+    },
+    "DNA to RNA - .fasta extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_dna"
+                    },
+                    "file_dna.rna.fasta:md5,71bb933047abe3001261186a5933ca92"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:52:52.079151812"
+    },
+    "DNA to RNA - .fa extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_dna"
+                    },
+                    "file_dna.rna.fa:md5,71bb933047abe3001261186a5933ca92"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:52:49.042944599"
+    },
+    "RNA to DNA - .fastq extension": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file_rna"
+                    },
+                    "file_rna.dna.fastq:md5,c8a1504d782fd0cac13f177baad2ed55"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-26T23:53:10.633559955"
+    }
+}

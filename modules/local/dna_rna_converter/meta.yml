@@ -1,0 +1,34 @@
+name: dna_rna_converter
+description: Converts DNA sequences to RNA and vice versa.
+keywords:
+  - dna
+  - rna
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - file:
+        type: file
+        description: File in FASTA or FASTQ format.
+  - - rna_to_dna:
+        type: bool
+        description: |
+          Boolean value that, when set to true, RNA sequences are converted to
+          DNA, and when set to false, DNA sequences are converted to RNA.
+output:
+  - file_conv:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.{dna,rna}.{fq,fa,fastq,fasta}":
+          type: file
+          description: File in FASTA or FASTQ format.
+          pattern: "*.{dna,rna}.{fq,fa,fastq,fasta}"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

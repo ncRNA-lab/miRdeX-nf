@@ -3,31 +3,72 @@ nextflow_process {
     name "Test Process BOWTIE_ALIGN"
     script "../main.nf"
     process "BOWTIE_ALIGN"
+    config "./nextflow.config"
 
-    test("Bowtie alignment") {
+    setup {
 
-        setup {
-
-            run("BOWTIE_BUILD") {
-                script "../../../../nf-core/bowtie/build/main.nf"
-                process {
-                    """
-                    input[0] = Channel.of([
-                        [id:'reference'],
-                        [ file(params.modules_testdata_base_path + 'modules/bowtie/database_test.fasta', checkIfExists: true) ]
-                    ])
-                    """
-                }
+        run("BOWTIE_BUILD") {
+            script "../../../../nf-core/bowtie/build/main.nf"
+            process {
+                """
+                input[0] = [
+                    [id:'reference'],
+                    [ file(params.modules_testdata_base_path + 'modules/bowtie/database_test.fasta', checkIfExists: true) ]
+                ]
+                """
             }
         }
+    }
+
+    test("Bowtie alignment") {
 
         when {
 
             process {
                 """
-                input[0] = Channel.of(
-                    [ [id: 'sample1_test', type: 'database', species: 'Glycine max', project: 'TEST', single_end: true], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fastq.gz', checkIfExists: true) ]
-                )
+                input[0] = [
+                    [id: 'sample1_test', single_end: true ], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fasta', checkIfExists: true)
+                ]
+                input[1] = BOWTIE_BUILD.out.index
+                input[2] = true
+                input[3] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.bam.get(0).get(1)) ==~ /.*\.bam/ }
+                { assert path(process.out.log.get(0).get(1)) ==~ /.*\.out/ }
+                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fasta\.gz/ }
+                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fasta\.gz/ }
+
+                // Use snapshots to verify
+                {
+                    assert snapshot(
+                        process.out.bam,
+                        process.out.log,
+                        process.out.aligned,
+                        process.out.unaligned,
+                    ).match() 
+                }
+            }
+        }
+    }
+    test("Bowtie alignment - Compressed input") {
+        
+        when {
+
+            process {
+                """
+                input[0] = [
+                    [id: 'sample1_test', single_end: true], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fasta.gz', checkIfExists: true)
+                ]
                 input[1] = BOWTIE_BUILD.out.index
                 input[2] = true
                 input[3] = true
@@ -45,8 +86,8 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert path(process.out.bam.get(0).get(1)) ==~ /.*\.bam/ }
                 { assert path(process.out.log.get(0).get(1)) ==~ /.*\.out/ }
-                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fastq\.gz/ }
-                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fastq\.gz/ }
+                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fasta\.gz/ }
+                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fasta\.gz/ }
 
                 // Use snapshots to verify
                 {

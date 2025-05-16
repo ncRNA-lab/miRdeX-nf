@@ -1,0 +1,167 @@
+{
+    "Isomirs precursor classification - Only canonical miRNAs": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.canonical.tsv:md5,19cab9829e9800a2405b7e48acf8402a"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_templated.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_non_templated.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:19:56.127675167"
+    },
+    "Isomirs precursor classification - All": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.canonical.tsv:md5,19cab9829e9800a2405b7e48acf8402a"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.templated.tsv:md5,d86a350ebb49998ca6573aa9ce8d911b"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.non_templated.tsv:md5,ab3a1b127880e69ea789d95cef7c9b30"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:19:52.572321311"
+    },
+    "Isomirs precursor classification - Only non-canonical miRNAs (all)": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_canonical.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.templated.tsv:md5,d86a350ebb49998ca6573aa9ce8d911b"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.non_templated.tsv:md5,ab3a1b127880e69ea789d95cef7c9b30"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T11:01:40.215076195"
+    },
+    "Isomirs precursor classification - Only non-canonical miRNAs (templated)": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_canonical.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.templated.tsv:md5,d86a350ebb49998ca6573aa9ce8d911b"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_non_templated.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:20:01.508105321"
+    },
+    "Isomirs precursor classification - Only non-canonical miRNAs (non-templated)": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_canonical.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.EMPTY_templated.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.non_templated.tsv:md5,ab3a1b127880e69ea789d95cef7c9b30"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T01:20:06.871600793"
+    }
+}

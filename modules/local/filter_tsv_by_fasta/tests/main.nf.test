@@ -1,0 +1,127 @@
+nextflow_process {
+
+    name "Test Process FILTER_TSV_BY_FASTA"
+    script "modules/local/filter_tsv_by_fasta/main.nf"
+    process "FILTER_TSV_BY_FASTA"
+
+    test("Filter TSV by FASTA - FASTA file compressed - Keep matches") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/tsv_file.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/fasta_file_compress.fasta.gz', checkIfExists: true)
+                ]
+                input[1] = 14
+                input[2] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.filt_tsv.get(0)[1]) ==~ /.*filtered\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.filt_tsv).match() }
+            }
+        }
+    }
+    test("Filter TSV by FASTA - FASTA file compressed - Discard matches") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/tsv_file.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/fasta_file_compress.fasta.gz', checkIfExists: true)
+                ]
+                input[1] = 14
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.filt_tsv.get(0)[1]) ==~ /.*filtered\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.filt_tsv).match() }
+            }
+        }
+    }
+    test("Filter TSV by FASTA - FASTA file - Keep matches") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/tsv_file.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/fasta_file.fasta', checkIfExists: true)
+                ]
+                input[1] = 14
+                input[2] = true
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.filt_tsv.get(0)[1]) ==~ /.*filtered\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.filt_tsv).match() }
+            }
+        }
+    }
+    test("Filter TSV by FASTA - FASTA file - Discard matches") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/tsv_file.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/filter_tsv_by_fasta/fasta_file.fasta', checkIfExists: true)
+                ]
+                input[1] = 14
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.filt_tsv.get(0)[1]) ==~ /.*filtered\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.filt_tsv).match() }
+            }
+        }
+    }
+}

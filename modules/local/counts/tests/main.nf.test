@@ -1,4 +1,3 @@
-// Test for MIRNA_ANNOTATION Process
 nextflow_process {
 
     name "Test Process COUNTS"
@@ -6,14 +5,14 @@ nextflow_process {
     process "COUNTS"
 
     test("Counts - Decompressed input") {
+        
         when {
-
             process {
                 """
-                input[0] = Channel.of([
+                input[0] = [
                     [id:'TEST'],
-                    [ file(params.modules_testdata_base_path + 'modules/counts/test.fastq', checkIfExists: true) ]
-                ])
+                    file(params.modules_testdata_base_path + 'modules/counts/test.fastq', checkIfExists: true)
+                ]
                 """
             }
         }
@@ -35,14 +34,14 @@ nextflow_process {
         }
     }
     test("Counts - Compressed input") {
+        
         when {
-
             process {
                 """
-                input[0] = Channel.of([
+                input[0] = [
                     [id:'TEST'],
-                    [ file(params.modules_testdata_base_path + 'modules/counts/test.fastq.gz', checkIfExists: true) ]
-                ])
+                    file(params.modules_testdata_base_path + 'modules/counts/test.fastq.gz', checkIfExists: true)
+                ]
                 """
             }
         }

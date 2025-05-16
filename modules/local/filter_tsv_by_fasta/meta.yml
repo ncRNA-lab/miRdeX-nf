@@ -1,0 +1,44 @@
+name: filter_tsv_by_fasta
+description: Filter a TSV file using sequences from a FASTA file.
+keywords:
+  - filter
+  - tsv
+  - fasta
+  - sequence
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - tsv:
+        type: file
+        description: TSV file.
+    - fasta:
+        type: file
+        description: FASTA file.
+  - - col:
+        type: integer
+        description: |
+          Column of the TSV file containing the DNA or RNA sequences.
+  - - keep_matches:
+        type: integer
+        description: |
+          Specify true to keep only the sequences present in the FASTA file in
+          the TSV file, removing the rest. Specify false to remove the sequences
+          in the FASTA file from the TSV, keeping the remaining sequences.
+output:
+  - filt_tsv:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.filtered.tsv":
+          type: file
+          description: Filtered TSV file.
+          pattern: "*.filtered.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

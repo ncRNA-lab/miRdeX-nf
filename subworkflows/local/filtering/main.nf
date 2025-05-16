@@ -13,7 +13,9 @@
 */
 
 include { BOWTIE_BUILD  } from '../../../modules/nf-core/bowtie/build'
-include { BOWTIE_ALIGN  } from '../../../modules/local/bowtie/align'
+include { BOWTIE_ALIGN as BOWTIE_ALIGN_DB } from '../../../modules/local/bowtie/align'
+include { BOWTIE_ALIGN as BOWTIE_ALIGN_GENOME } from '../../../modules/local/bowtie/align'
+
 /*
 ========================================================================================
     Workflow FILTERING
@@ -23,33 +25,37 @@ include { BOWTIE_ALIGN  } from '../../../modules/local/bowtie/align'
 workflow FILTERING {
     take:
         input                   // channel: [[id:val(id), project:val(projec), species:val(species), genome:val(genome)], file]
-        mismatches              // value: number of mismatches
-        type                    // value: 'database' or 'genome'
+        ref                    // value: 'database' or 'genome'
         database                // path: reference fasta file (optional)
 
     main:
+    
+        // Create a channel for the outputs file
+        ch_bowtie_bam       = Channel.empty()
+        ch_bowtie_aligned   = Channel.empty()
+        ch_bowtie_unaligned = Channel.empty()
 
-        // Branch the workflow based on the value of "type"
-        if (type == 'database') {
+        // Branch the workflow based on the value of "ref"
+        if (ref == 'database') {
 
             ch_input_build = Channel.value([[id:'Filtering database'], database])
             
             // Index the unique reference file (database)
             BOWTIE_BUILD(ch_input_build)
 
-            // Add the type field to the meta
+            // Add the ref field to the meta
             input
                 .map{ meta, file ->
-                    def meta_with_type = meta + [type: type]
-                    return [meta_with_type, file]
+                    def meta_with_ref = meta + [ref: ref]
+                    return [meta_with_ref, file]
                 }
-                .set{ch_input_type}
-
+                .set{ch_input_ref}
+            
             // Run Bowtie for each entry in the "input" channel
-            BOWTIE_ALIGN(ch_input_type, BOWTIE_BUILD.out.index, true, true)
+            BOWTIE_ALIGN_DB(ch_input_ref, BOWTIE_BUILD.out.index, true, true)
 
             // Get the alignment results (summary)
-            BOWTIE_ALIGN.out.log
+            BOWTIE_ALIGN_DB.out.log
                 .map { meta, file ->
                     // Leer el contenido del archivo
                     def content = file.text
@@ -68,8 +74,13 @@ workflow FILTERING {
                     ], file]
                 }
                 .set {alingment_summary}
+            
+            // Save the output into the output channels
+            ch_bowtie_bam       = BOWTIE_ALIGN_DB.out.bam
+            ch_bowtie_aligned   = BOWTIE_ALIGN_DB.out.aligned
+            ch_bowtie_unaligned = BOWTIE_ALIGN_DB.out.unaligned
 
-        } else if (type == 'genome') {
+        } else if (ref == 'genome') {
 
             // Modify the channel to later combine it with the indexed genome.
             input
@@ -80,7 +91,7 @@ workflow FILTERING {
 
             // Create a channel for the genomes [[id: Arabidopsis thaliana, etc], genome_file]
             input
-                .map{ meta, file ->
+                .map{ meta, _file ->
                     return [[id: meta.species], meta.genome]
                 }
                 .unique()
@@ -94,16 +105,16 @@ workflow FILTERING {
                 .combine(ch_files_to_align, by:0)
                 .multiMap{ it ->
                     // Create two channels: the query and the reference
-                    query: [it[2] + [type: "genome"], it[3]]
-                    reference: [it[2] + [type: "genome"], it [1]]
+                    query: [it[2] + [ref: "genome"], it[3]]
+                    reference: [it[2] + [ref: "genome"], it [1]]
                 }
                 .set{ch_input_alignment}
 
             // Run Bowtie for each entry in the "input" channel
-            BOWTIE_ALIGN(ch_input_alignment.query, ch_input_alignment.reference, true, true)
+            BOWTIE_ALIGN_GENOME(ch_input_alignment.query, ch_input_alignment.reference, true, true)
 
             // Get the alignment results (summary)
-            BOWTIE_ALIGN.out.log
+            BOWTIE_ALIGN_GENOME.out.log
                 .map { meta, file ->
 
                     // Read the file
@@ -124,24 +135,29 @@ workflow FILTERING {
                 }
                 .set {alingment_summary}
 
+            // Save the output into the output channels
+            ch_bowtie_bam       = BOWTIE_ALIGN_GENOME.out.bam
+            ch_bowtie_aligned   = BOWTIE_ALIGN_GENOME.out.aligned
+            ch_bowtie_unaligned = BOWTIE_ALIGN_GENOME.out.unaligned
+
         }
         
         // Add the summary results to the meta section of BAM channel
-        BOWTIE_ALIGN.out.bam
+        ch_bowtie_bam
             .map{ meta, file -> [meta.id, meta, file] }
             .combine(alingment_summary, by:0)
             .map{item -> [item[3], item[2]]}
             .set{ ch_bam_out }
 
         // Add the summary results to the meta section of aligned channel
-        BOWTIE_ALIGN.out.aligned
+        ch_bowtie_aligned
             .map{ meta, file -> [meta.id, meta, file] }
             .combine(alingment_summary, by:0)
             .map{item -> [item[3], item[2]]}
             .set{ ch_aligned_out }
         
         // Add the summary results to the meta section of unaligned channel
-        BOWTIE_ALIGN.out.unaligned
+        ch_bowtie_unaligned
             .map{ meta, file -> [meta.id, meta, file] }
             .combine(alingment_summary, by:0)
             .map{item -> [item[3], item[2]]}

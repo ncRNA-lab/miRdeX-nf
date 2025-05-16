@@ -1,0 +1,163 @@
+nextflow_process {
+
+    name "Test Process ISOMIRS_PRECURSOR_CLASSIFICATION"
+    script "modules/local/isomirs_precursor_classification/main.nf"
+    process "ISOMIRS_PRECURSOR_CLASSIFICATION"
+
+    test("Isomirs precursor classification - All") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_precursor_classification/file.mpblast.tsv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.canon.get(0)[1]) ==~ /.*\.canonical\.tsv/ }
+            { assert path(process.out.templated.get(0)[1]) ==~ /.*\.templated\.tsv/ }
+            { assert path(process.out.nontemplated.get(0)[1]) ==~ /.*\.non_templated\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(
+                process.out.canon,
+                process.out.templated,
+                process.out.nontemplated
+                ).match()
+            }
+        }
+    }
+    test("Isomirs precursor classification - Only canonical miRNAs") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_precursor_classification/file_only_canonical.tsv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.canon.get(0)[1]) ==~ /.*\.canonical\.tsv/ }
+            { assert path(process.out.templated.get(0)[1]) ==~ /.*\.EMPTY_templated\.tsv/ }
+            { assert path(process.out.nontemplated.get(0)[1]) ==~ /.*\.EMPTY_non_templated\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(
+                process.out.canon,
+                process.out.templated,
+                process.out.nontemplated
+                ).match()
+            }
+        }
+    }
+    test("Isomirs precursor classification - Only non-canonical miRNAs (all)") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_precursor_classification/file_only_non_canonical.tsv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.canon.get(0)[1]) ==~ /.*\.EMPTY_canonical\.tsv/ }
+            { assert path(process.out.templated.get(0)[1]) ==~ /.*\.templated\.tsv/ }
+            { assert path(process.out.nontemplated.get(0)[1]) ==~ /.*\.non_templated\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(
+                process.out.canon,
+                process.out.templated,
+                process.out.nontemplated
+                ).match()
+            }
+        }
+    }
+    test("Isomirs precursor classification - Only non-canonical miRNAs (templated)") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_precursor_classification/file_only_templated.tsv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.canon.get(0)[1]) ==~ /.*\.EMPTY_canonical\.tsv/ }
+            { assert path(process.out.templated.get(0)[1]) ==~ /.*\.templated\.tsv/ }
+            { assert path(process.out.nontemplated.get(0)[1]) ==~ /.*\.EMPTY_non_templated\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(
+                process.out.canon,
+                process.out.templated,
+                process.out.nontemplated
+                ).match()
+            }
+        }
+    }
+    test("Isomirs precursor classification - Only non-canonical miRNAs (non-templated)") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/isomirs_precursor_classification/file_only_non_templated.tsv', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.canon.get(0)[1]) ==~ /.*\.EMPTY_canonical\.tsv/ }
+            { assert path(process.out.templated.get(0)[1]) ==~ /.*\.EMPTY_templated\.tsv/ }
+            { assert path(process.out.nontemplated.get(0)[1]) ==~ /.*\.non_templated\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(
+                process.out.canon,
+                process.out.templated,
+                process.out.nontemplated
+                ).match()
+            }
+        }
+    }
+
+}

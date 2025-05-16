@@ -1,0 +1,36 @@
+nextflow_process {
+
+    name "Test Process ADD_COUNTS_TO_ISOMIRS_DF"
+    script "modules/local/add_counts_to_isomirs_df/main.nf"
+    process "ADD_COUNTS_TO_ISOMIRS_DF"
+
+    test("Add counts to isomirs dataframe - Threshold 5") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/add_counts_to_isomirs_df/file_blast.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/add_counts_to_isomirs_df/file_counts.tsv', checkIfExists: true)
+                ]
+                input[1] = 5
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.isocounts.get(0)[1]) ==~ /.*\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.isocounts).match() }
+            }
+        }
+    }
+}

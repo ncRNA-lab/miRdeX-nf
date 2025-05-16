@@ -1,0 +1,34 @@
+nextflow_process {
+
+    name "Test Process ADD_SEQUENCES_BLAST"
+    script "modules/local/add_sequences_blast/main.nf"
+    process "ADD_SEQUENCES_BLAST"
+
+    test("Add sequences to Blast results") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/add_sequences_blast/blast_results.txt', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/add_sequences_blast/query_file.fasta.gz', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/add_sequences_blast/database_collapsed.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.bseqs.get(0)[1]) ==~ /.*\.blast\.tsv/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.bseqs).match() }
+        }
+    }
+
+}

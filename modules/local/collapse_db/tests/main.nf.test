@@ -1,0 +1,79 @@
+nextflow_process {
+
+    name "Test Process COLLAPSE_DB"
+    script "modules/local/collapse_db/main.nf"
+    process "COLLAPSE_DB"
+
+    test("Collapse - .fa file") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/collapse_db/mirbase_mature.gma.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.coldb.get(0)[1]) ==~ /.*\.collapsed\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.coldb).match() }
+        }
+    }
+    test("Collapse - .fasta file") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/collapse_db/mirbase_mature.gma.fasta', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.coldb.get(0)[1]) ==~ /.*\.collapsed\.fasta/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.coldb).match() }
+        }
+    }
+    test("Collapse - Empty file") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'file' ],
+                    file(params.modules_testdata_base_path + 'modules/collapse_db/empty_file.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.coldb.get(0)[1]) ==~ /.*\.EMPTY_collapsed\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.coldb).match() }
+        }
+    }
+}

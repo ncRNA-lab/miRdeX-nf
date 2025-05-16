@@ -1,0 +1,259 @@
+nextflow_workflow {
+
+    name "Test Workflow PREPARE_MIRNA_DATABASES"
+    script "subworkflows/local/prepare_mirna_databases/main.nf"
+    workflow "PREPARE_MIRNA_DATABASES"
+
+    test("Prepare miRNA databases (miRNA > PmiREN > sRNAanno) - Species in miRBase") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'mirbase,pmiren,srnaanno'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*gma_mirbase_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*gma_mirbase_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (miRNA > PmiREN > sRNAanno) - Species in sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Arachis ipaensis']
+                input[1] = 'mirbase,pmiren,srnaanno'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*aip_srnaanno_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*aip_srnaanno_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (miRNA > PmiREN > sRNAanno) - Species in PmiREN") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Brassica juncea']
+                input[1] = 'mirbase,pmiren,srnaanno'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*bju_pmiren_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*bju_pmiren_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (PmiREN > miRBase) - Species in PmiREN") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'pmiren,mirbase'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*gma_pmiren_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*gma_pmiren_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (sRNAanno > PmiREN) - Species in sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'srnaanno,pmiren'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*gma_srnaanno_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*gma_srnaanno_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (sRNAanno > miRBase) - Species in sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'srnaanno,mirbase'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*gma_srnaanno_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*gma_srnaanno_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (miRBase) - Species in miRBase") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'mirbase'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*gma_mirbase_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*gma_mirbase_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (sRNAanno) - Species in sRNAanno") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'srnaanno'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*gma_srnaanno_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*gma_srnaanno_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+    test("Prepare miRNA databases (PmiREN) - Species in PmiREN") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = ['Glycine max']
+                input[1] = 'pmiren'
+                """
+            }
+        }
+
+        then {
+            println(workflow.out.dbs.get(0).mature)
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert workflow.success }
+                
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.dbs.get(0).mature) ==~  /.*Gma_pmiren_mature.collapsed\.fa/ }
+                { assert path(workflow.out.dbs.get(0).precursor) ==~  /.*Gma_pmiren_precursor\.collapsed.fa/ }
+
+                // Use snapshots to verify
+                { assert snapshot(workflow.out.dbs).match() }
+            }
+        }
+    }
+}

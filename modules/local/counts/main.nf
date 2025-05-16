@@ -1,17 +1,11 @@
-#!/usr/bin/env nextflow
-
-// Specify DSL2
-nextflow.enable.dsl=2
-
-// Define the process to calculate the absolute counts.
 process COUNTS {
 
     tag "$meta.id"
     
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/gzip:1.11' :
-        'quay.io/biocontainers/gzip:1.11' }"
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/f9/f9bfad58c74343625d23685a5ea7006c3c154eec7ad85584b8474d7bd8ec956c/data' :
+        'community.wave.seqera.io/library/gzip:1.14--19aaa2c84c85ddbc' }"
 
     input:
     tuple val(meta), path(file)
@@ -20,6 +14,7 @@ process COUNTS {
     tuple val(meta), path("*.raw.tsv"), emit: raw
     
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     def file_d = "$file".toString().replaceAll('.gz$', '')
     """
     # Decompress file 1
@@ -28,14 +23,15 @@ process COUNTS {
     fi
 
     # Create the count table using bash. It is faster
-    echo -e "seq\traw" > ${meta.id}.raw.tsv
+    echo -e "seq\traw" > ${prefix}.raw.tsv
 
     # Calculate absolute counts
-    awk 'NR%4==2' "${file_d}" | sort | uniq -c | sort -nr | awk 'BEGIN{FS=" "; OFS="\\t"} {print \$2, \$1}' >> ${meta.id}.raw.tsv
+    awk 'NR%4==2' "${file_d}" | sort | uniq -c | sort -nr | awk 'BEGIN{FS=" "; OFS="\\t"} {print \$2, \$1}' >> ${prefix}.raw.tsv
     """
     
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${meta.id}.raw.tsv
+    touch ${prefix}.raw.tsv
     """
 }

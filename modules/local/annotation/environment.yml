@@ -1,5 +1,0 @@
-channels:
-- conda-forge
-- bioconda
-dependencies:
-- bioconda::bowtie=1.3.1

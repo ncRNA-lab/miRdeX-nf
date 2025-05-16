@@ -84,7 +84,7 @@ arguments_management() {
     pmiren_hairpin=''
 
     # Read the options
-    TEMP=$(getopt -o h::i:m:s:p:a:n:v: --long help::,inputsps:,mirbase:,srnaanno:,pmiren:,mhairpin:,phairpin:,mirbaseplants: -- "$@")
+    TEMP=$(getopt -o h::i:m:s:p:a:n: --long help::,inputsps:,mirbase:,srnaanno:,pmiren:,mhairpin:,phairpin: -- "$@")
 
     # Check if the arguments are valid
     VALID_ARGUMENTS=$?
@@ -128,8 +128,6 @@ arguments_management() {
                     pmiren_hairpin+=" $2"
                 fi
                 shift 2 ;;
-            -v|--mirbaseplants)
-                mirbaseplants="$2"; shift 2 ;;
             # -- meands the end of the arguments; drop this, and break out the while loop
             --) shift ; break ;;
             # If invalid options were passed...
@@ -137,44 +135,6 @@ arguments_management() {
                 usage ;;
         esac
     done
-}
-
-
-#####################################################
-#
-#   This function filters a FASTA file of sequences
-#   directly downloaded from the miRBase database
-#   (mature.fa or hairpin.fa) to select only those
-#   sequences belonging to the species listed in a
-#   user-provided CSV file. In this case, sequences
-#   from plants (Viridiplantae). The CSV file should
-#   have a first column containing three-letter
-#   identifiers used to represent different species
-#   and a second column displaying the scientific
-#   name of the respective species. For example:
-#
-#   cre,Chlamydomonas reinhardtii
-#   cln,Cunninghamia lanceolata
-#   pab,Picea abies
-#   pde,Pinus densata
-#
-#   Arguments:
-#       FASTA file path
-#       Ids-table file path
-#       Output FASTA file path
-#
-#####################################################
-
-filter_miRBase_by_viridiplantae () {
-
-    # Arguments
-    local fasta_file_path="${1}"
-    local viridiplantae_id_table_path="${2}"
-    local fasta_output_path="${3}"
-
-    # Command
-    seqkit grep -f <(cut -d',' -f1 "$viridiplantae_id_table_path" | sed 's/$/-/') -r -i "$fasta_file_path" > "$fasta_output_path" 2>/dev/null
-
 }
 
 
@@ -238,8 +198,34 @@ get_mirbase_species_ids () {
     local mirbase_fasta_path="${1}"
     local mirbase_species_id_table="${2}"
 
+    # Create a temporary file
+    temp_file=$(mktemp)
+
     # Extract ID and Species, remove duplicates, and save in CSV file
-    awk '/^>/ {split($1, arr, "-"); gsub(">", "", arr[1]); printf "%s,%s %s\n", arr[1], $3, $4}' "$mirbase_fasta_path" | sort | uniq > "$mirbase_species_id_table"
+    awk '/^>/ {
+        # Split the header into elements using space as the delimiter
+        split($0, arr, " ");
+
+        # Get the species ID (first element before the dash)
+        id = substr(arr[1], 2, index(arr[1], "-") - 2);  # Remove the ">" and get the identifier
+
+        # Print the ID followed by a comma and the elements between the second and the last
+        printf "%s,", id;
+
+        # Print the elements between the second and the last (excluding these two)
+        for (i=3; i<=length(arr)-1; i++) {
+            printf "%s ", arr[i];
+        }
+        
+        # Print the last element
+        printf "\n";
+    }' "$mirbase_fasta_path" | sort | uniq > "$temp_file"
+
+    # Remove white spaces from the end of each row
+    sed 's/[[:space:]]*$//' "$temp_file" > "$mirbase_species_id_table"
+
+    # Remove temporary file
+    rm "$temp_file"
 }
 
 
@@ -603,16 +589,10 @@ main () {
     # Execute only if miRBase is provided
     if [ -n "$mirbase" ]; then
 
-        # Filter the mirbase database to select only plant sequences.
-        echo "Filtering miRBase database (Removing sequences not belonging to plants)..."
-        filter_miRBase_by_viridiplantae $mirbase $mirbaseplants tmp/viridiplantae_mirbase_mature.fa
-        filter_miRBase_by_viridiplantae $mirbase_hairpin $mirbaseplants tmp/viridiplantae_mirbase_hairpin.fa
-        echo "Done!"
-
         # Get miRBase species ids
         echo "Obtaining identifiers from miRBase database..."
-        get_mirbase_species_ids tmp/viridiplantae_mirbase_mature.fa tmp/mirbase_mature_species_ids.txt
-        get_mirbase_species_ids tmp/viridiplantae_mirbase_hairpin.fa tmp/mirbase_hairpin_species_ids.txt
+        get_mirbase_species_ids $mirbase tmp/mirbase_mature_species_ids.txt
+        get_mirbase_species_ids $mirbase_hairpin tmp/mirbase_hairpin_species_ids.txt
         echo "Done!"
 
         # Merge mature and hairpin
@@ -631,8 +611,8 @@ main () {
             mkdir -p 01-Mod_databases/miRBase
 
             # Create the output mirbase files
-            cp tmp/viridiplantae_mirbase_mature.fa 01-Mod_databases/miRBase/mirbase_mature.fa
-            cp tmp/viridiplantae_mirbase_hairpin.fa 01-Mod_databases/miRBase/mirbase_hairpin.fa
+            cp $mirbase 01-Mod_databases/miRBase/mirbase_mature.fa
+            cp $mirbase_hairpin 01-Mod_databases/miRBase/mirbase_hairpin.fa
 
             # Modify miR names (MIR -> miR)
             sed -i 's/[Mm][Ii][Rr]/miR/g' 01-Mod_databases/miRBase/mirbase_hairpin.fa
@@ -743,8 +723,8 @@ main () {
         sed -i 's/[Mm][Ii][Rr]/miR/g' $output_pmiren/pmiren_hairpin.fa
 
         # Replace identifiers in PmiREN so that both databases match (miRBase)
-        replace_mismatched_ids tmp/viridiplantae_mirbase_mature.fa $output_mirbase/mirbase_mature.fa 2 4 "$file_to_merge_diff"
-        replace_mismatched_ids tmp/viridiplantae_mirbase_hairpin.fa $output_mirbase/mirbase_hairpin.fa 2 4 "$file_to_merge_diff"
+        replace_mismatched_ids $mirbase $output_mirbase/mirbase_mature.fa 2 4 "$file_to_merge_diff"
+        replace_mismatched_ids $mirbase_hairpin $output_mirbase/mirbase_hairpin.fa 2 4 "$file_to_merge_diff"
 
         # Modify miR names (MIR -> miR)
         sed -i 's/[Mm][Ii][Rr]/miR/g' $output_mirbase/mirbase_hairpin.fa
@@ -817,8 +797,8 @@ main () {
             mkdir -p 01-Mod_databases/miRBase
 
             # Create the output mirbase files
-            cp tmp/viridiplantae_mirbase_mature.fa 01-Mod_databases/miRBase/mirbase_mature.fa
-            cp tmp/viridiplantae_mirbase_hairpin.fa 01-Mod_databases/miRBase/mirbase_hairpin.fa
+            cp $mirbase 01-Mod_databases/miRBase/mirbase_mature.fa
+            cp $mirbase_hairpin 01-Mod_databases/miRBase/mirbase_hairpin.fa
 
             # Modify miR names (MIR -> miR)
             sed -i 's/[Mm][Ii][Rr]/miR/g' 01-Mod_databases/miRBase/mirbase_hairpin.fa

@@ -1,0 +1,82 @@
+name: download_db
+description: |
+  Download miRNA databases (mature miRNAs and precursors) and unify the species
+  identifiers to avoid discrepancies.
+keywords:
+  - mirbase
+  - srnaanno
+  - pmiren
+  - dabatase
+  - mirna
+input:
+  - species:
+      type: list
+      description: |
+        List of species names
+        e.g. [ 'Arabidopsis thaliana', 'Glycine max' ]
+  - mirbase:
+      type: bool
+      description: |
+        Specify true to download miRBase database.
+  - srnaanno:
+      type: bool
+      description: |
+        Specify true to download sRNAanno database.
+  - pmiren:
+      type: bool
+      description: |
+        Specify true to download PmiREN database.
+output:
+  - species_ids:
+      type: file
+      description: Bowtie genome index files
+      pattern: "*.ebwt"
+  - mirbase:
+    - "01-Mod_databases/miRBase/*_mature.fa":
+      type: file
+      description:  |
+        FASTA file with mature miRNA sequences from the miRBase database (this
+        file has been modified so that the species identifiers match those of
+        the other downloaded).
+      pattern: "01-Mod_databases/miRBase/*_mature.fa"
+    - "01-Mod_databases/miRBase/*_hairpin.fa":
+      type: file
+      description:  |
+        FASTA file with miRNA precursors sequences from the miRBase database
+        (this file has been modified so that the species identifiers match those
+        of the other downloaded).
+      pattern: "01-Mod_databases/miRBase/*_hairpin.fa"
+  - srnaanno:
+    - "01-Mod_databases/sRNAanno/*_mature.fa":
+      type: file
+      description:  |
+        FASTA file with mature miRNA sequences from the sRNAanno database (this
+        file has been modified so that the species identifiers match those of
+        the other downloaded).
+      pattern: "01-Mod_databases/sRNAanno/*_mature.fa"
+    - "01-Mod_databases/sRNAanno/*_hairpin.fa":
+      type: file
+      description:  |
+        FASTA file with miRNA precursors sequences from the sRNAanno database
+        (this file has been modified so that the species identifiers match those
+        of the other downloaded).
+      pattern: "01-Mod_databases/sRNAanno/*_hairpin.fa"
+  - pmiren:
+    - "01-Mod_databases/PmiREN/*_mature.fa":
+      type: file
+      description:  |
+        FASTA file with mature miRNA sequences from the PmiREN database (this
+        file has been modified so that the species identifiers match those of
+        the other downloaded).
+      pattern: "01-Mod_databases/PmiREN/*_mature.fa"
+    - "01-Mod_databases/PmiREN/*_hairpin.fa":
+      type: file
+      description:  |
+        FASTA file with miRNA precursors sequences from the PmiREN database
+        (this file has been modified so that the species identifiers match those
+        of the other downloaded).
+      pattern: "01-Mod_databases/PmiREN/*_hairpin.fa"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

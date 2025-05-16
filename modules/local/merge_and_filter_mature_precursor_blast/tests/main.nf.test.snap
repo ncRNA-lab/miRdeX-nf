@@ -1,0 +1,19 @@
+{
+    "Merge mature and precursor blast results": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file.mpblast.tsv:md5,8997f202184ff536e8e31b1f3fb19771"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-04-27T11:06:14.029818308"
+    }
+}

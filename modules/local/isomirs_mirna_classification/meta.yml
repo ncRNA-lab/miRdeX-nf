@@ -1,0 +1,87 @@
+name: isomirs_mirna_classification
+description: Classify isomiR sequences.
+keywords:
+  - miRNA
+  - isomiR
+  - classification
+tools:
+  - "pandas":
+      description: "Python library for data manipulation and analysis"
+      homepage: "https://pandas.pydata.org/"
+      documentation: "https://pandas.pydata.org/docs/"
+      tool_dev_url: "https://github.com/pandas-dev/pandas"
+      doi: "10.5281/zenodo.3509134"
+      licence: ["BSD-3-Clause"]
+      identifiers:
+        - "biotools:pandas"
+        - "conda:pandas"
+  - "biopython":
+      description: "A set of freely available tools for biological computation written in Python by an international team of developers."
+      homepage: "https://biopython.org"
+      documentation: "https://biopython.org/wiki/Documentation"
+      tool_dev_url: "https://github.com/biopython/biopython"
+      licence: ["Biopython License Agreement", "BSD 3-Claus"]
+      identifiers:
+        - "conda:biopython"
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - blast_tsv:
+        type: file
+        description: |
+          TSV file with BLAST results from the alignment of sequences with
+          mature miRNAs and miRNA precursors, including both query and reference
+          sequences
+  - - substitutions:
+        type: integer
+        description: |
+          Maximum number of allowed internal substitutions (not located at the
+          sequence ends).
+  - - five_add:
+        type: integer
+        description: |
+          Maximum number of allowed non-templated nucleotides added at the 5' end.
+  - - three_add:
+        type: integer
+        description: |
+          Maximum number of allowed non-templated nucleotides added at the 3' end.
+  - - ends_modification:
+        type: integer
+        description: |
+          Maximum number of total modifications (substitutions) allowed across 
+          both ends (5' + 3').
+output:
+  - gff3:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*gff3":
+          type: file
+          description: miRNA annotation GFF3 file
+          pattern: "*gff3"
+  - filt_tsv:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.summary.tsv":
+          type: file
+          description: |
+            Summary TSV file with the sequence count for each miRNA
+            variant type.
+          pattern: "*.summary.tsv"
+  - versions:
+      - versions.yml:
+          type: file
+          description: File containing software versions
+          pattern: "versions.yml"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

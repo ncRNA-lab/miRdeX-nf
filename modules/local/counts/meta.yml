@@ -1,0 +1,28 @@
+name: counts
+description: Obtain the counts for each sequence in a Fastq file.
+keywords:
+  - concatenate
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - file:
+        type: file
+        description: FASTQ file.
+output:
+  - raw:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.raw.tsv":
+          type: file
+          description: TSV file with two columns, sequence and raw.
+          pattern: "*.raw.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

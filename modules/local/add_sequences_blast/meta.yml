@@ -1,0 +1,47 @@
+name: add_sequences_blast
+description: Add sequences to BLAST results
+keywords:
+  - blast
+  - sequence
+  - seqkit
+tools:
+  - "seqkit":
+      description: Cross-platform and ultrafast toolkit for FASTA/Q file manipulation,
+        written by Wei Shen.
+      homepage: https://bioinf.shenwei.me/seqkit/usage/
+      documentation: https://bioinf.shenwei.me/seqkit/usage/
+      tool_dev_url: https://github.com/shenwei356/seqkit/
+      doi: "10.1371/journal.pone.0163962"
+      licence: ["MIT"]
+      identifier: biotools:seqkit
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - blast_tsv:
+        type: file
+        description: BLAST results file in TXT format.
+    - query_fasta:
+        type: file
+        description: FASTA file with the query sequences.
+    - subject_fasta:
+        type: file
+        description: FASTA file with the subject sequences.
+output:
+  - bseqs:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.blast.tsv":
+          type: file
+          description: |
+            BLAST results file in TXT format with the query and subject sequences.
+          pattern: "*.blast.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

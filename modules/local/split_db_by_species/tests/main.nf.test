@@ -1,0 +1,160 @@
+nextflow_process {
+
+    name "Test Process SPLIT_DB_BY_SPECIES"
+    script "modules/local/split_db_by_species/main.nf"
+    process "SPLIT_DB_BY_SPECIES"
+
+    test("Arabidopsis thaliana - miRBase") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'mirbase_mature' ],
+                    'ath',
+                    file(params.modules_testdata_base_path + 'modules/split_db_by_species/mirbase_mature.dna.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.species_db.get(0)[1]) ==~ /.*ath\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.species_db).match() }
+        }
+    }
+    test("Non-existing species - miRBase") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'mirbase_mature' ],
+                    'uuu',
+                    file(params.modules_testdata_base_path + 'modules/split_db_by_species/mirbase_mature.dna.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.species_db.get(0)[1]) ==~ /.*EMPTY\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.species_db).match() }
+            
+        }
+    }
+    test("Arabidopsis thaliana - sRNAanno") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'srnaanno_mature' ],
+                    'ath',
+                    file(params.modules_testdata_base_path + 'modules/split_db_by_species/srnaanno_mature.dna.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.species_db.get(0)[1]) ==~ /.*ath\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.species_db).match() }
+        }
+    }
+    test("Non-existing species - sRNAanno") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'srnaanno_mature' ],
+                    'uuu',
+                    file(params.modules_testdata_base_path + 'modules/split_db_by_species/srnaanno_mature.dna.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.species_db.get(0)[1]) ==~ /.*EMPTY\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.species_db).match() }
+            
+        }
+    }
+    test("Arabidopsis thaliana - PmiREN") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'pmiren_mature' ],
+                    'ath',
+                    file(params.modules_testdata_base_path + 'modules/split_db_by_species/pmiren_mature.dna.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.species_db.get(0)[1]) ==~ /.*(?i)ath\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.species_db).match() }
+        }
+    }
+    test("Non-existing species - PmiREN") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'pmiren_mature' ],
+                    'uuu',
+                    file(params.modules_testdata_base_path + 'modules/split_db_by_species/pmiren_mature.dna.fa', checkIfExists: true)
+                ]
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.species_db.get(0)[1]) ==~ /.*EMPTY\.fa/ }
+
+            // Use snapshots to verify
+            { assert snapshot(process.out.species_db).match() }
+            
+        }
+    }
+}
