@@ -55,7 +55,9 @@ workflow QUANTIFICATION {
                 return [updatedMeta.id, updatedMeta, file]
             }
             .groupTuple(by:[0,1])
-            .map { it -> [it[1], it[2]] }
+            .map { it -> [it[1], it[2], it[1].metadata, it[1].valid_groups] }
+
+        ch_counts_by_project.view()
 
         // Create the count matrix
         COUNTS_MATRIX(ch_counts_by_project, type, counts_project_matrix)

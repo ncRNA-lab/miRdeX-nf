@@ -8,7 +8,7 @@ process COUNTS_MATRIX {
        'community.wave.seqera.io/library/python_pip_numpy_pandas:5731791ee246815e' }"
 
     input:
-    tuple val(meta), path(counts)
+    tuple val(meta), path(counts), path(metadata), val(valid_groups)
     val type
     val counts_project_matrix
 
@@ -23,15 +23,15 @@ process COUNTS_MATRIX {
     04-Create_counts_matrix.py \
         --project ${meta.id} \
         --counts-tsv ${counts} \
-        --metadata ${meta.metadata} \
-        --valid-groups ${meta.valid_groups} \
+        --metadata ${metadata} \
+        --valid-groups ${valid_groups} \
         ${create_project_matrix}
     else
     04-Create_counts_matrix.py \
         --project ${meta.id} \
         --counts-tsv ${counts} \
-        --metadata ${meta.metadata} \
-        --valid-groups ${meta.valid_groups} \
+        --metadata ${metadata} \
+        --valid-groups ${valid_groups} \
         --rpm \
         ${create_project_matrix}
     fi
