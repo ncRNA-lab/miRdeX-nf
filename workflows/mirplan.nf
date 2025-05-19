@@ -575,6 +575,8 @@ workflow MIRPLAN {
                     return [updatedMeta, file]
                 }
                 .set {ch_counts}
+            
+            ch_counts.view()
         }
         
     }
