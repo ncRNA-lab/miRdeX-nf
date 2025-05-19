@@ -27,6 +27,7 @@
 
 include { MIRPLAN                   } from './workflows/mirplan'
 include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_mirplan_pipeline'
+include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_mirplan_pipeline'
 
 
 //
@@ -46,8 +47,8 @@ workflow MAIN_MIRPLAN {
     // Run the workflow
     MIRPLAN (params.input, ch_versions)
 
-    // // Get the versions channel from the main workflow
-    // ch_versions = ch_versions.mix(MIRPLAN.out.versions)
+    // Get the versions channel from the main workflow
+    ch_versions = ch_versions.mix(MIRPLAN.out.versions)
 }
 
 /*
@@ -66,7 +67,6 @@ workflow {
         //
         // SUBWORKFLOW: Run initialisation tasks
         //
-
         // PIPELINE_INITIALISATION(
         //     params.version,
         //     params.validate_params,
@@ -78,6 +78,16 @@ workflow {
         // SUBWORKFLOW: Run the main workflow
         //
         MAIN_MIRPLAN ()
+    
+        //
+        // SUBWORKFLOW: Run completion tasks
+        //
+        PIPELINE_COMPLETION(
+            params.email,
+            params.email_on_fail,
+            params.plaintext_email,
+            params.outdir
+        )
 }
 
 /*

@@ -10,26 +10,38 @@ process COUNTS_MATRIX {
     input:
     tuple val(meta), path(counts)
     val type
+    val counts_project_matrix
 
     output:
     tuple val(meta), path("${meta.id}*.{raw,rpm}.tsv"), emit: matrix
+    path  "versions.yml"                              , emit: versions
 
     script:
+    def create_project_matrix = counts_project_matrix ? "--project-table" : ""
     """
     if [ "${type}" == "raw" ]; then
     04-Create_counts_matrix.py \
         --project ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${meta.metadata} \
-        --valid-groups ${meta.valid_groups}
+        --valid-groups ${meta.valid_groups} \
+        ${create_project_matrix}
     else
     04-Create_counts_matrix.py \
         --project ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${meta.metadata} \
         --valid-groups ${meta.valid_groups} \
-        --rpm
+        --rpm \
+        ${create_project_matrix}
     fi
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        numpy: \$(python3 -c "import numpy as np; print(np.__version__)")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+    END_VERSIONS
     """
     stub:
     """
@@ -63,6 +75,13 @@ process COUNTS_MATRIX {
         done
         echo -e "\$row" >> "\$output_file"
     done
-"""
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        numpy: \$(python3 -c "import numpy as np; print(np.__version__)")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+    END_VERSIONS
+    """
 
 }

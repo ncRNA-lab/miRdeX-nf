@@ -8,6 +8,7 @@ process BUILD_MIRNA_EVENT_MATRIX {
     path "presence_absence_table.tsv"   , emit: preabs
     path "shrunken_log2fc_table.tsv"    , emit: log2fc
     path "id_correspondence.tsv"        , emit: ids
+    path  "versions.yml"                , emit: versions
 
     script:
     def annotList = annot_file_list.toList()
@@ -20,5 +21,11 @@ process BUILD_MIRNA_EVENT_MATRIX {
     08-miRNA_event_matrix_builder.py \\
         ${args} \\
         --fields ${fields}
+
+    # Create versions file
+    echo "${task.process}:" > versions.yml
+    echo "    python: \$(python3 -c 'import platform; print(platform.python_version())')" >> versions.yml
+    echo "    pandas: \$(python3 -c 'import pandas as pd; print(pd.__version__)')" >> versions.yml
+    echo "    natsort: \$(python3 -c 'import natsort; print(natsort.__version__)')" >> versions.yml
     """
 }

@@ -35,10 +35,12 @@ process ISOMIRS_MIRNA_CLASSIFICATION {
         --ends_modification ${ends_modification}
     
     # Create vesions file
-    echo "${task.process}:" > versions.yml
-    echo "    python: \$(python3 -c 'import platform; print(platform.python_version())')" >> versions.yml
-    echo "    pandas: \$(python3 -c 'import pandas as pd; print(pd.__version__)')" >> versions.yml
-    echo "    biopython: \$(python3 -c 'import Bio; print(Bio.__version__)')" >> versions.yml
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)")
+    END_VERSIONS
     """
 
     stub:
@@ -54,9 +56,11 @@ process ISOMIRS_MIRNA_CLASSIFICATION {
     "\t20" > "${prefix}.summary.tsv"
 
     # Create vesions file
-    echo "${task.process}:" > versions.yml
-    echo "    python: \$(python3 -c 'import platform; print(platform.python_version())')" >> versions.yml
-    echo "    pandas: \$(python3 -c 'import pandas as pd; print(pd.__version__)')" >> versions.yml
-    echo "    biopython: \$(python3 -c 'import Bio; print(Bio.__version__)')" >> versions.yml
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+        biopython: \$(python3 -c "import Bio; print(Bio.__version__)")
+    END_VERSIONS
     """
 }

@@ -12,8 +12,8 @@
 ========================================================================================
 */
 
-include { LIBRARIES_VALIDATION } from "../../../modules/local/validation_libraries"
-include { COUNTS_VALIDATION    } from "../../../modules/local/validation_counts"
+include { LIBRARIES_VALIDATION } from "../../../modules/local/libraries_validation"
+include { COUNTS_VALIDATION    } from "../../../modules/local/counts_validation"
 
 /*
 ========================================================================================
@@ -30,6 +30,7 @@ workflow VALIDATION {
         type                        // value: 'libraries' or 'counts'
         replicates_threshold        // integer: > 2
         depth_threshold             // integer: > 0 (It is not used when type = 'counts')
+        ch_versions                 // channel: [val(versions)]
 
     main:
 
@@ -105,6 +106,9 @@ workflow VALIDATION {
                 }
                 .set { ch_files }
 
+            // Save the software version
+            ch_versions = ch_versions.mix(LIBRARIES_VALIDATION.out.versions)
+
         } else if (type == 'counts'){
             
             // Validate the counts matrices
@@ -162,6 +166,5 @@ workflow VALIDATION {
     emit:
         files = ch_files            // channel: [ val(meta), path(fastq) ]
         projects = ch_projects      // channel: [ val(summary) ]
-
-
+        versions = ch_versions      // channel: [ path(versions.yml) ]
 }

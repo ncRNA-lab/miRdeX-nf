@@ -25,8 +25,9 @@ include { BOWTIE_ALIGN as BOWTIE_ALIGN_GENOME } from '../../../modules/local/bow
 workflow FILTERING {
     take:
         input                   // channel: [[id:val(id), project:val(projec), species:val(species), genome:val(genome)], file]
-        ref                    // value: 'database' or 'genome'
+        ref                     // value: 'database' or 'genome'
         database                // path: reference fasta file (optional)
+        ch_versions             // channel: [ path(versions.yml) ]
 
     main:
     
@@ -43,6 +44,9 @@ workflow FILTERING {
             // Index the unique reference file (database)
             BOWTIE_BUILD(ch_input_build)
 
+            // ADd the software version
+            ch_versions = ch_versions.mix(BOWTIE_BUILD.out.versions)
+
             // Add the ref field to the meta
             input
                 .map{ meta, file ->
@@ -53,6 +57,9 @@ workflow FILTERING {
             
             // Run Bowtie for each entry in the "input" channel
             BOWTIE_ALIGN_DB(ch_input_ref, BOWTIE_BUILD.out.index, true, true)
+
+            // Add the software version
+            ch_versions = ch_versions.mix(BOWTIE_ALIGN_DB.out.versions)
 
             // Get the alignment results (summary)
             BOWTIE_ALIGN_DB.out.log
@@ -100,6 +107,9 @@ workflow FILTERING {
             // Index the reference genomes
             BOWTIE_BUILD(ch_genomes)
 
+            // Add the software version
+            ch_versions = ch_versions.mix(BOWTIE_BUILD.out.versions)
+
             // Combine the genome and file channels 
             BOWTIE_BUILD.out.index
                 .combine(ch_files_to_align, by:0)
@@ -112,6 +122,9 @@ workflow FILTERING {
 
             // Run Bowtie for each entry in the "input" channel
             BOWTIE_ALIGN_GENOME(ch_input_alignment.query, ch_input_alignment.reference, true, true)
+
+            // Add the software version
+            ch_versions = ch_versions.mix(BOWTIE_ALIGN_GENOME.out.versions)
 
             // Get the alignment results (summary)
             BOWTIE_ALIGN_GENOME.out.log
@@ -164,8 +177,8 @@ workflow FILTERING {
             .set{ ch_unaligned_out }
 
     emit:
-        bam = ch_bam_out
-        aligned = ch_aligned_out
-        unaligned = ch_unaligned_out
-
+        bam         = ch_bam_out
+        aligned     = ch_aligned_out
+        unaligned   = ch_unaligned_out
+        versions    = ch_versions      // channel: [ path(versions.yml) ]
 }

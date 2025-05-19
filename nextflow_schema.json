@@ -28,6 +28,299 @@
           "format": "directory-path",
           "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
           "fa_icon": "fas fa-folder-open"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address for completion summary.",
+          "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+          "fa_icon": "fas fa-envelope"
+        }
+      }
+    },
+    "execution_mode_options": {
+      "title": "Execution mode options",
+      "type": "object",
+      "description": "Options that define the starting point and scope of the pipeline execution. These options allow partial execution or resumption from intermediate steps.",
+      "default": "",
+      "properties": {
+        "only_preprocessing": {
+          "type": "boolean",
+          "description": "Run only the preprocessing steps \u2014 including trimming, validation, and FastQC/MultiQC. Skips quantification, differential expression analysis (DEA), and miRNA annotation.",
+          "fa_icon": "fas fa-cut"
+        },
+        "from_counts": {
+          "type": "boolean",
+          "description": "Indicates that the input samplesheet provides paths to raw count tables instead of sequencing libraries. The pipeline starts from the quantification step using these tables.",
+          "fa_icon": "fas fa-table"
+        },
+        "from_dea": {
+          "type": "boolean",
+          "description": "Indicates that the input samplesheet provides paths to DEA result tables. The pipeline skips quantification and DEA, starting directly from miRNA annotation.",
+          "fa_icon": "fas fa-table"
+        }
+      },
+      "fa_icon": "fas fa-code-branch"
+    },
+    "fastqc_multiqc_optios": {
+      "title": "FastQC/MultiQC optios",
+      "type": "object",
+      "description": "Options to customize FastQC and MultiQC behavior.",
+      "default": "",
+      "properties": {
+        "extra_fastqc_args": {
+          "type": "string",
+          "fa_icon": "fas fa-plus",
+          "description": "Extra options to customize FastQC execution."
+        },
+        "extra_multiqc_args": {
+          "type": "string",
+          "fa_icon": "fas fa-plus",
+          "description": "Extra options to customize MultiQC report generation."
+        }
+      },
+      "fa_icon": "fas fa-search"
+    },
+    "trimming_options": {
+      "title": "Trimming options",
+      "type": "object",
+      "description": "Options to adjust read trimming criteria.",
+      "default": "",
+      "fa_icon": "fas fa-cut",
+      "properties": {
+        "trimming_adapters": {
+          "type": "string",
+          "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/illumina_adapters.fa",
+          "fa_icon": "fas fa-align-center",
+          "description": "FASTA file with the adapters that must be removed during the trimming process."
+        },
+        "trimming_min_len": {
+          "type": "integer",
+          "default": 20,
+          "fa_icon": "fas fa-ruler-horizontal",
+          "description": "Minimum read length"
+        },
+        "trimming_max_len": {
+          "type": "integer",
+          "default": 25,
+          "fa_icon": "fas fa-ruler-horizontal",
+          "description": "Maximum read length"
+        },
+        "custom_fastp_args": {
+          "type": "string",
+          "fa_icon": "fas fa-plus",
+          "description": "User-defined extra parameters to customize fastp behavior during read trimming."
+        }
+      }
+    },
+    "validation_options": {
+      "title": "Validation options",
+      "type": "object",
+      "description": "Options to define criteria for validating sequencing libraries and experimental comparisons.",
+      "default": "",
+      "fa_icon": "fas fa-check-circle",
+      "properties": {
+        "validation_depth": {
+          "type": "integer",
+          "default": 500000,
+          "description": "Minimum read depth required for a sequencing library to be considered valid.",
+          "fa_icon": "fas fa-align-center"
+        },
+        "validation_rep": {
+          "type": "integer",
+          "default": 2,
+          "description": "Minimum number of biological replicates needed to validate a comparison (e.g., control vs treated)",
+          "fa_icon": "fas fa-copy"
+        }
+      }
+    },
+    "filtering_options": {
+      "title": "Filtering options",
+      "type": "object",
+      "description": "Options to configure filtering of sequencing reads based on database or genome alignment criteria.",
+      "default": "",
+      "properties": {
+        "filtering_db_file": {
+          "type": "string",
+          "description": "Path to the reference database file used for filtering.",
+          "fa_icon": "fas fa-database"
+        },
+        "bowtie_filt_db_ext_args": {
+          "type": "string",
+          "description": "Additional parameters to pass to Bowtie for database filtering",
+          "fa_icon": "fas fa-plus"
+        },
+        "bowtie_filt_genome_ext_args": {
+          "type": "string",
+          "description": "Additional parameters to pass to Bowtie for genome filtering.",
+          "fa_icon": "fas fa-plus"
+        }
+      },
+      "fa_icon": "fas fa-filter"
+    },
+    "quantification_options": {
+      "title": "Quantification options",
+      "type": "object",
+      "description": "Parameters related to the quantification of sequencing reads and filtering based on count thresholds.",
+      "default": "",
+      "properties": {
+        "counts_project_matrix": {
+          "type": "boolean",
+          "description": "Indicates whether to generate a global count table for the entire project.",
+          "help_text": "Indicates whether to generate a global count table for the entire project.\nBy default, individual count tables are generated for each pairwise sample group comparison. When this option is set to true, an additional count table is produced that includes all samples in the project, regardless of group comparisons.",
+          "fa_icon": "fas fa-table"
+        },
+        "min_counts": {
+          "type": "integer",
+          "default": 5,
+          "description": "Minimum number of counts required for a sequence to be considered.",
+          "fa_icon": "fas fa-angle-down"
+        },
+        "min_samples": {
+          "type": "integer",
+          "default": 3,
+          "description": "Minimum number of samples in which the sequence must meet the min_counts threshold to avoid being filtered out.",
+          "fa_icon": "fas fa-angle-down"
+        }
+      },
+      "fa_icon": "fas fa-table"
+    },
+    "dea_options": {
+      "title": "DEA options",
+      "type": "object",
+      "description": "Options related to exploratory analysis (EA) and subsequent differential expression analysis (DEA).",
+      "default": "",
+      "properties": {
+        "ea_p_value": {
+          "type": "number",
+          "default": 0.2,
+          "description": "P-value threshold for Mann-Whitney and Wilcoxon tests used to assess whether sample groups are spatially separated in Principal Component Analysis (PCA).",
+          "fa_icon": "fas fa-check-circle"
+        },
+        "dea_alpha": {
+          "type": "number",
+          "default": 0.05,
+          "description": "Significance level (alpha) used for determining statistical significance in DEA.",
+          "fa_icon": "fas fa-check-circle"
+        }
+      },
+      "fa_icon": "fas fa-chart-bar"
+    },
+    "annotation_options": {
+      "title": "Annotation options",
+      "type": "object",
+      "description": "Options for miRNA annotation of differentially expressed sequences through curated databases and specific criteria.",
+      "default": "",
+      "fa_icon": "fas fa-address-card",
+      "properties": {
+        "databases": {
+          "type": "string",
+          "default": "mirbase,pmiren,srnaanno",
+          "fa_icon": "fas fa-database",
+          "description": "omma-separated string indicating the databases to use for miRNA identification and their order of preference. The search proceeds sequentially through the listed databases until the species is found. Allowed databases are: miRBase, sRNAanno, and/or PmiREN."
+        },
+        "substitutions": {
+          "type": "integer",
+          "default": 1,
+          "fa_icon": "fas fa-sync-alt",
+          "description": "Maximum number of allowed internal substitutions (not at sequence ends)."
+        },
+        "five_add": {
+          "type": "integer",
+          "default": 0,
+          "fa_icon": "fas fa-step-backward",
+          "description": "Maximum number of non-templated nucleotides allowed at the 5' end."
+        },
+        "three_add": {
+          "type": "integer",
+          "default": 3,
+          "fa_icon": "fas fa-step-forward",
+          "description": "Maximum number of non-templated nucleotides allowed at the 3' end."
+        },
+        "ends_modification": {
+          "type": "integer",
+          "default": 4,
+          "fa_icon": "fas fa-step-forward",
+          "description": "Maximum total allowed modifications (substitutions) across both ends (5' + 3')."
+        },
+        "annotation_unitas": {
+          "type": "boolean",
+          "fa_icon": "fas fa-laptop-code",
+          "description": "Indicates whether to perform annotation using the Unitas program instead of the default annotation methodology."
+        }
+      }
+    },
+    "process_skipping_options": {
+      "title": "Process skipping options",
+      "type": "object",
+      "description": "Options to skip various steps within the workflow.",
+      "default": "",
+      "fa_icon": "fas fa-fast-forward",
+      "properties": {
+        "skip_fastqc": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip FastQC quality control."
+        },
+        "skip_multiqc": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip MultiQC report generation."
+        },
+        "skip_qc_trim": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip FastQC and MultiQC on trimmed reads."
+        },
+        "skip_filt_db": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip filtering reads using the reference database."
+        },
+        "skip_filt_genome": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip filtering reads using the reference genome."
+        },
+        "skip_annotation": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip miRNA annotation of differentially expressed sequences."
+        }
+      }
+    },
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "fa_icon": "fas fa-file-import",
+      "properties": {
+        "validate_params": {
+          "type": "boolean",
+          "default": true,
+          "fa_icon": "fas fa-check-circle",
+          "hidden": true
+        },
+        "publish_dir_mode": {
+          "type": "string",
+          "default": "copy",
+          "description": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
+          "enum": [
+            "symlink",
+            "rellink",
+            "link",
+            "copy",
+            "copyNoFollow",
+            "move"
+          ],
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "modules_testdata_base_path": {
+          "type": "string",
+          "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/testdata/",
+          "fa_icon": "fas fa-folder",
+          "hidden": true
         }
       }
     }
@@ -35,113 +328,36 @@
   "allOf": [
     {
       "$ref": "#/$defs/input_output_options"
+    },
+    {
+      "$ref": "#/$defs/execution_mode_options"
+    },
+    {
+      "$ref": "#/$defs/fastqc_multiqc_optios"
+    },
+    {
+      "$ref": "#/$defs/trimming_options"
+    },
+    {
+      "$ref": "#/$defs/validation_options"
+    },
+    {
+      "$ref": "#/$defs/filtering_options"
+    },
+    {
+      "$ref": "#/$defs/quantification_options"
+    },
+    {
+      "$ref": "#/$defs/dea_options"
+    },
+    {
+      "$ref": "#/$defs/annotation_options"
+    },
+    {
+      "$ref": "#/$defs/process_skipping_options"
+    },
+    {
+      "$ref": "#/$defs/generic_options"
     }
-  ],
-  "properties": {
-    "email": {
-      "type": "string"
-    },
-    "input_fastp": {
-      "type": "boolean"
-    },
-    "input_validation": {
-      "type": "boolean"
-    },
-    "input_filtering": {
-      "type": "boolean"
-    },
-    "extra_fastqc_args": {
-      "type": "string"
-    },
-    "extra_multiqc_args": {
-      "type": "string"
-    },
-    "trimming_adapters": {
-      "type": "string",
-      "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/illumina_adapters.fa"
-    },
-    "trimming_min_len": {
-      "type": "integer",
-      "default": 20
-    },
-    "trimming_max_len": {
-      "type": "integer",
-      "default": 25
-    },
-    "custom_fastp_args": {
-      "type": "string"
-    },
-    "validation_depth": {
-      "type": "integer",
-      "default": 500000
-    },
-    "validation_rep": {
-      "type": "integer",
-      "default": 2
-    },
-    "filtering_rnacentral": {
-      "type": "string"
-    },
-    "filtering_db_mismatches": {
-      "type": "integer",
-      "default": 0
-    },
-    "filtering_genome_mismatches": {
-      "type": "integer",
-      "default": 1
-    },
-    "min_counts": {
-      "type": "integer",
-      "default": 5
-    },
-    "min_samples": {
-      "type": "integer",
-      "default": 3
-    },
-    "ea_p_value": {
-      "type": "number",
-      "default": 0.2
-    },
-    "dea_alpha": {
-      "type": "number",
-      "default": 0.05
-    },
-    "annotation_mismatches": {
-      "type": "integer",
-      "default": 1
-    },
-    "annotation_mirbase": {
-      "type": "string"
-    },
-    "annotation_sRNAanno": {
-      "type": "string"
-    },
-    "annotation_pmiren": {
-      "type": "string"
-    },
-    "counts_project_table": {
-      "type": "boolean"
-    },
-    "skip_qc": {
-      "type": "boolean"
-    },
-    "skip_fastqc": {
-      "type": "boolean"
-    },
-    "skip_multiqc": {
-      "type": "boolean"
-    },
-    "skip_trimming": {
-      "type": "boolean"
-    },
-    "skip_validation": {
-      "type": "boolean"
-    },
-    "skip_filt_db": {
-      "type": "boolean"
-    },
-    "skip_filt_genome": {
-      "type": "boolean"
-    }
-  }
+  ]
 }

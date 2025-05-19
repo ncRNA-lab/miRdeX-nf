@@ -16,6 +16,7 @@ process ANNOTATE_DEA_RESULTS {
     tuple val(meta), path("*.unique.tsv")   , emit: unique
     tuple val(meta), path("*.boxplot.png")  , emit: boxplot
     path "*.summary.tsv"                    , emit: fam_sum
+    path  "versions.yml"                    , emit: versions
 
     script:
     """
@@ -24,5 +25,13 @@ process ANNOTATE_DEA_RESULTS {
         --dea ${dea_file} \
         --annotation ${annot_file} \
         --classes ${classes}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        r-base: \$(echo \$(R --version 2>&1) | sed 's/^.*R version //; s/ .*\$//')
+        argparse: \$(Rscript -e "suppressMessages(library(argparse)); cat(as.character(packageVersion('argparse')))") 
+        ape: \$(Rscript -e "suppressMessages(library(ape)); cat(as.character(packageVersion('ape')))") 
+        tidyverse: \$(Rscript -e "suppressMessages(library(tidyverse)); cat(as.character(packageVersion('tidyverse')))") 
+    END_VERSIONS
     """
 }

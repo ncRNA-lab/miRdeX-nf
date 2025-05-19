@@ -17,6 +17,7 @@ process LIBRARIES_VALIDATION {
     tuple val(meta), path('*.notvalid.fastq.gz')    , emit: notvalid, optional: true
     path '*.sum_projects.tsv'                       , emit: sumprojects
     path '*.sum_libraries.tsv'                      , emit: sumlibraries
+    path "versions.yml"                             , emit: versions
 
     script:
     """
@@ -27,6 +28,14 @@ process LIBRARIES_VALIDATION {
         -d ${depth_threshold} \
         -r ${rep_threshold} \
         -p ${task.cpus}
+    
+    # Create versions file
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        numpy: \$(python3 -c "import numpy as np; print(np.__version__)")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+    END_VERSIONS
     """
 
     stub:
@@ -44,10 +53,16 @@ process LIBRARIES_VALIDATION {
         echo -e "\$name.fastq.gz\t\$name\tvalid\tvalid" >> ${meta.id}.sum_libraries.tsv
     done
 
-    #!/bin/bash
-
     # Create the project summary files
     echo -e "${meta.id}\t1\t50\t10\tvalid" > ${meta.id}.sum_projects.tsv
+    
+    # Create versions file
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        numpy: \$(python3 -c "import numpy as np; print(np.__version__)")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+    END_VERSIONS
     """
 }
 

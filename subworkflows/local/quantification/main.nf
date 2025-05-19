@@ -29,7 +29,9 @@ workflow QUANTIFICATION {
 
     take:
         libraries
-        type            // value: 'raw' or 'rpm'
+        type                    // value: 'raw' or 'rpm'
+        counts_project_matrix   // value: true or false
+        ch_versions             // channel: [ path(versions.yml) ]
 
     main:
 
@@ -56,7 +58,10 @@ workflow QUANTIFICATION {
             .map { it -> [it[1], it[2]] }
 
         // Create the count matrix
-        COUNTS_MATRIX(ch_counts_by_project, type)
+        COUNTS_MATRIX(ch_counts_by_project, type, counts_project_matrix)
+
+        // Add the software version
+        ch_versions = ch_versions.mix(COUNTS_MATRIX.out.versions)
 
         // Create a new ID and set the group_id
         COUNTS_MATRIX.out.matrix
@@ -77,5 +82,6 @@ workflow QUANTIFICATION {
             .set{ ch_counts_matrix }
 
     emit:
-        group_matrix = ch_counts_matrix
+        group_matrix    = ch_counts_matrix
+        versions        = ch_versions      // channel: [ path(versions.yml) ]
 }

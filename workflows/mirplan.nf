@@ -123,11 +123,11 @@ workflow MIRPLAN {
 
     main:
 
-    // Fastq files empty channels
-    ch_fastq         = Channel.empty()
+    // Empty channels
+    ch_fastq            = Channel.empty()
     ch_pipeline_summary = Channel.empty()
-    ch_counts        = Channel.empty()
-    ch_versions      = Channel.empty()
+    ch_counts           = Channel.empty()
+    ch_versions         = Channel.empty()
 
     // Create a channel from input file using params.input
     Channel
@@ -201,7 +201,10 @@ workflow MIRPLAN {
     if (params.from_counts){
 
         // Check the counts matrices input files
-        VALIDATION(ch_input_files.counts, 'counts', params.validation_rep, 0)
+        VALIDATION(ch_input_files.counts, 'counts', params.validation_rep, 0, ch_versions)
+
+        // Save the software version
+        ch_versions = ch_versions.mix(VALIDATION.out.versions)
 
         // Assign the output channel to the ch_counts channel.
         VALIDATION.out.files
@@ -370,7 +373,10 @@ workflow MIRPLAN {
         */
 
         // Validate the project
-        VALIDATION(ch_fastq, 'libraries', params.validation_rep, params.validation_depth)
+        VALIDATION(ch_fastq, 'libraries', params.validation_rep, params.validation_depth, ch_versions)
+
+        // Save the software version
+        ch_versions = ch_versions.mix(VALIDATION.out.versions)
 
         // Prepare the projects results channel for the summary channel.
         VALIDATION.out.projects
@@ -416,7 +422,10 @@ workflow MIRPLAN {
         if (!params.skip_filt_db) {
 
             // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-            FILTERING_DB(ch_fastq, "database", params.filtering_db_file)
+            FILTERING_DB(ch_fastq, "database", params.filtering_db_file, ch_versions)
+
+            // Save the software version
+            ch_versions = ch_versions.mix(FILTERING_DB.out.versions)
 
             // Update ch_fastq channel
             ch_fastq = FILTERING_DB.out.unaligned
@@ -463,7 +472,10 @@ workflow MIRPLAN {
         if (!params.skip_filt_genome) {
             
             // Remove those sequences that do not align with the reference genome
-            FILTERING_GENOME(ch_fastq, "genome", null)
+            FILTERING_GENOME(ch_fastq, "genome", null, ch_versions)
+
+            // Save the software version
+            ch_versions = ch_versions.mix(FILTERING_GENOME.out.versions)
 
             // Update ch_fastq channel
             ch_fastq = FILTERING_GENOME.out.aligned
@@ -522,7 +534,10 @@ workflow MIRPLAN {
                 .set { ch_fastq }
             
             // Create count matrix
-            QUANTIFICATION(ch_fastq, 'raw')
+            QUANTIFICATION(ch_fastq, 'raw', params.counts_project_matrix, ch_versions)
+
+            // Save the software version
+            ch_versions = ch_versions.mix(QUANTIFICATION.out.versions)
             
             // Add the quantification data to the ch_pipeline_summary channel
             QUANTIFICATION.out.group_matrix
@@ -576,6 +591,9 @@ workflow MIRPLAN {
         
         // Perform exploratory and differential expression analyses.
         DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
+
+        // Save the software version
+        ch_versions = ch_versions.mix(DIFFEXPANALYSIS.out.versions)
         
         // Add the EA data to the ch_pipeline_summary channel
         DIFFEXPANALYSIS.out.easum
@@ -736,6 +754,9 @@ workflow MIRPLAN {
                 ch_versions
             )
 
+            // Save the software version
+            ch_versions = ch_versions.mix(ANNOTATION.out.versions)
+
             // Prepare the summary channel
             ANNOTATION.out.summary
                 .map{item -> [item.id, item]}
@@ -810,6 +831,9 @@ workflow MIRPLAN {
             // Add annotation to DEA results dataframe
             ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, 'ref_miRNA')
 
+            // Save the software version
+            ch_versions = ch_versions.mix(ANNOTATE_DEA_RESULTS.out.versions)
+
             // Prepare the summary channel
             ANNOTATE_DEA_RESULTS.out.fam_sum
                 .splitCsv(sep: '\t')
@@ -864,6 +888,12 @@ workflow MIRPLAN {
                     return [files, metas, samples]
                 }
                 .set{ch_to_create_pa_matrix}
+                
+                // Create the both presence-absence and log2fc matrices  
+                BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, 'Tissue')
+
+                // Save the software version
+                ch_versions = ch_versions.mix(BUILD_MIRNA_EVENT_MATRIX.out.versions)
         }        
     }
 
