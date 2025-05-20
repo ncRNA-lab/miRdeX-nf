@@ -142,7 +142,8 @@
         "filtering_db_file": {
           "type": "string",
           "description": "Path to the reference database file used for filtering.",
-          "fa_icon": "fas fa-database"
+          "fa_icon": "fas fa-database",
+          "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/01-Databases/01-RNAcentral/RNAcenral_viridiplantae_snrna_snorna_rrna_trna.fasta"
         },
         "bowtie_filt_db_ext_args": {
           "type": "string",
@@ -216,7 +217,8 @@
           "type": "string",
           "default": "mirbase,pmiren,srnaanno",
           "fa_icon": "fas fa-database",
-          "description": "omma-separated string indicating the databases to use for miRNA identification and their order of preference. The search proceeds sequentially through the listed databases until the species is found. Allowed databases are: miRBase, sRNAanno, and/or PmiREN."
+          "description": "omma-separated string indicating the databases to use for miRNA identification and their order of preference. The search proceeds sequentially through the listed databases until the species is found. Allowed databases are: miRBase, sRNAanno, and/or PmiREN.",
+          "pattern": "^[A-Za-z0-9_]+(,[A-Za-z0-9_]+)*$"
         },
         "substitutions": {
           "type": "integer",
@@ -241,6 +243,11 @@
           "default": 4,
           "fa_icon": "fas fa-step-forward",
           "description": "Maximum total allowed modifications (substitutions) across both ends (5' + 3')."
+        },
+        "bowtie_nti_ext_args": {
+          "type": "string",
+          "fa_icon": "fas fa-plus",
+          "description": "Additional parameters to pass to Bowtie to remove sequences identified as non-templated isomiRs that are found in other regions of the genome."
         },
         "annotation_unitas": {
           "type": "boolean",
@@ -288,6 +295,29 @@
         }
       }
     },
+    "global_analysis": {
+      "title": "Global analysis",
+      "type": "object",
+      "description": "Options related to the global analysis of the results obtained at the different steps of the pipeline.",
+      "default": "",
+      "properties": {
+        "global_matrix": {
+          "type": "boolean",
+          "description": "Boolean specifying whether to generate presence/absence and log2FC matrices of miRNAs based on the results of the contrasted comparisons in the differential expression analyses.",
+          "help_text": "f enabled, two matrices are produced: one indicating the presence or absence of differentially expressed miRNA families, and another containing their corresponding log2 fold change values.\nEach row in the matrices represents a miRNA family, while each column corresponds to a specific comparison (contrast) performed during differential expression analysis.\nComparisons are labeled using unique numeric identifiers that encapsulate information such as species, treatment, and any additional user-defined metadata fields, allowing for more flexible downstream analyses and visualization",
+          "fa_icon": "fas fa-table"
+        },
+        "global_fields": {
+          "type": "string",
+          "description": "Comma-separated list of metadata fields used to generate comparison identifiers.",
+          "help_text": "This parameter specifies which columns from the input metadata file should be used to define the unique identifiers for each differential expression comparison. These identifiers are used as column names in global summary matrices and help organize results across multiple experimental conditions.",
+          "fa_icon": "fas fa-table",
+          "pattern": "^[A-Za-z0-9_]+(,[A-Za-z0-9_]+)*$",
+          "default": "Species,Treatment"
+        }
+      },
+      "fa_icon": "fas fa-globe"
+    },
     "generic_options": {
       "title": "Generic options",
       "type": "object",
@@ -299,7 +329,8 @@
           "type": "boolean",
           "default": true,
           "fa_icon": "fas fa-check-circle",
-          "hidden": true
+          "hidden": true,
+          "description": "Boolean whether to validate parameters against the schema at runtime."
         },
         "publish_dir_mode": {
           "type": "string",
@@ -320,6 +351,21 @@
           "type": "string",
           "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/testdata/",
           "fa_icon": "fas fa-folder",
+          "hidden": true,
+          "description": "Base URL or local path to location of pipeline test dataset files."
+        },
+        "email_on_fail": {
+          "type": "string",
+          "fa_icon": "fas fa-exclamation-triangle",
+          "hidden": true,
+          "description": "Email address for completion summary, only when pipeline fails.",
+          "pattern": "^([a-zA-Z0-9_\\\\-\\\\.]+)@([a-zA-Z0-9_\\\\-\\\\.]+)\\\\.([a-zA-Z]{2,5})$",
+          "help_text": "An email address to send a summary email to when the pipeline is completed - ONLY sent if the pipeline does not exit successfully."
+        },
+        "plaintext_email": {
+          "type": "boolean",
+          "fa_icon": "fas fa-remove-format",
+          "description": "Send plain-text email instead of HTML.",
           "hidden": true
         }
       }
@@ -355,6 +401,9 @@
     },
     {
       "$ref": "#/$defs/process_skipping_options"
+    },
+    {
+      "$ref": "#/$defs/global_analysis"
     },
     {
       "$ref": "#/$defs/generic_options"

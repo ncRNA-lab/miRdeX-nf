@@ -210,7 +210,7 @@ workflow MIRPLAN {
     */
 
     // If the input files are count matrices, do not execute the pre-processing.
-    if (!params.from_counts){
+    if (!params.from_counts) {
 
         /*
         ============================================================================
@@ -565,10 +565,9 @@ workflow MIRPLAN {
     // Do not run these steps when only pre-processing is to be done.
     if (!params.only_preprocessing){
 
-
         /*
         ============================================================================
-            UBWORKFLOW: Differential Expression Analysis
+            SUBWORKFLOW: Differential Expression Analysis
         ============================================================================
         */
         
@@ -878,12 +877,15 @@ workflow MIRPLAN {
                     return [files, metas, samples]
                 }
                 .set{ch_to_create_pa_matrix}
-                
+            
+            // Create global matrices
+            if (params.global_matrix){
                 // Create the both presence-absence and log2fc matrices  
-                BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, 'Tissue')
+                BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)
 
                 // Save the software version
                 ch_versions = ch_versions.mix(BUILD_MIRNA_EVENT_MATRIX.out.versions)
+            }
         }        
     }
 
