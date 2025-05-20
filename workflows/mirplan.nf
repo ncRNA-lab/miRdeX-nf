@@ -39,6 +39,8 @@ include { validateAndAssignGenome    } from "../subworkflows/local/utils_mirplan
 include { notTsvFilesError           } from "../subworkflows/local/utils_mirplan_pipeline"
 include { validateGroupInputUsage    } from "../subworkflows/local/utils_mirplan_pipeline"
 include { validateAccessionList      } from "../subworkflows/local/utils_mirplan_pipeline"
+include { filterByMwwPvalue          } from "../subworkflows/local/utils_mirplan_pipeline"
+include { writeSampleSheet           } from "../subworkflows/local/utils_mirplan_pipeline"
 
 
 //
@@ -74,32 +76,6 @@ include { MIRNOTE as ANNOTATION                   } from "../subworkflows/local/
 // FUNCTIONS
 //
 include { samplesheetToList } from 'plugin/nf-schema'
-
-def filterByMwwPvalue(ch_input, threshold) {
-
-    // Filter comparisons using the threshold
-    def valid_mww_comparisons = ch_input
-        .map{ _meta, _dea_file, ea_file -> ea_file }
-        .splitCsv(sep: '\t', skip: 1)
-        .map { item ->
-            def mww_p_value = item[8].toDouble()
-            if (mww_p_value <= threshold) {
-                return [item[1], item[8]]
-            }
-        }
-
-    // Remove those comparisons that do not meet the threshold
-    def ch_valid_comparisons = ch_input
-        .map{ meta, dea_file, ea_file ->
-            def group_id = meta.id.replaceAll(/_\d+$/, '')
-            [group_id, meta, dea_file, ea_file]
-        }
-        .join(valid_mww_comparisons)
-        .map{item -> [item[1], item[2], item[3]]}
-    
-    return ch_valid_comparisons
-}
-
 
 
 //
@@ -576,9 +552,14 @@ workflow MIRPLAN {
                 }
                 .set {ch_counts}
             
-            ch_counts.view()
+            // Create a samplesheet with intermediate results
+            writeSampleSheet(
+                ch_counts,
+                "${params.outdir}/02-Results/02-Counts_matrix",
+                "${params.outdir}/00-Additional_data/02-Samplesheets/Samplesheet_counts.csv"
+            )
+
         }
-        
     }
 
     // Do not run these steps when only pre-processing is to be done.
@@ -702,6 +683,13 @@ workflow MIRPLAN {
                 return [meta + [coefficient:dea_sig.Coefficient, samples:dea_sig.Samples], file]
             }
             .set { ch_dea_sig }
+                    
+        // Create a samplesheet with intermediate results
+        writeSampleSheet(
+            DIFFEXPANALYSIS.out.sig,
+            "${params.outdir}/02-Results/03-DEA",
+            "${params.outdir}/00-Additional_data/02-Samplesheets/Samplesheet_dea.csv"
+        )
 
         // Execute the annotation step if params.skip_annotation is false.
         if(!params.skip_annotation){
@@ -748,11 +736,11 @@ workflow MIRPLAN {
             // Identify miRNA sequences
             ANNOTATION(
                 DEA_TO_FASTA.out.fasta,
-                'mirbase',
-                1,
-                0,
-                3,
-                4,
+                params.databases,
+                params.substitutions,
+                params.five_add,
+                params.three_add,
+                params.ends_modification,
                 ch_versions
             )
 
@@ -831,7 +819,7 @@ workflow MIRPLAN {
                 .set{ch_group_miRNAs_input}
 
             // Add annotation to DEA results dataframe
-            ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, 'ref_miRNA')
+            ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, 'ref_miRNA') // AÑADIR AQUI UN PARAMETRO PARA DECIDIR SI SE QUIERE REF_MIRNA O TODOS. POR DEFECTO TODOS
 
             // Save the software version
             ch_versions = ch_versions.mix(ANNOTATE_DEA_RESULTS.out.versions)
