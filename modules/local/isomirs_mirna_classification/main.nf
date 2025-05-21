@@ -1,5 +1,3 @@
-#!/usr/bin/env nextflow
-
 process ISOMIRS_MIRNA_CLASSIFICATION {
 
     tag "$meta.id"

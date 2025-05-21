@@ -19,7 +19,7 @@ include { COLLAPSE_DB         } from '../../../modules/local/collapse_db'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { formatDbChannel } from '../utils_mirnote_pipeline/'
+include { formatDbChannel } from '../utils_mirplan_pipeline/'
 
 
 /*

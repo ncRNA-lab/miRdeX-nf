@@ -10,7 +10,6 @@
 
 include { MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST } from '../../../modules/local/merge_and_filter_mature_precursor_blast'
 include { ISOMIRS_PRECURSOR_CLASSIFICATION        } from '../../../modules/local/isomirs_precursor_classification'
-include { TSV_TO_FASTA                            } from '../../../modules/local/tsv_to_fasta'
 include { BOWTIE_ALIGN                            } from '../../../modules/local/bowtie/align'
 include { FILTER_TSV_BY_FASTA                     } from '../../../modules/local/filter_tsv_by_fasta'
 include { CONCAT_TSV                              } from '../../../modules/local/concat_tsv'

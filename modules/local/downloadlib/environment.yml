@@ -1,7 +1,0 @@
-name: downloadlib
-channels:
-  - bioconda
-  - defaults
-dependencies:
-  - bioconda::sra-tools=2.11.0
-  - conda-forge::pigz=2.6

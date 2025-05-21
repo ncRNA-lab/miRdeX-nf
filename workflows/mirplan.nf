@@ -1,64 +1,23 @@
-#!/usr/bin/env nextflow
-
 /*
-========================================================================================
-    miRPlan Nextflow Workflow
-========================================================================================
-    Github   :
-    Contact  :
-----------------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT LOCAL MODULES/SUBWORKFLOWS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-
-
-
-nextflow.enable.dsl=2
-
-// println """\
-//          M I R P L A N - N F   P I P E L I N E
-//          ===================================
-//          genome       : ${params.genome}
-//          reads        : ${params.reads}
-//          outdir       : ${params.outdir}
-//          """
-//          .stripIndent()
-
-
-/*
-========================================================================================
-    IMPORT LOCAL FUNCTIONS/MODULES/SUBWORKFLOWS
-========================================================================================
-*/
-
-
 //
-// FUNCTIONS
+// MODULE: Loaded from modules/local/
 //
 
-include { validateAndAssignGenome    } from "../subworkflows/local/utils_mirplan_pipeline"
-include { notTsvFilesError           } from "../subworkflows/local/utils_mirplan_pipeline"
-include { validateGroupInputUsage    } from "../subworkflows/local/utils_mirplan_pipeline"
-include { validateAccessionList      } from "../subworkflows/local/utils_mirplan_pipeline"
-include { filterByMwwPvalue          } from "../subworkflows/local/utils_mirplan_pipeline"
-include { writeSampleSheet           } from "../subworkflows/local/utils_mirplan_pipeline"
-
+include { TSV_TO_FASTA              } from "../modules/local/tsv_to_fasta"
+include { DIFFEXPANALYSIS           } from "../modules/local/diffexpanalysis"
+include { ANNOTATE_DEA_RESULTS      } from "../modules/local/annotate_dea_results"
+include { BUILD_MIRNA_EVENT_MATRIX  } from "../modules/local/build_mirna_event_matrix"
+include { CONCAT_UNIQUE_GFF3        } from "../modules/local/concat_unique_gff3"
 
 //
-// MODULES
-//
-include { TSV_TO_FASTA      } from "../modules/local/tsv_to_fasta"
-include { DIFFEXPANALYSIS   } from "../modules/local/diffexpanalysis"
-include { ANNOTATE_DEA_RESULTS                    } from "../modules/local/annotate_dea_results"
-include { BUILD_MIRNA_EVENT_MATRIX } from "../modules/local/build_mirna_event_matrix"
-include { CONCAT_UNIQUE_GFF3 } from "../modules/local/concat_unique_gff3"
-
-
-//
-// SUBWORKFLOWS
+// SUBWORKFLOW: Loaded from subworkflows/local/
 //
 
-include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS                      } from "../subworkflows/nf-core/fastq_download_prefetch_fasterqdump_sratools"
-//include { ID_RESOLUTION                           } from "../subworkflows/local/idresolution"
 include { QUALITY_CONTROL as QUALITY_CONTROL_RAW  } from "../subworkflows/local/qualitycontrol"
 include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../subworkflows/local/qualitycontrol"
 include { VALIDATION                              } from "../subworkflows/local/validation"
@@ -68,30 +27,42 @@ include { QUANTIFICATION                          } from "../subworkflows/local/
 include { MIRNOTE as ANNOTATION                   } from "../subworkflows/local/mirnote"
 
 /*
-========================================================================================
-    IMPORT NF-CORE FUNCTIONS/MODULES/SUBWORKFLOWS
-========================================================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT NF-CORE MODULES/SUBWORKFLOWS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+//
+// MODULE: Installed directly from nf-core/modules
+//
 
-//
-// FUNCTIONS
-//
-include { samplesheetToList } from 'plugin/nf-schema'
-
-
-//
-// MODULES: Installed directly from nf-core/modules
-//
 include { FASTP } from '../modules/nf-core/fastp'
 
+//
+// SUBWORKFLOW: Consisting entirely of nf-core/modules
+//
+
+include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS } from "../subworkflows/nf-core/fastq_download_prefetch_fasterqdump_sratools"
 
 /*
-========================================================================================
-    WORKFLOW - miRNA GLOBAL ANALYSIS
-========================================================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { samplesheetToList          } from 'plugin/nf-schema'
+include { validateAndAssignGenome    } from "../subworkflows/local/utils_mirplan_pipeline"
+include { notTsvFilesError           } from "../subworkflows/local/utils_mirplan_pipeline"
+include { validateGroupInputUsage    } from "../subworkflows/local/utils_mirplan_pipeline"
+include { validateAccessionList      } from "../subworkflows/local/utils_mirplan_pipeline"
+include { filterByMwwPvalue          } from "../subworkflows/local/utils_mirplan_pipeline"
+include { writeSampleSheet           } from "../subworkflows/local/utils_mirplan_pipeline"
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    RUN MAIN WORKFLOW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
 
 workflow MIRPLAN {
 
@@ -114,7 +85,7 @@ workflow MIRPLAN {
     
     /*
     ============================================================================
-        Assign a default genome to the input files if necessary.
+       1. Assign a default genome to the input files if necessary.
     ============================================================================
     */
     
@@ -125,7 +96,7 @@ workflow MIRPLAN {
 
     /*
     ============================================================================
-        Check the inputs related to counts matrices
+        2. Check the inputs related to counts matrices
     ============================================================================
     */
 
@@ -144,7 +115,7 @@ workflow MIRPLAN {
     
     /*
     ============================================================================
-        Separate the fastq files from the accession list files
+        3. Separate the fastq files from the accession list files
     ============================================================================
     */
 
@@ -175,6 +146,12 @@ workflow MIRPLAN {
         }
         .set { ch_input_files }
     
+    /*
+    ============================================================================
+        4. Validate input counts matrices
+    ============================================================================
+    */
+
     // Check that the count matrices provided as input are valid.
     if (params.from_counts){
 
@@ -213,7 +190,7 @@ workflow MIRPLAN {
 
     /*
     ============================================================================
-        PRE-PROCESSING
+        5. Pre-processing of the sequencing libraries
     ============================================================================
     */
 
@@ -222,7 +199,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Download the study libraries
+            5.1. SUBWORKFLOW: Download the study libraries
         ============================================================================
         */
 
@@ -280,7 +257,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Perform quality control of RAW data
+            5.2. SUBWORKFLOW: Perform quality control of RAW data
         ============================================================================
         */
 
@@ -294,7 +271,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Perform trimming of the libraries using fastp.
+            5.3. SUBWORKFLOW: Perform trimming of the libraries using fastp.
         ============================================================================
         */
 
@@ -337,7 +314,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Perform quality control of RAW data
+            5.4. SUBWORKFLOW: Perform quality control of RAW data
         ============================================================================
         */
 
@@ -351,8 +328,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Check if the projects meet the criteria
-                        for the number of replicates and sequencing depth.
+            5.5. SUBWORKFLOW: Validate the libraries (depth and replicates)
         ============================================================================
         */
 
@@ -399,7 +375,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Remove sequences that are not of interest
+            5.6. SUBWORKFLOW: Remove sequences that are not of interest
         ============================================================================
         */
 
@@ -449,7 +425,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Remove sequences that do not align with the genome
+            5.7. SUBWORKFLOW: Remove sequences that do not align with the genome
         ============================================================================
         */
 
@@ -508,14 +484,15 @@ workflow MIRPLAN {
             }
             .set { ch_fastq }
 
+
+        /*
+        ============================================================================
+            6. SUBWORKFLOW: Quantification of small RNA sequences
+        ============================================================================
+        */
+
         // Do not run this step when only pre-processing is to be done.
         if (!params.only_preprocessing){
-
-            /*
-            ============================================================================
-                SUBWORKFLOW: Quantification of small RNA sequences
-            ============================================================================
-            */
             
             // Create count matrix
             QUANTIFICATION(ch_fastq, 'raw', params.counts_project_matrix, ch_versions)
@@ -575,7 +552,7 @@ workflow MIRPLAN {
 
         /*
         ============================================================================
-            SUBWORKFLOW: Differential Expression Analysis
+            7. SUBWORKFLOW: Differential Expression Analysis
         ============================================================================
         */
         
@@ -691,14 +668,14 @@ workflow MIRPLAN {
             }
             .set { ch_dea_sig }
 
+        /*
+        ============================================================================
+            8. SUBWORKFLOW: miRNA Annotation
+        ============================================================================
+        */
+
         // Execute the annotation step if params.skip_annotation is false.
         if(!params.skip_annotation){
-
-            /*
-            ============================================================================
-                SUBWORKFLOW: miRNA Annotation
-            ============================================================================
-            */
 
 
             // Filter dea results using a mww p-value threshold
@@ -843,7 +820,7 @@ workflow MIRPLAN {
                 .set{ch_group_miRNAs_input}
 
             // Add annotation to DEA results dataframe
-            ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, 'ref_miRNA') // AÑADIR AQUI UN PARAMETRO PARA DECIDIR SI SE QUIERE REF_MIRNA O TODOS. POR DEFECTO TODOS
+            ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, params.mirna_classes)
 
             // Save the software version
             ch_versions = ch_versions.mix(ANNOTATE_DEA_RESULTS.out.versions)
@@ -878,7 +855,6 @@ workflow MIRPLAN {
                     return updatedItem
                 }.set{ch_pipeline_summary}
 
-            // AÑADIR AQUI UN CONDICIONAL PARA COMPROBAR SI SE QUIERE HACER ESTE ANALISSI GLOBAL O NO
             // Prepare the channel to create the absence-presence matrix
             ANNOTATE_DEA_RESULTS.out.unique
                 .map{meta, file -> [file, meta.metadata, meta.samples]}
@@ -903,6 +879,12 @@ workflow MIRPLAN {
                 }
                 .set{ch_to_create_pa_matrix}
             
+            /*
+            ============================================================================
+                9. Create global matrices
+            ============================================================================
+            */
+
             // Create global matrices
             if (params.global_matrix){
                 // Create the both presence-absence and log2fc matrices  
@@ -917,13 +899,13 @@ workflow MIRPLAN {
     // Specify which samples have been discarded at any stage of the pipeline.
     ch_pipeline_summary
         .map { item ->
-            // Lista de valores inválidos
+            // List of invalid values
             def invalidValues = ['NA', 'not-valid', 'not-quantified']
-            // Indicar si se ha encontrado un valor inválido
+            // Flag to indicate if an invalid value has been found
             def stopProcessing = false
-            // Recorrer las claves del mapa y verificar los valores
+            // Iterate over the map keys and check the values
             item.each { key, value ->
-                // Si encontramos un valor no válido, marcamos todos los siguientes como "NA"
+                // If an invalid value is found, mark all subsequent ones as "NA"
                 if (stopProcessing || invalidValues.contains(value)) {
                     item[key] = 'NA'
                     stopProcessing = true
@@ -932,7 +914,7 @@ workflow MIRPLAN {
             return item
         }
         .set{ ch_pipeline_summary }
-    
+
 
     emit:
     summary        = ch_pipeline_summary                     // channel: [id:, sample:, etc]

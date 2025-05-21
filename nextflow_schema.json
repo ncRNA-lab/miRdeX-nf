@@ -217,8 +217,15 @@
           "type": "string",
           "default": "mirbase,pmiren,srnaanno",
           "fa_icon": "fas fa-database",
-          "description": "omma-separated string indicating the databases to use for miRNA identification and their order of preference. The search proceeds sequentially through the listed databases until the species is found. Allowed databases are: miRBase, sRNAanno, and/or PmiREN.",
+          "description": "Comma-separated string indicating the databases to use for miRNA identification and their order of preference. The search proceeds sequentially through the listed databases until the species is found. Allowed databases are: miRBase, sRNAanno, and/or PmiREN.",
           "pattern": "^[A-Za-z0-9_]+(,[A-Za-z0-9_]+)*$"
+        },
+        "mirna_classes": {
+          "type": "string",
+          "default": "ref_miRNA,iso_5p,iso_3p,iso_add3p,iso_add5p,iso_snv_seed,iso_snv_central_offset,iso_snv_central,iso_snv_central_supp,iso_snv,Mixed,Mixed_shift,Undefined",
+          "fa_icon": "fas fa-list-ul",
+          "description": "Comma-separated string specifying which miRNA classes or variants will be considered during the annotation process.",
+          "help_text": "These are the miRNA classes that can be included in the string:\n\n    ref_miRNA: Canonical miRNA sequence, perfectly matching the reference.\n\n    iso_5p: Shift in the 5\u2032 end of the sequence (e.g., iso_5p:+1 or iso_5p:\u22121).\n\n    iso_3p: Shift in the 3\u2032 end of the sequence.\n\n    iso_add5p: Non-templated nucleotide additions at the 5\u2032 end.\n\n    iso_add3p: Non-templated nucleotide additions at the 3\u2032 end.\n\n    iso_snv_seed: Single nucleotide variants (SNVs) in the seed region (positions 2\u20137).\n\n    iso_snv_central_offset: SNVs at position 8.\n\n    iso_snv_central: SNVs in positions 9\u201312.\n\n    iso_snv_central_supp: SNVs in the supplementary region (positions 13\u201317).\n\n    iso_snv: SNVs outside of the regions defined above.\n\n    Mixed: Sequences that exhibit a combination of variant types.\n\n    Mixed_shift: Mixed variants that result in a shift of the seed region.\n\n    Undefined: Sequences that match multiple variant categories without a clear dominant class."
         },
         "substitutions": {
           "type": "integer",
@@ -253,6 +260,20 @@
           "type": "boolean",
           "fa_icon": "fas fa-laptop-code",
           "description": "Indicates whether to perform annotation using the Unitas program instead of the default annotation methodology."
+        },
+        "counts": {
+          "type": "integer",
+          "default": 0,
+          "fa_icon": "fas fa-table",
+          "description": "Minimum raw counts required for a sequence to be retained for the annotation step.",
+          "help_text": "Minimum number of raw counts required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--rpm'."
+        },
+        "rpm": {
+          "type": "integer",
+          "default": 0,
+          "fa_icon": "fas fa-table",
+          "description": "Minimum Reads per million (RPM) required for a sequence to be retained for the annotation step.",
+          "help_text": "Minimum number of RPM required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--counts'."
         }
       }
     },

@@ -3,8 +3,6 @@ process ANNOTATE_DEA_RESULTS {
     // Process tag
     tag "$meta.id"
 
-    debug true
-
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'library://antoglz/mirnas_analysis/annotate_dea_results:latest' :
         'docker.io/antoglz/annotate_dea_results:latest' }"
