@@ -123,13 +123,33 @@ read_miRNA_gff3 <- function(gff3_path) {
   # Read the miRNA gff3 file
   gff3 <- read.gff(gff3_path, GFF3 = TRUE)
   
-  # Move attributes to columns
-  gff3_df <- gff3 %>%
-    select(-phase) %>% 
-    separate_rows(attributes, sep = ";\\s*") %>%
-    separate(attributes, into = c("attr_name", "attr_value"), sep = "=", fill = "right") %>%
-    pivot_wider(names_from = attr_name, values_from = attr_value)
+  # Create a datarame using th gff3 file
+  attr_dfs <- vector("list", length = nrow(gff3))
+  for (i in seq_len(nrow(gff3))) {
+    row <- gff3[i, ]
+    
+    # Parse attributes into a named list
+    attr_pairs <- strsplit(strsplit(row$attributes, ";\\s*")[[1]], "=", fixed = TRUE)
+    attr_list <- setNames(
+      lapply(attr_pairs, function(x) x[2]),
+      sapply(attr_pairs, function(x) x[1])
+    )
+    
+    # Convert attributes list to a one-row data frame
+    attr_df <- as.data.frame(attr_list, stringsAsFactors = FALSE)
+    
+    # Select all columns except 'attributes' and 'phase'
+    base_df <- row %>% dplyr::select(-attributes, -phase)
+    
+    # Combine base columns and parsed attributes into one row
+    combined_df <- cbind(base_df, attr_df)
+    
+    attr_dfs[[i]] <- combined_df
+  }
   
+  # Bind all rows together into a final data frame
+  gff3_df <- dplyr::bind_rows(attr_dfs)
+
   return(gff3_df)
 }
 
@@ -233,7 +253,7 @@ gff3_check_df <- gff3_df %>%
   ungroup()
 
 # Merge DEA results dataframe with gff3 dataframe (Keep duplicated sequences (IsomiRs from multiple reference miRNAs)
-dea_annotated_all_isomirs <- merge(dea_df, gff3_check_df, by.x = 'seq', by.y = 'Read', all.y = TRUE)
+dea_annotated_all_isomirs <- merge(dea_df, gff3_check_df, by.x = 'seq', by.y = 'Read')
 
 # Save table
 file_name_table_all = paste0(id, '.all.tsv')

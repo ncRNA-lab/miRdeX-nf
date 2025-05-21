@@ -81,6 +81,28 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
         '  "\$input_file" > "\$output_file"
     }
 
+    # Select the most probable alignment within the same precursor.
+    select_best_alignment_precursor(){
+        
+        # Arguments
+        local input_file="\${1}"
+        local output_file="\${2}"
+
+        awk -F'\\t' '
+        {
+            key = \$1 FS \$16
+            val = \$27 + 0
+            if (!(key in max) || val > max[key]) {
+                max[key] = val
+                line[key] = \$0
+            }
+        }
+        END {
+            for (k in line) print line[k]
+        }
+        ' \$input_file > \$output_file
+    }
+
     ### MAIN
     main () {
         # Create temporary directory
@@ -105,7 +127,10 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
         cut --complement -f1,4,18,20,32 tmp/joined_table.tsv > tmp/isomirs_all.tsv
         
         # Select most likely references for each sequence
-        select_most_likely_references tmp/isomirs_all.tsv "${prefix}.mpblast.tsv"
+        select_most_likely_references tmp/isomirs_all.tsv tmp/isomirs_best_alig_within_same_pre.tsv 
+        
+        # Select the most probable alignment within the same precursor.
+        select_best_alignment_precursor tmp/isomirs_best_alig_within_same_pre.tsv "${prefix}.mpblast.tsv"
 
         # Add empty suffix if the file is empty
         if [ ! -s "${prefix}.mpblast.tsv" ]; then

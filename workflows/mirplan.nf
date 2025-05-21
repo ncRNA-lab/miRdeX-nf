@@ -46,10 +46,12 @@ include { writeSampleSheet           } from "../subworkflows/local/utils_mirplan
 //
 // MODULES
 //
-include { DEA_TO_FASTA      } from "../modules/local/dea_to_fasta"
+include { TSV_TO_FASTA      } from "../modules/local/tsv_to_fasta"
 include { DIFFEXPANALYSIS   } from "../modules/local/diffexpanalysis"
 include { ANNOTATE_DEA_RESULTS                    } from "../modules/local/annotate_dea_results"
 include { BUILD_MIRNA_EVENT_MATRIX } from "../modules/local/build_mirna_event_matrix"
+include { CONCAT_UNIQUE_GFF3 } from "../modules/local/concat_unique_gff3"
+
 
 //
 // SUBWORKFLOWS
@@ -201,6 +203,12 @@ workflow MIRPLAN {
                 // Crear un nuevo elemento por cada SRR, asignándolo a 'sample'
                 samples.collect { srr -> [sample: srr] + newMeta }
             }.set{ ch_pipeline_summary }
+        
+        // Create FASTA file for the annotation step
+        TSV_TO_FASTA(ch_counts, 0, 1, true)
+        
+        // Save the output into the ch_fastq channel
+        ch_fastq = TSV_TO_FASTA.out.fasta
     }
 
     /*
@@ -489,6 +497,17 @@ workflow MIRPLAN {
                 .set{ ch_pipeline_summary }
         }
 
+        // Remove those specific fields of the sample except for the ID.
+        ch_fastq
+            .map { meta, file ->
+                // Filtrar los campos no deseados
+                def filteredMeta = meta.findAll { key, _value ->
+                    !(key.startsWith('filtering_') || key in ['depth', 'depth_validity', 'replicates_validity'])
+                }
+                [filteredMeta, file]
+            }
+            .set { ch_fastq }
+
         // Do not run this step when only pre-processing is to be done.
         if (!params.only_preprocessing){
 
@@ -497,17 +516,6 @@ workflow MIRPLAN {
                 SUBWORKFLOW: Quantification of small RNA sequences
             ============================================================================
             */
-
-            // Remove those specific fields of the sample except for the ID.
-            ch_fastq
-                .map { meta, file ->
-                    // Filtrar los campos no deseados
-                    def filteredMeta = meta.findAll { key, _value ->
-                        !(key.startsWith('filtering_') || key in ['depth', 'depth_validity', 'replicates_validity'])
-                    }
-                    [filteredMeta, file]
-                }
-                .set { ch_fastq }
             
             // Create count matrix
             QUANTIFICATION(ch_fastq, 'raw', params.counts_project_matrix, ch_versions)
@@ -651,7 +659,7 @@ workflow MIRPLAN {
                 ] : [
                     comparison_id: 'NA',
                     test: 'NA',
-                    'padj<0.05': 'NA',
+                    'padj<alpha': 'NA',
                     total: 'NA',
                     coefficient: 'NA',
                     contrast: 'NA',
@@ -682,13 +690,6 @@ workflow MIRPLAN {
                 return [meta + [coefficient:dea_sig.Coefficient, samples:dea_sig.Samples], file]
             }
             .set { ch_dea_sig }
-                    
-        // Create a samplesheet with intermediate results
-        writeSampleSheet(
-            DIFFEXPANALYSIS.out.sig,
-            "${params.outdir}/02-Results/03-DEA",
-            "${params.outdir}/00-Additional_data/02-Samplesheets/Samplesheet_dea.csv"
-        )
 
         // Execute the annotation step if params.skip_annotation is false.
         if(!params.skip_annotation){
@@ -729,12 +730,9 @@ workflow MIRPLAN {
                     .set{ch_dea_sig}
             }
 
-            // Create fasta files from the DESeq2 results
-            DEA_TO_FASTA(ch_dea_sig)
-
             // Identify miRNA sequences
             ANNOTATION(
-                DEA_TO_FASTA.out.fasta,
+                ch_fastq,
                 params.databases,
                 params.substitutions,
                 params.five_add,
@@ -800,21 +798,48 @@ workflow MIRPLAN {
 
                     return updatedItem
                 }.set{ch_pipeline_summary}
+            
+            // Prepare the input chennel for CONCAT_UNIQUE_GFF3 process
+            if (!params.from_counts){
+
+                // Create a single GFF3 file for each group with the annotated sequences
+                ANNOTATION.out.annotation
+                    .flatMap { tuple -> 
+                        def meta = tuple[0]
+                        def file = tuple[1]
+
+                        // For each valid group, we generate a new map.
+                        meta.valid_groups.collect { group_num ->
+                            def new_meta = meta.clone()
+                            new_meta.id = "${meta.project}_${group_num}"
+                            return [[id:new_meta.id, genome:new_meta.genome], file]
+                        }
+                    }
+                    .groupTuple(by: 0)
+                    .set{ ch_gff3_by_group}
+            } else {
+                // If the input consists of count tables, each table is already a group.
+                ch_gff3_by_group = ANNOTATION.out.annotation
+            }
+
+            // Concat gff3 files by group and remove duplicates
+            CONCAT_UNIQUE_GFF3(ch_gff3_by_group)
 
             // Prepare annotation channel
-            ANNOTATION.out.annotation
+            CONCAT_UNIQUE_GFF3.out.gff3
                 .map{meta, file -> return[meta.id, meta, file]}
                 .set{ch_mirna_annot}
 
             // Prepate dea_files channel
             ch_dea_ea_sig
-                .map{meta, file, ea_file -> return[meta.id, meta, file, ea_file]}
+                .map{meta, file, _ea_file ->
+                    return["${meta.project}_${meta.group_id}", meta, file]}
                 .set{ dea_ea_files }
 
             // Combine both channels
             dea_ea_files
                 .combine(ch_mirna_annot, by:0)
-                .map{item -> return[item[1], item[2], item[5]]}
+                .map{item -> return[item[1], item[2], item[4]]}
                 .set{ch_group_miRNAs_input}
 
             // Add annotation to DEA results dataframe
