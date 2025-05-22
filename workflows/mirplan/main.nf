@@ -8,23 +8,23 @@
 // MODULE: Loaded from modules/local/
 //
 
-include { TSV_TO_FASTA              } from "../modules/local/tsv_to_fasta"
-include { DIFFEXPANALYSIS           } from "../modules/local/diffexpanalysis"
-include { ANNOTATE_DEA_RESULTS      } from "../modules/local/annotate_dea_results"
-include { BUILD_MIRNA_EVENT_MATRIX  } from "../modules/local/build_mirna_event_matrix"
-include { CONCAT_UNIQUE_GFF3        } from "../modules/local/concat_unique_gff3"
+include { TSV_TO_FASTA              } from "../../modules/local/tsv_to_fasta"
+include { DIFFEXPANALYSIS           } from "../../modules/local/diffexpanalysis"
+include { ANNOTATE_DEA_RESULTS      } from "../../modules/local/annotate_dea_results"
+include { BUILD_MIRNA_EVENT_MATRIX  } from "../../modules/local/build_mirna_event_matrix"
+include { CONCAT_UNIQUE_GFF3        } from "../../modules/local/concat_unique_gff3"
 
 //
 // SUBWORKFLOW: Loaded from subworkflows/local/
 //
 
-include { QUALITY_CONTROL as QUALITY_CONTROL_RAW  } from "../subworkflows/local/qualitycontrol"
-include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../subworkflows/local/qualitycontrol"
-include { VALIDATION                              } from "../subworkflows/local/validation"
-include { FILTERING as FILTERING_DB               } from "../subworkflows/local/filtering"
-include { FILTERING as FILTERING_GENOME           } from "../subworkflows/local/filtering"
-include { QUANTIFICATION                          } from "../subworkflows/local/quantification"
-include { MIRNOTE as ANNOTATION                   } from "../subworkflows/local/mirnote"
+include { QUALITY_CONTROL as QUALITY_CONTROL_RAW  } from "../../subworkflows/local/qualitycontrol"
+include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../../subworkflows/local/qualitycontrol"
+include { VALIDATION                              } from "../../subworkflows/local/validation"
+include { FILTERING as FILTERING_DB               } from "../../subworkflows/local/filtering"
+include { FILTERING as FILTERING_GENOME           } from "../../subworkflows/local/filtering"
+include { QUANTIFICATION                          } from "../../subworkflows/local/quantification"
+include { MIRNOTE as ANNOTATION                   } from "../../subworkflows/local/mirnote"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,13 +36,13 @@ include { MIRNOTE as ANNOTATION                   } from "../subworkflows/local/
 // MODULE: Installed directly from nf-core/modules
 //
 
-include { FASTP } from '../modules/nf-core/fastp'
+include { FASTP } from '../../modules/nf-core/fastp'
 
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
 //
 
-include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS } from "../subworkflows/nf-core/fastq_download_prefetch_fasterqdump_sratools"
+include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS } from "../../subworkflows/nf-core/fastq_download_prefetch_fasterqdump_sratools"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,12 +51,12 @@ include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS } from "../subworkflows/n
 */
 
 include { samplesheetToList          } from 'plugin/nf-schema'
-include { validateAndAssignGenome    } from "../subworkflows/local/utils_mirplan_pipeline"
-include { notTsvFilesError           } from "../subworkflows/local/utils_mirplan_pipeline"
-include { validateGroupInputUsage    } from "../subworkflows/local/utils_mirplan_pipeline"
-include { validateAccessionList      } from "../subworkflows/local/utils_mirplan_pipeline"
-include { filterByMwwPvalue          } from "../subworkflows/local/utils_mirplan_pipeline"
-include { writeSampleSheet           } from "../subworkflows/local/utils_mirplan_pipeline"
+include { validateAndAssignGenome    } from "../../subworkflows/local/utils_mirplan_pipeline"
+include { notTsvFilesError           } from "../../subworkflows/local/utils_mirplan_pipeline"
+include { validateGroupInputUsage    } from "../../subworkflows/local/utils_mirplan_pipeline"
+include { validateAccessionList      } from "../../subworkflows/local/utils_mirplan_pipeline"
+include { filterByMwwPvalue          } from "../../subworkflows/local/utils_mirplan_pipeline"
+include { writeSampleSheet           } from "../../subworkflows/local/utils_mirplan_pipeline"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -628,7 +628,7 @@ workflow MIRPLAN {
                 def additionalFields = dea_summary ? [
                     comparison_id : dea_summary.Group,
                     test: dea_summary.Test,
-                    'padj<alpha': dea_summary.'Padj<0.05', // CAMMBIAR LO DE 0.05 POR ALPHA
+                    'padj<alpha': dea_summary.'Padj<alpha', // CAMMBIAR LO DE 0.05 POR ALPHA
                     total: dea_summary.Total,
                     coefficient: dea_summary.Coefficient,
                     contrast: dea_summary.Contrast,
@@ -728,7 +728,7 @@ workflow MIRPLAN {
             
             // Add the Annotation data to the ch_pipeline_summary channel
             ch_pipeline_summary
-                .map{ item -> [item.comparison_id, item]}
+                .map{ item -> [item.sample, item]}
                 .groupTuple(by:0)
                 .join(ch_annot_summary, remainder:true)
                 .flatMap { item ->

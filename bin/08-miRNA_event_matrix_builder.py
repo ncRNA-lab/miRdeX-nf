@@ -135,16 +135,21 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
             (df_metadata['Group'] == samples_group) &
             (df_metadata['Run'].isin(samp_list))
         ]
+
         # Select those fields that are in the metadata file
         all_fields = [col for col in fields
                     if col.lower() in [c.lower() for c in group_rows.columns]]
         id_parts = []
         for col in all_fields:
+
             # Get the real column name (respecting case)
             real_col = next(c for c in group_rows.columns if c.lower() == col.lower())
 
             # Get unique values from that column (ignoring NaN)
             unique_vals = group_rows[real_col].dropna().unique()
+
+            # Remove 'None' element from Treatment column levels
+            unique_vals = [val for val in unique_vals if not (col == 'treatment' and val == 'None')]
             
             # If there is only one unique value, assign an ID
             if len(unique_vals) == 1:

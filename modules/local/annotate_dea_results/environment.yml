@@ -1,0 +1,9 @@
+name: annotdea
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - r-base==4.4.2
+  - r-argparse=2.2.5
+  - r-tidyverse==2.0.0
+  - r-ape==5.8.1

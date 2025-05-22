@@ -1,23 +1,11 @@
 #!/usr/bin/env nextflow
-
 /*
-========================================================================================
-    miRPlan Nextflow Workflow
-========================================================================================
-    Github   :
-    Contact  :
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    antoglz/mirplan
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Github : https://github.com/antoglz/miRPlan-nf
 ----------------------------------------------------------------------------------------
 */
-
-// println """\
-//          M I R P L A N - N F   P I P E L I N E
-//          ===================================
-//          genome       : ${params.genome}
-//          reads        : ${params.reads}
-//          outdir       : ${params.outdir}
-//          """
-//          .stripIndent()
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,37 +17,36 @@ include { MIRPLAN                   } from './workflows/mirplan'
 include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_mirplan_pipeline'
 include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_mirplan_pipeline'
 
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    NAMED WORKFLOWS FOR PIPELINE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
 
-//
-// WORKFLOW: Run main nf-mirplan pipeline
-//
 workflow MAIN_MIRPLAN {
 
     main:
     
     // Create an empty channel for versions 
     ch_versions = Channel.empty()
-
-    //
-    // WORKFLOW: Run mirplan workflow
-    //
     
     // Run the workflow
     MIRPLAN (params.input, ch_versions)
 
     // Get the versions channel from the main workflow
     ch_versions = ch_versions.mix(MIRPLAN.out.versions)
+
+    emit:
+    summary  = MIRPLAN.out.summary
+    versions = MIRPLAN.out.versions
 }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN ALL WORKFLOWS
+    RUN MAIN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// WORKFLOW: Execute a single named workflow for the pipeline
-//
 workflow {
 
     main:
@@ -67,12 +54,12 @@ workflow {
         //
         // SUBWORKFLOW: Run initialisation tasks
         //
-        // PIPELINE_INITIALISATION(
-        //     params.version,
-        //     params.validate_params,
-        //     args,
-        //     params.outdir
-        // )
+        PIPELINE_INITIALISATION(
+            params.version,
+            params.validate_params,
+            args,
+            params.outdir
+        )
 
         //
         // SUBWORKFLOW: Run the main workflow
@@ -83,6 +70,8 @@ workflow {
         // SUBWORKFLOW: Run completion tasks
         //
         PIPELINE_COMPLETION(
+            MAIN_MIRPLAN.out.summary,
+            MAIN_MIRPLAN.out.versions,
             params.email,
             params.email_on_fail,
             params.plaintext_email,

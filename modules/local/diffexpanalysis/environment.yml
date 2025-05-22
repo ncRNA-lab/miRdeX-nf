@@ -1,0 +1,30 @@
+name: diffexp
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base=4.4.2
+  - r-curl=6.2.2
+  - r-httr=1.4.7
+  - r-usethis=3.1.0
+  - r-renv
+  - r-devtools=2.4.5
+  - r-biocmanager=1.30.23
+  - r-dendextend=1.19.0
+  - r-ff=4.5.2
+  - r-tidyverse=2.0.0
+  - r-ggthemes=5.1.0
+  - r-argparse=2.2.5
+  - r-tibble=3.2.1
+  - r-plotly=4.10.4
+  - r-paletteer=1.6.0
+  - r-gtools=3.9.5
+  - r-stringr=1.5.1
+  - r-rcolorbrewer=1.1_3
+  - r-readr=2.1.5
+  - r-htmltools=0.5.8.1
+  - r-sartools=1.8.1
+  - bioconda::bioconductor-deseq2~=1.46.0
+  - bioconda::bioconductor-degreport=1.42.0
+  - bioconda::bioconductor-apeglm==1.28.0

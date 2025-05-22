@@ -15,7 +15,7 @@
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
 include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
-
+include { softwareVersionsToYAML    } from '../../nf-core/utils_nfcore_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,6 +69,8 @@ workflow PIPELINE_INITIALISATION {
 workflow PIPELINE_COMPLETION {
 
     take:
+    summary
+    versions
     email               //  string: email address
     email_on_fail       //  string: email address sent on pipeline failure
     plaintext_email     // boolean: Send plain-text email instead of HTML
@@ -95,6 +97,24 @@ workflow PIPELINE_COMPLETION {
     workflow.onError {
         log.error "Pipeline failed."
     }
+    
+    def timestamp = new java.util.Date().format('yyyy-MM-dd_HH-mm-ss')
+    
+    // Save a file with the software versions
+    softwareVersionsToYAML(versions)
+        .collectFile(storeDir: "${params.outdir}/00-Additional_data/00-Pipeline_summary/", name: "mirplan_versions_${timestamp}.yml", sort: true, newLine: true)
+    
+    // Sort the summary chanel
+    summary
+        .toSortedList { a, b -> 
+            a.comparison_id <=> b.comparison_id ?: a.group <=> b.group ?: a.species <=> b.species
+        }
+        .flatMap()
+        .set{ch_sorted_summary}
+
+    // Save a file with the summary information
+    summaryToTsv(ch_sorted_summary)
+        .collectFile(storeDir: "${params.outdir}/00-Additional_data/00-Pipeline_summary/", name: "mirplan_summary_${timestamp}.tsv", newLine: true, sort: false)
 }
 
 /*

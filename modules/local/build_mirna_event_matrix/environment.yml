@@ -5,5 +5,5 @@ dependencies:
 - conda-forge::python=3.8.20
 - pip
 - pip:
-  - numpy==1.23.1
+  - natsort==8.0.0
   - pandas==1.4.1

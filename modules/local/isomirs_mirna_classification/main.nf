@@ -1,7 +1,7 @@
 process ISOMIRS_MIRNA_CLASSIFICATION {
 
     tag "$meta.id"
-    
+
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/ee/ee1cb5ff22056795ddb2bb8ddc2f755a32f7c463c12665f5f246919ce595307e/data' :

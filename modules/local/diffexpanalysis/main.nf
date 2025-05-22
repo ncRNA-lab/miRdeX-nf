@@ -1,7 +1,8 @@
 process DIFFEXPANALYSIS {
 
     tag "$meta.id"
-
+    
+    conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'library://antoglz/mirnas_analysis/diffexp:latest' :
         'docker.io/antoglz/diffexp:latest' }"

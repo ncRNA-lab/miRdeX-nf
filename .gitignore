@@ -14,6 +14,8 @@ assets/PRJNA720229_3.counts.tsv
 assets/PRJNA720229_3.counts.tsv
 assets/samplesheet_counts.csv
 assets/samplesheet_original.csv
+assets/PRJNA560782/
+assets/arth_m_PRJNA560782.tsv
 
 # Ignore work directory
 work/

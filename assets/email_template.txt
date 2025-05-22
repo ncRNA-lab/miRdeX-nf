@@ -1,0 +1,41 @@
+
+
+miRPlan-nf                 
+────────────────────────────────────────────────────────────────
+Run Name     : ${runName}                                  
+Completed At : ${dateComplete}                             
+Duration     : ${duration}
+Version      : ${version}
+────────────────────────────────────────────────────────────────
+
+<% if (!success) {
+    out << """
+Workflow Status: FAILED
+────────────────────────────────────────────────────────────────
+The workflow terminated with an error.
+Exit Status   : $exitStatus
+
+Error Report:
+────────────────
+${errorReport}
+"""
+} else {
+    out << """
+Workflow Status: SUCCESS
+────────────────────────────────────────────────────────────────
+mirnote-nf finished successfully!
+"""
+}
+%>
+
+COMMAND LINE
+────────────────────────────────────────────────────────────────
+$commandLine
+────────────────────────────────────────────────────────────────
+
+PIPELINE CONFIGURATION
+────────────────────────────────────────────────────────────────
+<% out << summary.collect{ k,v -> " - $k: $v" }.join("\n") %>
+────────────────────────────────────────────────────────────────
+
+mirplan-nf – https://github.com/antoglz/miRPlan-nf

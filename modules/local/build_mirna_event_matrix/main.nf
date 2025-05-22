@@ -1,5 +1,10 @@
 process BUILD_MIRNA_EVENT_MATRIX {
 
+    conda "${moduleDir}/environment.yml"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/09/09d962c742a1be43eff7a362658618cec47d333f0f09b34f493fc960b05a27df/data' :
+        'community.wave.seqera.io/library/python_pip_natsort_pandas:4aa565244c22e36b' }"
+
     input:
     tuple path(annot_file_list), path(metadata_file_list), val(samples_list)
     val fields
