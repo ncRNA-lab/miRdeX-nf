@@ -14,8 +14,12 @@ process DIFFEXPANALYSIS {
     val min_samples
 
     output:
-    tuple val(meta), path("*_raw.tsv")  , emit: raw
-    tuple val(meta), path("*_sig.tsv")  , emit: sig
+    tuple val(meta), path("*_raw.tsv")                    , emit: raw
+    tuple val(meta), path("*_sig.tsv")                    , emit: sig
+    tuple val(meta), path("*.volcano.png")                , emit: volcano
+    tuple val(meta), path("01-PCA")                       , emit: pca
+    tuple val(meta), path("02-SERE_dendrogram")           , emit: sere
+    tuple val(meta), path("03-Mean_vs_variance")          , emit: var
     tuple val(meta), path("${meta.id}.ea_summary.tsv")    , emit: easum
     tuple val(meta), path("${meta.id}.dea_summary.tsv")   , emit: deasum
     path  "versions.yml", emit: versions
