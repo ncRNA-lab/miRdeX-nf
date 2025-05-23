@@ -23,7 +23,7 @@ process ISOMIRS_MIRNA_CLASSIFICATION {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Execute isomir classification script
-    02-IsomiRs_classification.py \
+    05-IsomiRs_classification.py \
         --id ${prefix} \
         --database ${meta.database} \
         --input ${blast_tsv} \

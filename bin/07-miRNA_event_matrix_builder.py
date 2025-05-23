@@ -139,11 +139,15 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
         # Select those fields that are in the metadata file
         all_fields = [col for col in fields
                     if col.lower() in [c.lower() for c in group_rows.columns]]
+        
         id_parts = []
+        real_columns = []
+        column_values= []
         for col in all_fields:
 
             # Get the real column name (respecting case)
             real_col = next(c for c in group_rows.columns if c.lower() == col.lower())
+            real_columns.append(real_col)
 
             # Get unique values from that column (ignoring NaN)
             unique_vals = group_rows[real_col].dropna().unique()
@@ -153,6 +157,9 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
             
             # If there is only one unique value, assign an ID
             if len(unique_vals) == 1:
+
+                # Save the values into the values list
+                column_values.append(unique_vals[0])
 
                 # Check if this id has been already assigned
                 dic_id = f'{real_col}_{unique_vals[0]}'
@@ -185,7 +192,7 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
                     id_parts.append(field_id_dic[dic_id])
             else:
                 raise ValueError(f"Expected only one unique value for column '{real_col}', found: {unique_vals}")
-            
+
         # Create the identifier
         id = '.'.join(map(str, id_parts))
 
@@ -198,27 +205,44 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
             i += 1
 
         # Save the identifier in the dictionary
-        ids_dic['_'.join(anno.split('.')[0].split('_'))] = new_id
+        ids_dic['_'.join(anno.split('.')[0].split('_'))] = [new_id, column_values]
         # Save the identifier in the "done" list
         ids_done.append(new_id)
-        
-    # Convert to list of rows
-    rows = []
-    for key, value in field_id_dic.items():
-        type_, name = key.split('_', 1)
-        rows.append((type_, name, value))
-
-    # Sort by Type and then ID
-    rows.sort(key=lambda x: (x[0], x[2]))
-
+    
+    # Save files with ids
     if save_id_file:
+
+        ## Save the IDs file
+        # Convert to list of rows
+        rows = []
+        for key, value in field_id_dic.items():
+            type_, name = key.split('_', 1)
+            rows.append((type_, name, value))
+
+        # Sort by Type and then ID
+        rows.sort(key=lambda x: (x[0], x[2]))
+
         # Write to TSV file
-        with open('id_correspondence.tsv', 'w', newline='') as tsvfile:
+        with open('ids.tsv', 'w', newline='') as tsvfile:
             writer = csv.writer(tsvfile, delimiter='\t')
             writer.writerow(['Type', 'Name', 'ID'])
             writer.writerows(rows)
-            return ids_dic
-    
+
+        ## Save the Comparison-id file
+        rows2 = []
+        for key, value in ids_dic.items():
+            row2 = [key] + [value[0]] + value[1]
+            rows2.append(row2)
+
+        # Sort by Type and then ID
+        rows2.sort(key=lambda x: (x[0], x[1]))
+        
+        # Write to TSV file
+        with open('comparisons_ids.tsv', 'w', newline='') as tsvfile2:
+            writer = csv.writer(tsvfile2, delimiter='\t')
+            writer.writerow(['Comparsion_id', 'Id'] + real_columns)
+            writer.writerows(rows2)
+
     return ids_dic
 
 
@@ -486,7 +510,7 @@ def main():
     eventid_miRNAs_dic = {}
     for key, new_key in ids_dic.items():
         if key in files_miRNA_list:
-            eventid_miRNAs_dic[new_key] = files_miRNA_list[key]
+            eventid_miRNAs_dic[new_key[0]] = files_miRNA_list[key]
 
     # Create the both presence-absence and Log2fc matrices
     print('Creating miRNA-events matrices...')

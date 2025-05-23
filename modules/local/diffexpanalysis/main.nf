@@ -26,7 +26,7 @@ process DIFFEXPANALYSIS {
 
     script:
     """
-    05-Diff_exp_analysis.r \
+    04-Diff_exp_analysis.r \
         --id ${meta.id} \
         --group_id ${meta.group_id} \
         --counts ${matrix} \

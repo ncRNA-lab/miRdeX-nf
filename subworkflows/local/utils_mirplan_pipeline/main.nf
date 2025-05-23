@@ -98,11 +98,9 @@ workflow PIPELINE_COMPLETION {
         log.error "Pipeline failed."
     }
     
-    def timestamp = new java.util.Date().format('yyyy-MM-dd_HH-mm-ss')
-    
     // Save a file with the software versions
     softwareVersionsToYAML(versions)
-        .collectFile(storeDir: "${params.outdir}/00-Additional_data/00-Pipeline_summary/", name: "mirplan_versions_${timestamp}.yml", sort: true, newLine: true)
+        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirplan_versions_${workflow.nextflow.timestamp}.yml", sort: true, newLine: true)
     
     // Sort the summary chanel
     summary
@@ -114,7 +112,7 @@ workflow PIPELINE_COMPLETION {
 
     // Save a file with the summary information
     summaryToTsv(ch_sorted_summary)
-        .collectFile(storeDir: "${params.outdir}/00-Additional_data/00-Pipeline_summary/", name: "mirplan_summary_${timestamp}.tsv", newLine: true, sort: false)
+        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirplan_summary_${workflow.nextflow.timestamp}.tsv", newLine: true, sort: false)
 }
 
 /*
@@ -631,9 +629,9 @@ def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, o
         }
         
         // Save a copy of the email to the output directory
-        def output_tf = new File(workflow.launchDir.toString(), ".pipeline_report.txt")
+        def output_tf = new File(workflow.launchDir.toString(), ".pipeline_report_${workflow.nextflow.timestamp}.txt")
         output_tf.withWriter { w -> w << rendered }
-        nextflow.extension.FilesEx.copyTo(output_tf.toPath(), "${outdir}/pipeline_info/pipeline_report.txt")
+        nextflow.extension.FilesEx.copyTo(output_tf.toPath(), "${outdir}/pipeline_info/pipeline_report_${workflow.nextflow.timestamp}.txt")
         output_tf.delete()
     }
 }

@@ -20,7 +20,7 @@ process ANNOTATE_DEA_RESULTS {
 
     script:
     """
-    Annotate_dea_results.r \
+    06-Annotate_dea_results.r \
         --id ${meta.id} \
         --dea ${dea_file} \
         --annotation ${annot_file} \

@@ -20,14 +20,14 @@ process COUNTS_MATRIX {
     def create_project_matrix = counts_project_matrix ? "--project-table" : ""
     """
     if [ "${type}" == "raw" ]; then
-    04-Create_counts_matrix.py \
+    03-Create_counts_matrix.py \
         --project ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${metadata} \
         --valid-groups ${valid_groups} \
         ${create_project_matrix}
     else
-    04-Create_counts_matrix.py \
+    03-Create_counts_matrix.py \
         --project ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${metadata} \

@@ -21,7 +21,7 @@ process LIBRARIES_VALIDATION {
 
     script:
     """
-    03-Validate_libraries.py \
+    02-Validate_libraries.py \
         -i ${fastq_files} \
         -j ${meta.id} \
         -m ${meta.metadata} \

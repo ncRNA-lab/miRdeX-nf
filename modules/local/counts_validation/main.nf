@@ -18,7 +18,7 @@ process COUNTS_VALIDATION {
 
     script:
     """
-    03-Validate_counts_matrix.py \
+    02-Validate_counts_matrix.py \
         -i ${meta.id} \
         -g ${meta.group_id} \
         -c ${counts_files} \

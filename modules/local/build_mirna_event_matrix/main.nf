@@ -12,7 +12,8 @@ process BUILD_MIRNA_EVENT_MATRIX {
     output:
     path "presence_absence_table.tsv"   , emit: preabs
     path "shrunken_log2fc_table.tsv"    , emit: log2fc
-    path "id_correspondence.tsv"        , emit: ids
+    path "ids.tsv"                      , emit: ids
+    path "comparisons_ids.tsv"          , emit: compids
     path  "versions.yml"                , emit: versions
 
     script:
@@ -23,7 +24,7 @@ process BUILD_MIRNA_EVENT_MATRIX {
         "--annotation \"${annotList[i]}\" --metadata \"${metaList[i]}\" --samples \"${samplesList[i]}\""
     }.join(' ')
     """
-    08-miRNA_event_matrix_builder.py \\
+    07-miRNA_event_matrix_builder.py \\
         ${args} \\
         --fields ${fields}
 
