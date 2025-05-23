@@ -25,9 +25,10 @@ process DIFFEXPANALYSIS {
     path  "versions.yml", emit: versions
 
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     04-Diff_exp_analysis.r \
-        --id ${meta.id} \
+        --id ${prefix} \
         --group_id ${meta.group_id} \
         --counts ${matrix} \
         --metadata ${meta.metadata} \
@@ -59,10 +60,17 @@ process DIFFEXPANALYSIS {
     """
 
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Create raw and sig tables
-    touch ${meta.id}_1.dea_raw.tsv
-    touch ${meta.id}_1.dea_sig.tsv
+    touch ${prefix}_1.dea_raw.tsv
+    touch ${prefix}_1.dea_sig.tsv
+    touch ${prefix}_1.volcano.png
+
+    # Create output directories
+    mkdir -p 01-PCA
+    mkdir -p 02-SERE_dendrogram
+    mkdir -p 03-Mean_vs_variance
     
     # Create EA summary file
     ea_summary=${meta.id}.ea_summary.tsv

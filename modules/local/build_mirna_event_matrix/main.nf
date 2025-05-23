@@ -34,4 +34,19 @@ process BUILD_MIRNA_EVENT_MATRIX {
     echo "    pandas: \$(python3 -c 'import pandas as pd; print(pd.__version__)')" >> versions.yml
     echo "    natsort: \$(python3 -c 'import natsort; print(natsort.__version__)')" >> versions.yml
     """
+
+    stub:
+    """
+    # Create output files
+    touch presence_absence_table.tsv
+    touch shrunken_log2fc_table.tsv
+    touch ids.tsv
+    touch comparisons_ids.tsv
+
+    # Create versions file
+    echo "${task.process}:" > versions.yml
+    echo "    python: \$(python3 -c 'import platform; print(platform.python_version())')" >> versions.yml
+    echo "    pandas: \$(python3 -c 'import pandas as pd; print(pd.__version__)')" >> versions.yml
+    echo "    natsort: \$(python3 -c 'import natsort; print(natsort.__version__)')" >> versions.yml
+    """
 }

@@ -19,12 +19,30 @@ process ANNOTATE_DEA_RESULTS {
     path  "versions.yml"                    , emit: versions
 
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     06-Annotate_dea_results.r \
-        --id ${meta.id} \
+        --id ${prefix} \
         --dea ${dea_file} \
         --annotation ${annot_file} \
         --classes ${classes}
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        r-base: \$(echo \$(R --version 2>&1) | sed 's/^.*R version //; s/ .*\$//')
+        argparse: \$(Rscript -e "suppressMessages(library(argparse)); cat(as.character(packageVersion('argparse')))") 
+        ape: \$(Rscript -e "suppressMessages(library(ape)); cat(as.character(packageVersion('ape')))") 
+        tidyverse: \$(Rscript -e "suppressMessages(library(tidyverse)); cat(as.character(packageVersion('tidyverse')))") 
+    END_VERSIONS
+    """
+    stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
+    """
+    # Create output files 
+    touch ${prefix}.all.tsv
+    touch ${prefix}.unique.tsv
+    touch ${prefix}.boxplot.png
+    touch ${prefix}.summary.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -93,21 +93,17 @@ process BOWTIE_ALIGN {
     def prefix = task.ext.prefix ?: "${meta.id}"
     def ext = meta.single_end ? reads.name.replaceAll(/\.gz$/, '').tokenize('.')[-1] : reads[0].name.replaceAll(/\.gz$/, '').tokenize('.')[-1]
     def aligned = save_aligned ?
-                    meta.single_end ? "echo '' | gzip > ${prefix}.aligned.${ext}.gz" :
-                        "echo '' | gzip > ${prefix}.aligned_1.${ext}.gz; echo '' | gzip > ${prefix}.aligned_2.${ext}.gz"
+                    meta.single_end ? "touch ${prefix}.aligned.${ext}.gz" :
+                        "touch ${prefix}.aligned_1.${ext}.gz; touch ${prefix}.aligned_2.${ext}.gz"
                     : ''
     def unaligned = save_unaligned ?
-                    meta.single_end ? "echo '' | gzip > ${prefix}.unaligned.${ext}.gz" :
-                        "echo '' | gzip > ${prefix}.unaligned_1.${ext}.gz; echo '' | gzip > ${prefix}.unaligned_2.${ext}.gz"
+                    meta.single_end ? "touch ${prefix}.unaligned.${ext}.gz" :
+                        "touch ${prefix}.unaligned_1.${ext}.gz; touch ${prefix}.unaligned_2.${ext}.gz"
                     : ''
     """
     touch ${prefix}.bam
-
-    if [ "${meta.type}" == "genome"]; then
-        $aligned
-    else
-        $unaligned
-    fi
+    ${aligned}
+    ${unaligned}
 
     # Create the log file
     echo "# reads processed: 921451" > ${prefix}.out

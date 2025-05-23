@@ -79,20 +79,20 @@ workflow PIPELINE_COMPLETION {
     main:
 
     // Get the parameters from the pipeline
-    summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    // summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
     
-    // Completion email
-    workflow.onComplete {
-        if (email || email_on_fail) {
-            sendCompletionEmail(
-                summary_params,
-                email,
-                email_on_fail,
-                plaintext_email,
-                outdir
-            )
-        }
-    }
+    // // Completion email
+    // workflow.onComplete {
+    //     if (email || email_on_fail) {
+    //         sendCompletionEmail(
+    //             summary_params,
+    //             email,
+    //             email_on_fail,
+    //             plaintext_email,
+    //             outdir
+    //         )
+    //     }
+    // }
 
     workflow.onError {
         log.error "Pipeline failed."

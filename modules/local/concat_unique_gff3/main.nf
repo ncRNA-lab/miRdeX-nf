@@ -39,6 +39,6 @@ process CONCAT_UNIQUE_GFF3 {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Create output file
-    touch "${prefix}.tsv"
+    touch "${prefix}.concat.gff3"
     """
 }
