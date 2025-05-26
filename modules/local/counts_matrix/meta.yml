@@ -1,0 +1,61 @@
+name: counts_matrix
+description: |
+  Create a counts matrix.
+keywords:
+  - counts
+  - rpm
+  - matrix
+  - quantification
+tools:
+  - "pandas":
+      description: "Python library for data manipulation and analysis"
+      homepage: "https://pandas.pydata.org/"
+      documentation: "https://pandas.pydata.org/docs/"
+      tool_dev_url: "https://github.com/pandas-dev/pandas"
+      doi: "10.5281/zenodo.3509134"
+      licence: ["BSD-3-Clause"]
+      identifiers:
+        - "biotools:pandas"
+        - "conda:pandas"
+  - "numpy":
+      description: "NumPy is the fundamental package for scientific computing in Python"
+      homepage: "https://numpy.org/"
+      documentation: "https://numpy.org/doc/2.2/"
+      tool_dev_url: "https://github.com/numpy/numpy"
+      doi: "10.1038/s41586-020-2649-2"
+      licence: ["BSD-3-Clause"]
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing id information
+          e.g. [ id:'PROJECT1', species: 'Arabidpsis thaliana', project 'PROJECT1']
+    - counts:
+        type: file[]
+        description: |
+          List of files containing either raw counts or RPM values of small RNA
+          sequences. Each file consists of two columns: seq and (raw|rpm).
+    - metadata:
+        type: file
+        description: |
+          TSV metadata file of the project in question.
+    - valid_groups:
+        type: val[]
+        description: |
+          List of valid groups within the project. The project groups are
+          specified in the Group column of the metadata file.
+output:
+  - gff3:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing id information
+            e.g. [ id:'Project' ]
+      - "${meta.id}*.{raw,rpm}.tsv":
+          type: file
+          description: Counts matrix in TSV format.
+          pattern: "${meta.id}*.{raw,rpm}.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

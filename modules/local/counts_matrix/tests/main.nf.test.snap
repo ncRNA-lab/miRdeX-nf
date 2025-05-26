@@ -1,14 +1,12 @@
 {
-    "Counts matrix - Raw counts": {
+    "Counts matrix - Raw counts - Only subprojects": {
         "content": [
             [
                 [
                     {
                         "id": "TEST",
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
-                        "valid_groups": [
-                            1
-                        ]
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST"
                     },
                     "TEST_1.raw.tsv:md5,2b72981cfbcb01f87d9fa72016053606"
                 ]
@@ -16,20 +14,40 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T12:32:18.22238"
+        "timestamp": "2025-05-26T17:14:44.735603"
     },
-    "Counts matrix - RPM": {
+    "Counts matrix - Raw counts - Project matrix": {
         "content": [
             [
                 [
                     {
                         "id": "TEST",
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
-                        "valid_groups": [
-                            1
-                        ]
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST"
+                    },
+                    [
+                        "TEST.raw.tsv:md5,2b72981cfbcb01f87d9fa72016053606",
+                        "TEST_1.raw.tsv:md5,82f4eade5ca453220d0ee8a15b792fc9"
+                    ]
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-26T16:40:53.385365"
+    },
+    "Counts matrix - RPM - Only subprojects": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST"
                     },
                     "TEST_1.rpm.tsv:md5,40cb4e309ce1efd4da5ab83919186fc6"
                 ]
@@ -37,8 +55,30 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T12:59:28.712159"
+        "timestamp": "2025-05-26T17:17:41.468334"
+    },
+    "Counts matrix - RPM - Project matrix": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST"
+                    },
+                    [
+                        "TEST.rpm.tsv:md5,40cb4e309ce1efd4da5ab83919186fc6",
+                        "TEST_1.rpm.tsv:md5,7a7b82bda74cc25718d569f091d05f9a"
+                    ]
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-26T16:45:05.937218"
     }
 }

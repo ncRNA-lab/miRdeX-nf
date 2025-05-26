@@ -255,65 +255,81 @@ gff3_check_df <- gff3_df %>%
 # Merge DEA results dataframe with gff3 dataframe (Keep duplicated sequences (IsomiRs from multiple reference miRNAs)
 dea_annotated_all_isomirs <- merge(dea_df, gff3_check_df, by.x = 'seq', by.y = 'Read')
 
-# Save table
-file_name_table_all = paste0(id, '.all.tsv')
-write.table(dea_annotated_all_isomirs, file = file_name_table_all, sep = "\t", quote = FALSE, row.names = FALSE)
-
-# Remove duplicated sequences 
-gff3_uniq <- gff3_check_df %>%
-  select(Read, UID, miRNA_fam, Class_check) %>%
-  distinct()
-
-# Merge DEA results dataframe with gff3 dataframe
-dea_annotated_uniq <- merge(dea_df, gff3_uniq, by.x = 'seq', by.y = 'Read')
-
-# Save table
-file_name_table_unique = paste0(id, '.unique.tsv')
-write.table(dea_annotated_uniq, file = file_name_table_unique, sep = "\t", quote = FALSE, row.names = FALSE)
-
-### 3. CREATE BOXPLOT
-################################################################################
-
-# Create output file name
-file_name_plot = paste0(id, '.boxplot.png')
-
-# Create the boxplot
-p <- createBoxplot(dea_annotated_uniq, 'miRNA_fam', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
-
-# Save plot in output directory
-ggsave(file_name_plot, p)
-
-
-### 4. TABLE WITH DIFFUSE-TREND MIRNAS FAMILY
-################################################################################
-
-# Get miRNA family names
-miRNAs_v <- unique(dea_annotated_uniq$miRNA_fam)
-
-# Select miRNAs families with diffuse trend
-miRNAs_var <- c()
-for (miRNA in miRNAs_v){
+# There are miRNAs in the dataframe.
+if (nrow(dea_annotated_all_isomirs) > 0) {
   
-  # Get the miRNA Shrunkenlog2FoldChange vector
-  lfc_v <- na.omit(dea_annotated_uniq[dea_annotated_uniq$miRNA_fam == miRNA,]$Shrunkenlog2FoldChange)
+  # Save table
+  file_name_table_all = paste0(id, '.all.tsv')
+  write.table(dea_annotated_all_isomirs, file = file_name_table_all, sep = "\t", quote = FALSE, row.names = FALSE)
   
-  # If there are positives and negatives
-  if (any(lfc_v > 0) && any(lfc_v < 0)) {
-    miRNAs_var <- c(miRNAs_var, miRNA)
+  # Remove duplicated sequences 
+  gff3_uniq <- gff3_check_df %>%
+    select(Read, UID, miRNA_fam, Class_check) %>%
+    distinct()
+  
+  # Merge DEA results dataframe with gff3 dataframe
+  dea_annotated_uniq <- merge(dea_df, gff3_uniq, by.x = 'seq', by.y = 'Read')
+  
+  # Save table
+  file_name_table_unique = paste0(id, '.unique.tsv')
+  write.table(dea_annotated_uniq, file = file_name_table_unique, sep = "\t", quote = FALSE, row.names = FALSE)
+  
+  ### 3. CREATE BOXPLOT
+  ################################################################################
+  
+  # Create output file name
+  file_name_plot = paste0(id, '.boxplot.png')
+  
+  # Create the boxplot
+  p <- createBoxplot(dea_annotated_uniq, 'miRNA_fam', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
+  
+  # Save plot in output directory
+  ggsave(file_name_plot, p)
+  
+  
+  ### 4. TABLE WITH DIFFUSE-TREND MIRNAS FAMILY
+  ################################################################################
+  
+  # Get miRNA family names
+  miRNAs_v <- unique(dea_annotated_uniq$miRNA_fam)
+  
+  # Select miRNAs families with diffuse trend
+  miRNAs_var <- c()
+  for (miRNA in miRNAs_v){
+    
+    # Get the miRNA Shrunkenlog2FoldChange vector
+    lfc_v <- na.omit(dea_annotated_uniq[dea_annotated_uniq$miRNA_fam == miRNA,]$Shrunkenlog2FoldChange)
+    
+    # If there are positives and negatives
+    if (any(lfc_v > 0) && any(lfc_v < 0)) {
+      miRNAs_var <- c(miRNAs_var, miRNA)
+    }
   }
-}
-
-# If there are no miRNAs families with diffuse trend...
-if (is.null(miRNAs_var)){
-  miRNAs_var <- "NULL"
-  num_miRNAs_d <- 0
+  
+  # If there are no miRNAs families with diffuse trend...
+  if (is.null(miRNAs_var)){
+    miRNAs_var <- "NULL"
+    num_miRNAs_d <- 0
+  } else {
+    num_miRNAs_d <- length(miRNAs_var)
+  }
+  
+  # Save it in summary file
+  miRNAs_txt <- paste(miRNAs_var, collapse = '/')
+  text <- paste(id, length(miRNAs_v), num_miRNAs_d, miRNAs_txt, sep='\t')
+  cat(text, file=paste0(id,'.summary.tsv'), append=TRUE, sep='\n')
+  
+# There are no miRNAs...
 } else {
-  num_miRNAs_d <- length(miRNAs_var)
+  
+  # Create empty files
+  file.create(paste0(id,'_EMPTY.all.tsv'))
+  file.create(paste0(id,'_EMPTY.unique.tsv'))
+  file.create(paste0(id,'_EMPTY.boxplot.png'))
+  text <- paste(id, '0', '0', 'NULL', sep='\t')
+  cat(text, file=paste0(id,'.summary.tsv'), append=TRUE, sep='\n')
 }
+  
 
-# Save it in summary file
-miRNAs_txt <- paste(miRNAs_var, collapse = '/')
-text <- paste(id, length(miRNAs_v), num_miRNAs_d, miRNAs_txt, sep='\t')
-cat(text, file=paste0(id,'.summary.tsv'), append=TRUE, sep='\n')
 
 

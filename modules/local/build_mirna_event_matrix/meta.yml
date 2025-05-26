@@ -1,0 +1,92 @@
+name: build_mirna_event_matrix
+description: Creates a binary matrix indicating in which comparisons each miRNA family appears as differentially expressed.
+keywords:
+  - comparison
+  - miRNA
+  - deseq2
+  - event
+tools:
+  - "pandas":
+      description: "Python library for data manipulation and analysis"
+      homepage: "https://pandas.pydata.org/"
+      documentation: "https://pandas.pydata.org/docs/"
+      tool_dev_url: "https://github.com/pandas-dev/pandas"
+      doi: "10.5281/zenodo.3509134"
+      licence: ["BSD-3-Clause"]
+      identifiers:
+        - "biotools:pandas"
+        - "conda:pandas"
+input:
+  - - annot_file_list:
+        type: file[]
+        description: |
+          List of TSV files containing the results of the differential expression
+          analysis performed with DESeq2, filtered to include only miRNA
+          sequences. Each file is associated with a file from the
+          metadata_file_list and with a group of samples from the samples_list.
+    - metadata_file_list:
+        type: file[]
+        description: |
+          List of TSV files with the metadata of each project. Each file
+          is associated with a file from the annot_file_list and with a group of
+          samples from the samples_list.
+    - samples_list:
+        type: file[]
+        description: |
+          Comma-separated string with the names of the samples involved in the
+          comparisons performed in the differential expression analysis. Each
+          sample group is associated with a file from the annot_file_list and from
+          the metadata_file_list.
+  - - fields:
+        type: string
+        description: |
+          Comma-separated list of metadata fields used to generate comparison
+          identifiers. e.g. "Species,Treatment"
+output:
+  - preabs:
+      - presence_absence_table.tsv:
+          type: file
+          description: |
+            Binary matrix indicating in which comparisons each miRNA family
+            appears as differentially expressed.
+          pattern: "presence_absence_table.tsv"
+  - log2fc:
+      - shrunken_log2fc_table.tsv:
+          type: file
+          description: |
+            Matrix indicating the log2FC value of the most representative
+            member of each miRNA family in each comparison.
+          pattern: "shrunken_log2fc_table.tsv"
+  - ids:
+      - ids.tsv:
+          type: file
+          description: |
+            TSV file containing the identifier assigned to each level of each of
+            the fields used to generate the comparison identifiers. It consists
+            of 3 columns: Type, which indicates the field (e.g. Species); Name,
+            which indicates the level (e.g. Arabidopsis thaliana); and ID,
+            which indicates the assigned identifier (e.g. 1)
+          pattern: "presence_absence_table.tsv"
+  - compids:
+      - comparisons_ids.tsv:
+          type: file
+          description: |
+            SV file containing the identifiers assigned to each comparison in
+            the differential expression analysis. The file consists of two fixed
+            columns followed by a variable number of columns depending on how
+            many fields are used. The first column, Comparison_id, contains the
+            identifier generated for the comparison based on the project and
+            group identifiers specified in the metadata. The second column, Id,
+            contains the generated numeric identifier (for example, 1.1.1). The
+            additional columns correspond to each field used and indicate the
+            level of each field associated with the Id colum.
+          pattern: "comparisons_ids.tsv"
+  - versions:
+    - versions.yml:
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

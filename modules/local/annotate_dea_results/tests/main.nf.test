@@ -1,44 +1,114 @@
 nextflow_process {
 
-    name "Test Process GROUP_BY_FAMILY"
+    name "Test Process ADD_SEQUENCES_BLAST"
     script "../main.nf"
-    process "GROUP_BY_FAMILY"
+    process "ANNOTATE_DEA_RESULTS"
 
-    test("Group miRNAs by family") {
+    test("Annotate DEA Results - Only reference miRNA") {
 
         when {
-
             process {
                 """
-                input[0] = Channel.of([
-                    [id:'TEST_1_0'],
-                    file(params.modules_testdata_base_path + 'modules/grouping/TEST_1_0.dea_sig.tsv', checkIfExists: true),
-                    file(params.modules_testdata_base_path + 'modules/grouping/TEST_1_0.annot_filt.tsv', checkIfExists: true)
-                ])
+                input[0] = [
+                    [ id: 'TEST_1', species: 'Arabidopsis thaliana', project: 'PROJECT_TEST' ],
+                    file(params.modules_testdata_base_path + 'modules/annotate_dea_results/TEST.dea_sig.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/annotate_dea_results/TEST.concat.gff3', checkIfExists: true)
+                ]
+                input[1] = 'ref_miRNA'
                 """
             }
         }
-
         then {
 
-            assertAll{
+            // Verify that the process has been successfully executed.
+            { assert process.success }
 
-                // Verify that the process has been successfully executed.
-                { assert process.success }
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.all.get(0).get(1)) ==~ /.*\.all\.tsv/ }
+            { assert path(process.out.unique.get(0).get(1)) ==~ /.*\.unique\.tsv/ }
+            { assert path(process.out.boxplot.get(0).get(1)) ==~ /.*\.boxplot\.png/ }
+            { assert path(process.out.fam_sum.get(0)) ==~ /.*\.summary\.tsv/  }
 
-                // Verify that the necessary output files are generated.
-                { assert path(process.out.fam_annot.get(0).get(1)) ==~ /.*\.fam_annot\.tsv/ }
-                { assert path(process.out.fam_boxplot.get(0).get(1)) ==~ /.*\.fam_annot_boxplot\.png/ }
-                { assert path(process.out.fam_sum.get(0)) ==~ /.*\.fam_annot_summary\.tsv/ }
+            // Use snapshots to verify
+            {
+                assert snapshot(
+                    process.out.all,
+                    process.out.unique,
+                    process.out.boxplot,
+                    process.out.fam_sum,
+                ).match() 
+            }
+        }
+    }
+    test("Annotate DEA Results - All miRNA classes") {
 
-                // Use snapshots to verify
-                {
-                    assert snapshot(
-                        process.out.fam_annot,
-                        process.out.fam_boxplot,
-                        process.out.fam_sum,
-                    ).match() 
-                }
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'TEST_1', species: 'Arabidopsis thaliana', project: 'PROJECT_TEST' ],
+                    file(params.modules_testdata_base_path + 'modules/annotate_dea_results/TEST.dea_sig.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/annotate_dea_results/TEST.concat.gff3', checkIfExists: true)
+                ]
+                input[1] = 'ref_miRNA,iso_5p,iso_3p,iso_add3p,iso_add5p,iso_snv_seed,iso_snv_central_offset,iso_snv_central,iso_snv_central_supp,iso_snv,Mixed,Mixed_shift,Undefined'
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.all.get(0).get(1)) ==~ /.*\.all\.tsv/ }
+            { assert path(process.out.unique.get(0).get(1)) ==~ /.*\.unique\.tsv/ }
+            { assert path(process.out.boxplot.get(0).get(1)) ==~ /.*\.boxplot\.png/ }
+            { assert path(process.out.fam_sum.get(0)) ==~ /.*\.summary\.tsv/  }
+
+            // Use snapshots to verify
+            {
+                assert snapshot(
+                    process.out.all,
+                    process.out.unique,
+                    process.out.boxplot,
+                    process.out.fam_sum,
+                ).match() 
+            }
+        }
+    }
+   test("Annotate DEA Results - No miRNA Sequences") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'TEST_1', species: 'Arabidopsis thaliana', project: 'PROJECT_TEST' ],
+                    file(params.modules_testdata_base_path + 'modules/annotate_dea_results/TEST_no_miRNAs.dea_sig.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/annotate_dea_results/TEST.concat.gff3', checkIfExists: true)
+                ]
+                input[1] = 'ref_miRNA,iso_5p,iso_3p,iso_add3p,iso_add5p,iso_snv_seed,iso_snv_central_offset,iso_snv_central,iso_snv_central_supp,iso_snv,Mixed,Mixed_shift,Undefined'
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert path(process.out.all.get(0).get(1)) ==~ /.*_EMPTY\.all\.tsv/ }
+            { assert path(process.out.unique.get(0).get(1)) ==~ /.*_EMPTY\.unique\.tsv/ }
+            { assert path(process.out.boxplot.get(0).get(1)) ==~ /.*_EMPTY\.boxplot\.png/ }
+            { assert path(process.out.fam_sum.get(0)) ==~ /.*\.summary\.tsv/  }
+
+            // Use snapshots to verify
+            {
+                assert snapshot(
+                    process.out.all,
+                    process.out.unique,
+                    process.out.boxplot,
+                    process.out.fam_sum,
+                ).match() 
             }
         }
     }

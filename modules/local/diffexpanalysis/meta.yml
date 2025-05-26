@@ -1,0 +1,57 @@
+name: annotate_dea_results
+description: Annotate the miRNA sequences present in a DESeq2 results table.
+keywords:
+  - annotation
+  - miRNA
+  - deseq2
+tools:
+  - "deseq2":
+      description: "Differential gene expression analysis based on the negative binomial
+        distribution"
+      homepage: "https://bioconductor.org/packages/release/bioc/html/DESeq2.html"
+      documentation: "https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html"
+      tool_dev_url: "https://github.com/mikelove/DESeq2"
+      doi: "10.1186/s13059-014-0550-8"
+      licence: ["LGPL >=3"]
+      identifier: biotools:deseq2
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - blast_tsv:
+        type: file
+        description: |
+          TSV file resulting from the combination of BLAST results obtained
+          using mature miRNAs and miRNA precursors as references.
+    - counts_tsv:
+        type: file
+        description: |
+          Two-column TSV file (sequence, counts) with the counts of each
+          nucleotide sequence.
+  - - threshold:
+        type: integer
+        description: |
+          Minimum count threshold that a sequence must meet to be considered
+          valid. In the resulting file, an additional column indicates 'PASS'
+          if the sequence exceeds this threshold or 'REJECT' if it does not.
+output:
+  - isocounts:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.tsv":
+          type: file
+          description: |
+            TSV file resulting from the combination of BLAST results obtained
+            using mature miRNAs and miRNA precursors as references. The file
+            includes the counts for each sequence and indicates whether each
+            sequence meets the count threshold ('PASS') or not ('REJECT').
+          pattern: "*.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

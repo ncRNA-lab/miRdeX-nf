@@ -9,7 +9,7 @@ input:
           Groovy Map containing sample information
           e.g. [ id:'sample1' ]
     - tsv_files:
-        type: list
+        type: file[]
         description: List of TSV files.
 output:
   - concat:

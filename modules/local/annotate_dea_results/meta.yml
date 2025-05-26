@@ -1,0 +1,115 @@
+name: annotate_dea_results
+description: Annotate the miRNA sequences present in a DESeq2 results table.
+keywords:
+  - annotation
+  - miRNA
+  - deseq2
+tools:
+  - "R":
+      description: "A Language and Environment for Statistical Computing"
+      homepage: https://www.r-project.org/
+      documentation: https://www.r-project.org/
+      licence: ["GPL v2"]
+      identifier: ""
+  - "Tidyverse":
+      description: "Tidyverse: R packages for data science"
+      homepage: https://www.tidyverse.org/
+      documentation: https://www.tidyverse.org/
+      tool_dev_url: https://github.com/tidyverse
+      doi: "10.21105/joss.01686"
+      licence: ["MIT"]
+      identifier: ""
+  - "ape":
+      description: "ape: Analyses of Phylogenetics and Evolution
+      homepage: https://cran.r-project.org/web/packages/ape/index.html
+      documentation: https://cran.r-project.org/web/packages/ape/ape.pdf
+      tool_dev_url: https://github.com/emmanuelparadis/ape
+      doi: "10.32614/CRAN.package.ape"
+      licence: ["GPL v2", "GPL v3"]
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', species: 'Species species', project: 'Project1']
+    - dea_file:
+        type: file
+        description: |
+          TSV file with the results of the differential expression analysis performed with DESeq2.
+    - annot_file:
+        type: file
+        description: |
+          GFF3 file with the annotation of miRNA sequences.
+  - - classes:
+        type: string
+        description: |
+          Comma-separated string specifying which miRNA classes or variants will
+          be considered during the annotation process. Classes: "ref_miRNA,
+          iso_5p,iso_3p,iso_add3p,iso_add5p,iso_snv_seed,iso_snv_central_offset,
+          iso_snv_central,iso_snv_central_supp,iso_snv,Mixed,Mixed_shift,Undefined"
+output:
+  - all:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', species: 'Species species', project: 'Project1']
+      - "*.all.tsv":
+          type: file
+          description: |
+            TSV file containing the results of the differential expression
+            analysis performed with DESeq2, filtered to include only miRNA
+            sequences. Additional annotation information for each miRNA is
+            included. When a sequence has multiple possible annotations, it
+            appears multiple times in the table,
+          pattern: "*.all.tsv"
+  - unique:
+    - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', species: 'Species species', project: 'Project1']
+    - "*.unique.tsv":
+        type: file
+        description: |
+          TSV file containing the results of the differential expression
+          analysis performed with DESeq2, filtered to include only miRNA
+          sequences. Additional annotation information for each miRNA is
+          included. Each sequence appears only once in the table; sequences
+          with multiple possible annotations are labeled as 'Undefined'.
+        pattern: "*.unique.tsv"
+  - boxplot:
+    - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', species: 'Species species', project: 'Project1']
+    - "*.boxplot.png":
+        type: file
+        description: |
+          PNG file containing a boxplot that visualizes the distribution of
+          log2 fold changes (log2FC) across miRNA families. The y-axis 
+          represents the log2FC values, while the x-axis shows the different
+          miRNA families. This plot illustrates how the log2FC values of family
+          members are distributed to assess whether they follow a common
+          pattern.
+        pattern: "*.boxplot.png"
+  - fam_sum:
+      type: file
+      description: |
+        Summary file listing miRNA families based on the consistency of their
+        members' log2 fold change (log2FC) patterns. It reports how many
+        families have members that follow a common pattern, how many do not, 
+        and specifically identifies which families do not follow a common
+        pattern
+      pattern: "*.summary.tsv"
+  - versions:
+    - versions.yml:
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

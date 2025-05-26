@@ -1,0 +1,32 @@
+name: concat_unique_gff3
+description: |
+  Concatenate GFF3 files.
+keywords:
+  - duplicates
+  - unique
+  - fasta
+  - collapse
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing id information
+          e.g. [ id:'sample1']
+    - gff_files:
+        type: file[]
+        description: List of GFF3 files.
+output:
+  - gff3:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing id information
+            e.g. [ id:'sample1' ]
+      - "*.concat.gff3":
+          type: file
+          description: GFF3 file resulting from the concatenation of the input files.
+          pattern: "*.concat.gff3"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

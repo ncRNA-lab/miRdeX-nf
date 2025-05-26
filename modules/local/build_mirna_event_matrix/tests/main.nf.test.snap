@@ -1,0 +1,23 @@
+{
+    "Build miRNA Event Matrix - Species, Treatment and Tissue": {
+        "content": [
+            [
+                "presence_absence_table.tsv:md5,ff2e5eb4d5d91f837aaa70954e57a331"
+            ],
+            [
+                "shrunken_log2fc_table.tsv:md5,5f9e7a0eca5d11f57605d387d1f722f9"
+            ],
+            [
+                "ids.tsv:md5,e77282e299b8b579557a4b435cfc8226"
+            ],
+            [
+                "comparisons_ids.tsv:md5,4afcc2311916906cb18ed5906e8ec7c0"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-26T14:26:27.63211"
+    }
+}

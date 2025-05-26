@@ -1,0 +1,43 @@
+nextflow_process {
+
+    name "Test Process BUILD_MIRNA_EVENT_MATRIX"
+    script "../main.nf"
+    process "BUILD_MIRNA_EVENT_MATRIX"
+
+    test("Build miRNA Event Matrix - Species, Treatment and Tissue") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [file(params.modules_testdata_base_path + 'modules/build_mirna_event_matrix/PRJNA560782_1_0.unique.tsv', checkIfExists: true)],
+                    [file(params.modules_testdata_base_path + 'modules/build_mirna_event_matrix/arth_m_PRJNA560782.tsv', checkIfExists: true)],
+                    ['SRR9995048,SRR9995049,SRR9995051,SRR9995052,SRR9995053,SRR9995054']
+                ]
+                input[1] = 'Species,Treatment,Tissue'
+                """
+            }
+        }
+        then {
+
+            // Verify that the process has been successfully executed.
+            { assert process.success }
+
+            // Verify that the necessary output files are generated.
+            { assert new File(process.out.preabs.get(0)).getName() ==~ /presence_absence_table\.tsv/ }
+            { assert new File(process.out.log2fc.get(0)).getName() ==~ /shrunken_log2fc_table\.tsv/  }
+            { assert new File(process.out.ids.get(0)).getName() ==~ /ids\.tsv/ }
+            { assert new File(process.out.compids.get(0)).getName() ==~ /comparisons_ids\.tsv/ }
+
+            // Use snapshots to verify
+            {
+                assert snapshot(
+                    process.out.preabs,
+                    process.out.log2fc,
+                    process.out.ids,
+                    process.out.compids,
+                ).match() 
+            }
+        }
+    }
+}

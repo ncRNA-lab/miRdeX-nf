@@ -1,0 +1,41 @@
+nextflow_process {
+
+    name "Test Process CONCAT_UNIQUE_GFF3"
+    script "../main.nf"
+    process "CONCAT_UNIQUE_GFF3"
+
+    test("Concat GFF3 files") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    [ id: 'PROJECT1', species: 'Arabidopsis thaliana', project: 'PROJECT1'],
+                    [
+                        file(params.modules_testdata_base_path + 'modules/concat_unique_gff3/SRR9995048.gff3', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_unique_gff3/SRR9995049.gff3', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_unique_gff3/SRR9995051.gff3', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_unique_gff3/SRR9995052.gff3', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_unique_gff3/SRR9995053.gff3', checkIfExists: true),
+                        file(params.modules_testdata_base_path + 'modules/concat_unique_gff3/SRR9995054.gff3', checkIfExists: true)
+                    ]
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll{
+
+                // Verify that the process has been successfully executed.
+                { assert process.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(process.out.gff3.get(0)[1]) ==~ /.*concat\.gff3/ }
+
+                // Use snapshots to verify
+                { assert snapshot(process.out.gff3).match() }
+            }
+        }
+    }
+}
