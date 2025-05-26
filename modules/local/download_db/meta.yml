@@ -76,6 +76,11 @@ output:
         (this file has been modified so that the species identifiers match those
         of the other downloaded).
       pattern: "01-Mod_databases/PmiREN/*_hairpin.fa"
+  - versions:
+    - versions.yml:
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
 authors:
   - "@antoglz"
 maintainers:

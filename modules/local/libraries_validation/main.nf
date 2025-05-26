@@ -8,7 +8,7 @@ process LIBRARIES_VALIDATION {
         'community.wave.seqera.io/library/python_pip_numpy_pandas:5731791ee246815e' }"
 
     input:
-    tuple val(meta), path(fastq_files)
+    tuple val(meta), path(fastq_files), path(metadata)
     val depth_threshold
     val rep_threshold
 
@@ -24,7 +24,7 @@ process LIBRARIES_VALIDATION {
     02-Validate_libraries.py \
         -i ${fastq_files} \
         -j ${meta.id} \
-        -m ${meta.metadata} \
+        -m ${metadata} \
         -d ${depth_threshold} \
         -r ${rep_threshold} \
         -p ${task.cpus}

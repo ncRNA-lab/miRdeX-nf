@@ -8,7 +8,7 @@ process COUNTS_VALIDATION {
        'community.wave.seqera.io/library/python_pip_numpy_pandas:5731791ee246815e' }"
 
     input:
-    tuple val(meta), path(counts_files)
+    tuple val(meta), path(counts), path(metadata), val(group_id)
     val rep_threshold
 
     output:
@@ -20,15 +20,16 @@ process COUNTS_VALIDATION {
     """
     02-Validate_counts_matrix.py \
         -i ${meta.id} \
-        -g ${meta.group_id} \
-        -c ${counts_files} \
-        -m ${meta.metadata} \
+        -g ${group_id} \
+        -c ${counts} \
+        -m ${metadata} \
         -r ${rep_threshold} \
     """
 
     stub:
     """
-    touch ${meta.project}.counts_validity.tsv
+    touch ${meta.id}_${group_id}.valid.tsv
+    touch ${meta.id}_${group_id}.notvalid.tsv
     """
 }
 

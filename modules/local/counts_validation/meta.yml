@@ -1,11 +1,10 @@
-name: counts_matrix
+name: counts_validation
 description: |
-  Create a counts matrix.
+  Validate counts matrix.
 keywords:
   - counts
-  - rpm
+  - validation
   - matrix
-  - quantification
 tools:
   - "pandas":
       description: "Python library for data manipulation and analysis"
@@ -31,10 +30,9 @@ input:
           Groovy Map containing id information
           e.g. [ id:'PROJECT1', species: 'Arabidpsis thaliana', project 'PROJECT1']
     - counts:
-        type: file[]
+        type: file
         description: |
-          List of files containing either raw counts or RPM values of small RNA
-          sequences. Each file consists of two columns: seq and (raw|rpm).
+          Counts matrix in TSV format.
     - metadata:
         type: file
         description: |
@@ -44,17 +42,32 @@ input:
         description: |
           List of valid groups within the project. The project groups are
           specified in the Group column of the metadata file.
+  - - rep_threshold:
+        type: integer
+        description: |
+          Minimum number of replicates that the sample groups within a group
+          must have to be considered valid.
 output:
-  - gff3:
+  - valid:
       - meta:
           type: map
           description: |
             Groovy Map containing id information
             e.g. [ id:'Project' ]
-      - "${meta.id}*.{raw,rpm}.tsv":
+      - "*.valid.tsv":
           type: file
-          description: Counts matrix in TSV format.
-          pattern: "${meta.id}*.{raw,rpm}.tsv"
+          description: Count matrices in TSV format considered as valid.
+          pattern: "*.valid.tsv"
+  - notvalid:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing id information
+            e.g. [ id:'Project' ]
+      - "*.notvalid.tsv":
+          type: file
+          description: Count matrices in TSV format considered as not-valid.
+          pattern: "*.notvalid.tsv"
   - versions:
     - versions.yml:
         type: file

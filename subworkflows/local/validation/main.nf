@@ -19,7 +19,7 @@ include { COUNTS_VALIDATION    } from "../../../modules/local/counts_validation"
 
 workflow VALIDATION {
     take:
-        ch_input_validation         // channel: [[id:(counts_id/project_id), metadata:val(metadata)], counts_file/[lib_file1, lib_file2...]]
+        ch_input_validation         // channel: [[id:(counts_id/project_id), metadata:path(metadata)], counts_file/[lib_file1, lib_file2...]]
         type                        // value: 'libraries' or 'counts'
         replicates_threshold        // integer: > 2
         depth_threshold             // integer: > 0 (It is not used when type = 'counts')
@@ -30,8 +30,15 @@ workflow VALIDATION {
         // Branch the workflow based on the value of "type"
         if (type == 'libraries') {
 
+            // Extract the metadata from the map object.
+            ch_input_validation
+                .map{ meta, file ->
+                    return [meta, file, meta.metadata]
+                }
+                .set { ch_input_validation_lib }
+
             // Validate the library depth and the number of project replicates
-            LIBRARIES_VALIDATION(ch_input_validation, depth_threshold, replicates_threshold)
+            LIBRARIES_VALIDATION(ch_input_validation_lib, depth_threshold, replicates_threshold)
 
             // Create the libraries summary channel
             LIBRARIES_VALIDATION.out.sumlibraries
@@ -103,9 +110,16 @@ workflow VALIDATION {
             ch_versions = ch_versions.mix(LIBRARIES_VALIDATION.out.versions)
 
         } else if (type == 'counts'){
+
+            // Extract the metadata and the group_id from the map object.
+            ch_input_validation
+                .map{ meta, file ->
+                    return [meta, file, meta.metadata, meta.group_id]
+                }
+                .set { ch_input_validation_counts }
             
             // Validate the counts matrices
-            COUNTS_VALIDATION(ch_input_validation, replicates_threshold)
+            COUNTS_VALIDATION(ch_input_validation_counts, replicates_threshold)
             
             // Create a channel with the project info
             COUNTS_VALIDATION.out.summary
