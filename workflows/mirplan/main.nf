@@ -284,6 +284,9 @@ workflow MIRPLAN {
             false
         )
 
+        // Save the software version
+        ch_versions = ch_versions.mix(FASTP.out.versions)
+
         // Add the trimming data to the ch_pipeline_summary channel
         FASTP.out.reads
             .map{meta, file ->

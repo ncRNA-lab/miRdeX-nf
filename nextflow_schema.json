@@ -346,6 +346,11 @@
       "default": "",
       "fa_icon": "fas fa-file-import",
       "properties": {
+        "version": {
+          "type": "boolean",
+          "description": "Display version and exit.",
+          "fa_icon": "fas fa-question-circle"
+        },
         "validate_params": {
           "type": "boolean",
           "default": true,

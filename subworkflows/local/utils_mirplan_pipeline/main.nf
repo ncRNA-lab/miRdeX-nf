@@ -249,7 +249,6 @@ def validateInputParameters() {
         // Parameters not compatible with '--only_preprocessing'
         def nextStepsParams = [
             'skip_quantification',
-            'skip_dea',
             'skip_annotation',
             'databases',
             'min_counts',
@@ -272,35 +271,13 @@ def validateInputParameters() {
         }
     }
 
-    // skip_dea parameter warning.
-    if (params.skip_dea) {
-
-        // Get the CLI params
-        def cliParams = workflow.commandLine.findAll(/--\S+/).collect { it.replaceFirst(/^--/, '') }
-        
-        // Parameters not compatible with '--skip_dea'
-        def nextStepsParams = ['databases']
-
-        // Check if any of the parameters associated with previous steps of the
-        // pipeline have been provided
-        def filteredParams = cliParams.findAll { it in nextStepsParams }
-
-        // Add the ignored params to the list
-        ignoreParams.addAll(filteredParams)
-        
-        // If that condition is TRUE, show the corresponding warning...
-        if (filteredParams && !ignoreParams.contains('skip_dea')) {
-            skipDeaWarn(filteredParams)
-        }
-    }
-
-    // skip_dea parameter warning.
+    // skip_annotation parameter warning.
     if (params.skip_annotation) {
 
         // Get the CLI params
         def cliParams = workflow.commandLine.findAll(/--\S+/).collect { it.replaceFirst(/^--/, '') }
 
-        // Parameters not compatible with '--skip_dea'
+        // Parameters not compatible with '--skip_annotation'
         def nextStepsParams = [
             'databases',
             'substitutions',
@@ -362,20 +339,6 @@ def onlyPreprocessingWarn(providedParams) {
         ${providedParams.collect { "--$it" }.join(', ')}
     """.stripIndent(true)
 }
-
-
-//
-// Print a warning if using '--skip_dea'
-//
-
-def skipDeaWarn (providedParams){
-    log.warn """ '--skip_dea' parameter has been provided. The pipeline steps after
-        differential expression analysis (DEA) will neither be executed. Any
-        provided parameter related to these steps will be ignored:
-        ${providedParams.collect { "--$it" }.join(', ')}
-    """.stripIndent(true)
-}
-
 
 //
 // Verifies whether the input samples have an associated genome or if one can
