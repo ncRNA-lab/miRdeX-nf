@@ -12,9 +12,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:16:18.241400651"
+        "timestamp": "2025-05-27T14:08:49.907632"
     },
     "Filter TSV by FASTA - FASTA file - Keep matches": {
         "content": [
@@ -29,9 +29,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:16:25.469825955"
+        "timestamp": "2025-05-27T14:08:56.712004"
     },
     "Filter TSV by FASTA - FASTA file - Discard matches": {
         "content": [
@@ -46,9 +46,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:16:29.151323052"
+        "timestamp": "2025-05-27T14:09:00.031356"
     },
     "Filter TSV by FASTA - FASTA file compressed - Discard matches": {
         "content": [
@@ -63,8 +63,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:16:21.814405682"
+        "timestamp": "2025-05-27T14:08:53.209415"
     }
 }

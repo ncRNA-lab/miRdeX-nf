@@ -4,7 +4,9 @@
             [
                 [
                     {
-                        "id": "SAMPLE1"
+                        "id": "SAMPLE1",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     "SAMPLE1.rpm.tsv:md5,0794024e0ca92e34e80c1ba758cd602a"
                 ]
@@ -12,8 +14,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:21:42.246804509"
+        "timestamp": "2025-05-27T14:30:02.354698"
     }
 }

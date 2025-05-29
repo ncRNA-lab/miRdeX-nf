@@ -5,7 +5,8 @@
                 [
                     {
                         "id": "TEST",
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "SAMPLE1.valid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d",
@@ -29,9 +30,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-07T17:09:30.806351"
+        "timestamp": "2025-05-27T14:11:36.202376"
     },
     "Libraries validation - Not-valid - Depth": {
         "content": [
@@ -42,7 +43,8 @@
                 [
                     {
                         "id": "TEST",
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "SAMPLE1.notvalid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d",
@@ -58,14 +60,14 @@
                 "TEST.sum_projects.tsv:md5,79abcceb8b7b852fb02f50fd27c37567"
             ],
             [
-                "TEST.sum_libraries.tsv:md5,6037f585943fe9fc4ce0e6d2377608ac"
+                "TEST.sum_libraries.tsv:md5,762cf717c4b647220ba8defc7a2d91ec"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-07T17:13:02.27578"
+        "timestamp": "2025-05-27T14:15:26.456236"
     },
     "Libraries validation - Not-valid - Replicates": {
         "content": [
@@ -76,7 +78,8 @@
                 [
                     {
                         "id": "TEST",
-                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9"
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "SAMPLE1.notvalid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d",
@@ -90,13 +93,13 @@
                 "TEST.sum_projects.tsv:md5,79abcceb8b7b852fb02f50fd27c37567"
             ],
             [
-                "TEST.sum_libraries.tsv:md5,05ae7c4a39edd9c37108a9e1086bda14"
+                "TEST.sum_libraries.tsv:md5,5d6e2ef750b9d4abbc8f988306e0d094"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-07T17:19:28.665349"
+        "timestamp": "2025-05-27T14:21:55.865066"
     }
 }

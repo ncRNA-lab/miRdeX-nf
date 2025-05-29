@@ -1,0 +1,36 @@
+name: "mirnote"
+description: |
+  Identifies miRNAs and isomiRs from a FASTA/FASTQ file.
+keywords:
+  - mirna
+  - isomir
+  - annotation
+components:
+  - merge_and_filter_mature_precursor_blast
+  - isomirs_precursor_classification
+  - filter_tsv_by_fasta
+  - concat_tsv
+  - complete_blastn
+  - filter_nontemplated_isomirs
+  - seqkit/rmdup
+  - bowtie/build
+  - bowtie/align
+input:
+  - ch_input:
+      description: |
+        Channel containing a query FASTA file, mature miRNA FASTA, precursor
+        miRNA FASTA, and genome FASTA file.
+        Structure: [ val(meta), path(query_fasta), path(mature_fasta), path(precursor_fasta), path(genome) ]
+output:
+  - iso:
+      description: |
+        BLASTn results TSV file containing potential isomiR sequences.
+        Structure: [ val(meta), path(tsv_file) ]
+  - versions:
+      description: |
+        Files containing software versions
+        Structure: [ path(versions.yml) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

@@ -1,0 +1,33 @@
+name: "filter_nontemplated_isomirs"
+description: |
+  Filters the blastn results table, removing sequences that align to other
+  regions of the genome without any mismatches.
+keywords:
+  - isomirs
+  - filtering
+  - genome
+components:
+  - seqkit/rmdup
+  - bowtie/build
+  - bowtie/align
+  - tsv_to_fasta
+  - filter_tsv_by_fasta
+input:
+  - ch_input:
+      description: |
+        BLASTn results table in TSV format and the genome FASTA file.
+        Structure: [ val(meta), path(blast_tsv), path(genome) ]
+output:
+  - iso:
+      description: |
+        Filtered BLASTn results table in TSV format, excluding sequences that
+        aligned to the genome.
+        Structure:  [ val(meta), path(tsv_file) ]
+  - versions:
+      description: |
+        Files containing software versions
+        Structure: [ path(versions.yml) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

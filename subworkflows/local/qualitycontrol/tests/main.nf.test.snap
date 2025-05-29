@@ -9,7 +9,7 @@
                         "project": "TEST",
                         "type": "Trimmed"
                     },
-                    "SAMPLE1_Trimmed_fastqc.zip:md5,14c2aed703a6ae6b2758523d1e5cd0fc"
+                    "SAMPLE1_Trimmed_fastqc.zip:md5,cf58589f636472dd2444e5bb4eaba7fb"
                 ],
                 [
                     {
@@ -18,7 +18,7 @@
                         "project": "TEST",
                         "type": "Trimmed"
                     },
-                    "SAMPLE2_Trimmed_fastqc.zip:md5,2b2b37788639db60fbf886d2ff7b6634"
+                    "SAMPLE2_Trimmed_fastqc.zip:md5,7b5a16ac0d639cfe819949c341dba3bb"
                 ]
             ],
             [
@@ -29,7 +29,7 @@
                         "project": "TEST",
                         "type": "Trimmed"
                     },
-                    "SAMPLE1_Trimmed_fastqc.html:md5,49390ca9e98dd991e56a3385e60a3862"
+                    "SAMPLE1_Trimmed_fastqc.html:md5,2e6710d21821f9a231ced331f22f34e8"
                 ],
                 [
                     {
@@ -38,22 +38,22 @@
                         "project": "TEST",
                         "type": "Trimmed"
                     },
-                    "SAMPLE2_Trimmed_fastqc.html:md5,a35ceec142fa49f6e6a82092b6ff5c26"
+                    "SAMPLE2_Trimmed_fastqc.html:md5,1cdfc4a7543b3ac6b60f82eb0853cda9"
                 ]
             ],
             [
-                "multiqc_report.html:md5,6d6e07926fe8d04e20a9602f41542ff5"
+                "multiqc_report.html:md5,b9873c11f129bbae56c81837a3f2d737"
             ],
             [
-                "versions.yml:md5,7d88319dcef7bbf2cc0b64d04d42413c",
-                "versions.yml:md5,908b943b942f4e1f0e80463a3a4a84be"
+                "versions.yml:md5,908b943b942f4e1f0e80463a3a4a84be",
+                "versions.yml:md5,df29ddce0d6768460316bb277962c860"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-10T18:00:33.397251"
+        "timestamp": "2025-05-28T12:30:22.590522"
     },
     "Quality control - Raw": {
         "content": [
@@ -65,7 +65,7 @@
                         "project": "TEST",
                         "type": "Raw"
                     },
-                    "SAMPLE1_Raw_fastqc.zip:md5,d13051c6244a9edd8d0816c1e6170d21"
+                    "SAMPLE1_Raw_fastqc.zip:md5,648bf3bc9a4e725e835db8e236082e39"
                 ],
                 [
                     {
@@ -74,7 +74,7 @@
                         "project": "TEST",
                         "type": "Raw"
                     },
-                    "SAMPLE2_Raw_fastqc.zip:md5,65d6ddb620ecb7e370be2965d3c2ed83"
+                    "SAMPLE2_Raw_fastqc.zip:md5,cccce22b62977475d408c7bbf26fe62d"
                 ]
             ],
             [
@@ -85,7 +85,7 @@
                         "project": "TEST",
                         "type": "Raw"
                     },
-                    "SAMPLE1_Raw_fastqc.html:md5,6ff6d17a0f6dd5303f77e4a5dffc3a2b"
+                    "SAMPLE1_Raw_fastqc.html:md5,127b92de73b6ffde647f4133065f61a6"
                 ],
                 [
                     {
@@ -94,21 +94,21 @@
                         "project": "TEST",
                         "type": "Raw"
                     },
-                    "SAMPLE2_Raw_fastqc.html:md5,53737380472b10345157778e63d2d9b9"
+                    "SAMPLE2_Raw_fastqc.html:md5,b07097315364487c1a80cc5d156dbbe4"
                 ]
             ],
             [
-                "multiqc_report.html:md5,f500b488344400223b1fd6327b910523"
+                "multiqc_report.html:md5,594580829cc3e612f18924ee2c66a57b"
             ],
             [
-                "versions.yml:md5,7d88319dcef7bbf2cc0b64d04d42413c",
-                "versions.yml:md5,908b943b942f4e1f0e80463a3a4a84be"
+                "versions.yml:md5,908b943b942f4e1f0e80463a3a4a84be",
+                "versions.yml:md5,df29ddce0d6768460316bb277962c860"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-10T18:00:05.383723"
+        "timestamp": "2025-05-28T12:29:50.400174"
     }
 }

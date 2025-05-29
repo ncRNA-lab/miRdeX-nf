@@ -42,19 +42,6 @@ include { SEQKIT_RMDUP } from '../../../modules/nf-core/seqkit/rmdup/main'
 include { BLAST_MAKEBLASTDB as BLAST_MAKEBLASTDB_MATURE    } from '../../../modules/nf-core/blast/makeblastdb/main'
 include { BLAST_MAKEBLASTDB as BLAST_MAKEBLASTDB_PRECURSOR } from '../../../modules/nf-core/blast/makeblastdb/main'
 
-//
-// SUBWORKFLOW: Consisting entirely of nf-core/modules
-//
-
-include { softwareVersionsToYAML           } from '../../nf-core/utils_nfcore_pipeline'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-include { samplesheetToList                } from 'plugin/nf-schema'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,12 +58,12 @@ workflow MIRNOTE {
     five_add                // integer: 0
     three_add               // integer: 3
     ends_modification       // integer: 4
-    ch_versions             // channel: [ path(versions.yml) ]
 
     main:
     
     // Create an empty channel for summary info
     ch_pipeline_summary  = Channel.empty()
+    ch_versions  = Channel.empty()
     
     /*
     ========================================================================================

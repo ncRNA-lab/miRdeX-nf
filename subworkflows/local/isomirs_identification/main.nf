@@ -45,9 +45,11 @@ include { BOWTIE_BUILD } from '../../../modules/nf-core/bowtie/build'
 workflow ISOMIRS_IDENTIFICATION {
     take:
         ch_input           // channel: [[id:val(id)], path(query_fasta), path(mature_fasta), path(precursor_fasta), path(genome)]
-        ch_versions        // channel: [ path(versions.yml) ]
 
     main:
+
+        // Create empty channel for versions
+        ch_versions             = Channel.empty()
 
         /*
         ========================================================================
@@ -68,7 +70,7 @@ workflow ISOMIRS_IDENTIFICATION {
             .set { ch_mature_to_blast }
 
         // Run Blast using mature miRNAs as reference
-        COMPLETE_BLASTN_MATURE(ch_mature_to_blast, ch_versions)
+        COMPLETE_BLASTN_MATURE(ch_mature_to_blast)
     
         // Save the software version
         ch_versions = ch_versions.mix(COMPLETE_BLASTN_MATURE.out.versions)
@@ -91,7 +93,7 @@ workflow ISOMIRS_IDENTIFICATION {
             .set { ch_precursor_to_blast }
 
         // Run Blast using miRNA precursors as reference
-        COMPLETE_BLASTN_PRECURSOR(ch_precursor_to_blast, ch_versions)
+        COMPLETE_BLASTN_PRECURSOR(ch_precursor_to_blast)
 
         // Prepare the channel for the MERGE_BLAST process
         COMPLETE_BLASTN_PRECURSOR.out.blast
@@ -134,7 +136,7 @@ workflow ISOMIRS_IDENTIFICATION {
             .set{ ch_nontemplated_and_genome }
 
         // Remove non-templated isomiRs that align to other regions of the genome.
-        FILTER_NONTEMPLATED_ISOMIRS(ch_nontemplated_and_genome, ch_versions)
+        FILTER_NONTEMPLATED_ISOMIRS(ch_nontemplated_and_genome)
 
         // Save the software version
         ch_versions = ch_versions.mix(FILTER_NONTEMPLATED_ISOMIRS.out.versions)

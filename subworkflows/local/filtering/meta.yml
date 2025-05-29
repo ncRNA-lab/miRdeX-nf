@@ -1,0 +1,39 @@
+name: "filtering"
+description: |
+  Filtering sequences based on a database (discard sequences) or genome
+  (select sequences).
+keywords:
+  - filtering
+  - genome
+  - database
+  - srnas
+components:
+  - bowtie/build
+  - bowtie/align
+input:
+  - ch_input:
+      description: |
+        Channel containing a query FASTA file, mature miRNA FASTA, precursor
+        miRNA FASTA, and genome FASTA file.
+        Structure: [ val(meta), path(query_fasta), path(mature_fasta), path(precursor_fasta), path(genome) ]
+output:
+  - bam:
+      description: |
+        BAM file resulting from the alignment.
+        Structure: [ val(meta), path(bam_file) ]
+  - aligned:
+      description: |
+        FASTA file containing sequences that aligned to the reference.
+        Structure: [ val(meta), path(fasta_file) ]
+  - unaligned:
+      description: |
+        FASTA file containing sequences that did not align to the reference.
+        Structure: [ val(meta), path(fasta_file) ]
+  - versions:
+      description: |
+        Files containing software versions
+        Structure: [ path(versions.yml) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

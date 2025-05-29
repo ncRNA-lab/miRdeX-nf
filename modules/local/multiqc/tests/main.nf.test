@@ -11,7 +11,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST'],
+                    [id:'TEST', species: 'Arabidopsis thaliana', project: 'TEST_1'],
                     [file(params.modules_testdata_base_path + 'modules/multiqc/SRR1848803_Trimmed_fastqc.zip', checkIfExists: true)]
                 ])
                 """

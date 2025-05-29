@@ -32,17 +32,20 @@ include { BOWTIE_BUILD  } from '../../../modules/nf-core/bowtie/build'
 
 workflow FILTERING {
     take:
-        input                   // channel: [[id:val(id), project:val(projec), species:val(species), genome:val(genome)], file]
+        ch_input                   // channel: [[id:val(id), project:val(projec), species:val(species), genome:val(genome)], file]
         ref                     // value: 'database' or 'genome'
         database                // path: reference fasta file (optional)
-        ch_versions             // channel: [ path(versions.yml) ]
 
     main:
-    
+        
+        // Create empty channel for versions
+        ch_versions             = Channel.empty()
+        ch_alignment_summary    = Channel.empty()
+
         // Create a channel for the outputs file
-        ch_bowtie_bam       = Channel.empty()
-        ch_bowtie_aligned   = Channel.empty()
-        ch_bowtie_unaligned = Channel.empty()
+        ch_bowtie_bam           = Channel.empty()
+        ch_bowtie_aligned       = Channel.empty()
+        ch_bowtie_unaligned     = Channel.empty()
 
         // Branch the workflow based on the value of "ref"
         if (ref == 'database') {
@@ -56,7 +59,7 @@ workflow FILTERING {
             ch_versions = ch_versions.mix(BOWTIE_BUILD.out.versions)
 
             // Add the ref field to the meta
-            input
+            ch_input
                 .map{ meta, file ->
                     def meta_with_ref = meta + [ref: ref]
                     return [meta_with_ref, file]
@@ -88,7 +91,7 @@ workflow FILTERING {
                         filtering_db_failed: failed
                     ], file]
                 }
-                .set {alingment_summary}
+                .set {ch_alignment_summary}
             
             // Save the output into the output channels
             ch_bowtie_bam       = BOWTIE_ALIGN_DB.out.bam
@@ -98,14 +101,14 @@ workflow FILTERING {
         } else if (ref == 'genome') {
 
             // Modify the channel to later combine it with the indexed genome.
-            input
+            ch_input
                 .map{ meta, file ->
                     return [[id: meta.species], meta, file]
                 }
                 .set{ch_files_to_align}
 
             // Create a channel for the genomes [[id: Arabidopsis thaliana, etc], genome_file]
-            input
+            ch_input
                 .map{ meta, _file ->
                     return [[id: meta.species], meta.genome]
                 }
@@ -154,7 +157,7 @@ workflow FILTERING {
                         filtering_genome_failed: failed
                     ], file]
                 }
-                .set {alingment_summary}
+                .set {ch_alignment_summary}
 
             // Save the output into the output channels
             ch_bowtie_bam       = BOWTIE_ALIGN_GENOME.out.bam
@@ -166,21 +169,21 @@ workflow FILTERING {
         // Add the summary results to the meta section of BAM channel
         ch_bowtie_bam
             .map{ meta, file -> [meta.id, meta, file] }
-            .combine(alingment_summary, by:0)
+            .combine(ch_alignment_summary, by:0)
             .map{item -> [item[3], item[2]]}
             .set{ ch_bam_out }
 
         // Add the summary results to the meta section of aligned channel
         ch_bowtie_aligned
             .map{ meta, file -> [meta.id, meta, file] }
-            .combine(alingment_summary, by:0)
+            .combine(ch_alignment_summary, by:0)
             .map{item -> [item[3], item[2]]}
             .set{ ch_aligned_out }
         
         // Add the summary results to the meta section of unaligned channel
         ch_bowtie_unaligned
             .map{ meta, file -> [meta.id, meta, file] }
-            .combine(alingment_summary, by:0)
+            .combine(ch_alignment_summary, by:0)
             .map{item -> [item[3], item[2]]}
             .set{ ch_unaligned_out }
 

@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow ISOMIRS_IDENTIFICATION"
-    script "subworkflows/local/isomirs_identification/main.nf"
+    script "../main.nf"
     workflow "ISOMIRS_IDENTIFICATION"
 
     test("IsomiRs identification") {
@@ -10,13 +10,13 @@ nextflow_workflow {
 
             workflow  {
                 """
-                input[0] = [
-                    [ id: 'file', single_end: true],
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Arabidopsis thaliana', project: 'PROJECT1'],
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/file.fasta', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/mature.fa', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/precursor.fa', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/genome.fna', checkIfExists: true)
-                ]
+                ])
                 """
             }
         }
@@ -28,7 +28,7 @@ nextflow_workflow {
                 { assert workflow.success }
                 
                 // Verify that the necessary output files are generated.
-                { assert path(workflow.out.iso.get(0)[1]) ==~ /.*\.tsv/ }
+                { assert path(workflow.out.iso.get(0).get(1)) ==~ /.*\.tsv/ }
 
                 // Use snapshots to verify
                 { assert snapshot(workflow.out.iso).match() }
@@ -41,13 +41,13 @@ nextflow_workflow {
 
             workflow  {
                 """
-                input[0] = [
-                    [ id: 'file', single_end: true],
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Arabidopsis thaliana', project: 'PROJECT1'],
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/file.fasta.gz', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/mature.fa', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/precursor.fa', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/isomirs_identification/genome.fna', checkIfExists: true)
-                ]
+                ])
                 """
             }
         }
@@ -59,7 +59,7 @@ nextflow_workflow {
                 { assert workflow.success }
                 
                 // Verify that the necessary output files are generated.
-                { assert path(workflow.out.iso.get(0)[1]) ==~ /.*\.tsv/ }
+                { assert path(workflow.out.iso.get(0).get(1)) ==~ /.*\.tsv/ }
 
                 // Use snapshots to verify
                 { assert snapshot(workflow.out.iso).match() }

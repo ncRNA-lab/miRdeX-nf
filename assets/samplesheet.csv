@@ -1,7 +1,3 @@
 Species,Project,File,Metadata,Genome,Group
-Arabidopsis thaliana,PRJNA560782,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA560782/SRR9995048.fastq.gz,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/arth_m_PRJNA560782.tsv,,
-Arabidopsis thaliana,PRJNA560782,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA560782/SRR9995049.fastq.gz,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/arth_m_PRJNA560782.tsv,,
-Arabidopsis thaliana,PRJNA560782,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA560782/SRR9995051.fastq.gz,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/arth_m_PRJNA560782.tsv,,
-Arabidopsis thaliana,PRJNA560782,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA560782/SRR9995052.fastq.gz,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/arth_m_PRJNA560782.tsv,,
-Arabidopsis thaliana,PRJNA560782,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA560782/SRR9995053.fastq.gz,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/arth_m_PRJNA560782.tsv,,
-Arabidopsis thaliana,PRJNA560782,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA560782/SRR9995054.fastq.gz,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/arth_m_PRJNA560782.tsv,,
+Glycine max,PRJNA720229,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA720229_3.counts.tsv,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/03-Metadata/glma_m_PRJNA720229.tsv,,3
+Glycine max,PRJNA720229,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA720229_4.counts.tsv,/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/03-Metadata/glma_m_PRJNA720229.tsv,,4

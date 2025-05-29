@@ -1,0 +1,30 @@
+name: "filtering"
+description: |
+  Downloads the requested databases and assigns each species a mature and a
+  precursor miRNA file based on the databases' order of preference.
+keywords:
+  - filtering
+  - database
+  - genome
+  - srnas
+components:
+  - download_db
+  - split_db_by_species
+  - dna_rna_converter
+  - collapse_db
+  - utils_mirplan_pipeline
+input:
+  - species:
+      description: |
+        List of species names.
+        Structure: [ val([species_name_1, species_name_2, ..., species_name_n]) ]
+output:
+- dbs:
+    description: |
+      Mature and precursor miRNA FASTA files associated with each species.
+      Metadata specifies the source database for the files.
+      Structure: [ val(meta), path(mature), path(precursor) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

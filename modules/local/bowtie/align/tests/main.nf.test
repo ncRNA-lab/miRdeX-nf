@@ -3,7 +3,6 @@ nextflow_process {
     name "Test Process BOWTIE_ALIGN"
     script "../main.nf"
     process "BOWTIE_ALIGN"
-    config "./nextflow.config"
 
     setup {
 
@@ -27,7 +26,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [id: 'sample1_test', single_end: true ], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fasta', checkIfExists: true)
+                    [id: 'sample1_test', single_end: true, species: 'Arabidopsis thaliana', project:'TEST_1'], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fastq', checkIfExists: true)
                 ]
                 input[1] = BOWTIE_BUILD.out.index
                 input[2] = true
@@ -45,8 +44,8 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert path(process.out.bam.get(0).get(1)) ==~ /.*\.bam/ }
                 { assert path(process.out.log.get(0).get(1)) ==~ /.*\.out/ }
-                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fasta\.gz/ }
-                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fasta\.gz/ }
+                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fastq\.gz/ }
+                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fastq\.gz/ }
 
                 // Use snapshots to verify
                 {
@@ -67,7 +66,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [id: 'sample1_test', single_end: true], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fasta.gz', checkIfExists: true)
+                    [id: 'sample1_test', single_end: true, species: 'Arabidopsis thaliana', project:'TEST_1'], file(params.modules_testdata_base_path + 'modules/bowtie/sample1_test.fastq.gz', checkIfExists: true)
                 ]
                 input[1] = BOWTIE_BUILD.out.index
                 input[2] = true
@@ -86,8 +85,8 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert path(process.out.bam.get(0).get(1)) ==~ /.*\.bam/ }
                 { assert path(process.out.log.get(0).get(1)) ==~ /.*\.out/ }
-                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fasta\.gz/ }
-                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fasta\.gz/ }
+                { assert path(process.out.aligned.get(0).get(1)) ==~ /.*\.aligned\.fastq\.gz/ }
+                { assert path(process.out.unaligned.get(0).get(1)) ==~ /.*\.unaligned\.fastq\.gz/ }
 
                 // Use snapshots to verify
                 {

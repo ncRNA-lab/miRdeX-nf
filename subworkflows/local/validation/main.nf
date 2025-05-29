@@ -19,19 +19,21 @@ include { COUNTS_VALIDATION    } from "../../../modules/local/counts_validation"
 
 workflow VALIDATION {
     take:
-        ch_input_validation         // channel: [[id:(counts_id/project_id), metadata:path(metadata)], counts_file/[lib_file1, lib_file2...]]
+        ch_input                    // channel: [[id:(counts_id/project_id), metadata:path(metadata)], counts_file/[lib_file1, lib_file2...]]
         type                        // value: 'libraries' or 'counts'
         replicates_threshold        // integer: > 2
         depth_threshold             // integer: > 0 (It is not used when type = 'counts')
-        ch_versions                 // channel: [val(versions)]
 
     main:
+
+        // Create empty channel for versions
+        ch_versions             = Channel.empty()
 
         // Branch the workflow based on the value of "type"
         if (type == 'libraries') {
 
             // Extract the metadata from the map object.
-            ch_input_validation
+            ch_input
                 .map{ meta, file ->
                     return [meta, file, meta.metadata]
                 }
@@ -112,7 +114,7 @@ workflow VALIDATION {
         } else if (type == 'counts'){
 
             // Extract the metadata and the group_id from the map object.
-            ch_input_validation
+            ch_input
                 .map{ meta, file ->
                     return [meta, file, meta.metadata, meta.group_id]
                 }

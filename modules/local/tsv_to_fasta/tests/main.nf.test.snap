@@ -12,9 +12,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:41.25304831"
+        "timestamp": "2025-05-27T14:30:25.231133"
     },
     "TSV to FASTA - Input file without header": {
         "content": [
@@ -29,8 +29,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:46.738937574"
+        "timestamp": "2025-05-27T14:30:28.30342"
     }
 }

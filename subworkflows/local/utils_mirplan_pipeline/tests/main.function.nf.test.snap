@@ -1,0 +1,115 @@
+{
+    "Test Function validateGroupInputUsage success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:23:03.131705"
+    },
+    "Test Function validateAccessionList success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-29T09:16:20.538412"
+    },
+    "Test Function validateInputParameters success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:02:42.10937"
+    },
+    "Test Function validateAccessionList -  AccessionList valid - success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-29T09:19:43.661755"
+    },
+    "Test Function createProjectTableWarn success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:06:27.444"
+    },
+    "Test Function fromCountsWarn success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:06:30.3356"
+    },
+    "Test Function summaryToTsv success": {
+        "content": [
+            {
+                
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-29T09:40:57.534383"
+    },
+    "Test Function validateAndAssignGenome success": {
+        "content": [
+            [
+                "Glycine max",
+                "PRJNA720229",
+                "glma_m_PRJNA720229.tsv:md5,2cdb1b411a9e6cfbb0f5471372d7dd59",
+                "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/004/515/GCF_000004515.6_Glycine_max_v4.0/GCF_000004515.6_Glycine_max_v4.0_genomic.fna.gz",
+                "PRJNA720229_3.counts.tsv:md5,46a8680a02ec9ed8bd3d69f32f9662e6",
+                "3"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:16:07.262849"
+    },
+    "Test Function skipDeaWarn success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:16:04.279083"
+    },
+    "Test Function notTsvFilesError success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:19:50.250056"
+    },
+    "Test Function formatDbChannel success": {
+        "content": [
+            {
+                
+            }
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-29T09:32:41.149467"
+    },
+    "Test Function onlyPreprocessingWarn success": {
+        "content": null,
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T17:16:01.452867"
+    }
+}

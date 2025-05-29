@@ -156,7 +156,7 @@ workflow MIRPLAN {
     if (params.from_counts){
 
         // Check the counts matrices input files
-        VALIDATION(ch_input_files.counts, 'counts', params.validation_rep, 0, ch_versions)
+        VALIDATION(ch_input_files.counts, 'counts', params.validation_rep, 0)
 
         // Save the software version
         ch_versions = ch_versions.mix(VALIDATION.out.versions)
@@ -333,7 +333,7 @@ workflow MIRPLAN {
         */
 
         // Validate the project
-        VALIDATION(ch_fastq, 'libraries', params.validation_rep, params.validation_depth, ch_versions)
+        VALIDATION(ch_fastq, 'libraries', params.validation_rep, params.validation_depth)
 
         // Save the software version
         ch_versions = ch_versions.mix(VALIDATION.out.versions)
@@ -382,7 +382,7 @@ workflow MIRPLAN {
         if (!params.skip_filt_db) {
 
             // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-            FILTERING_DB(ch_fastq, "database", params.filtering_db_file, ch_versions)
+            FILTERING_DB(ch_fastq, "database", params.filtering_db_file)
 
             // Save the software version
             ch_versions = ch_versions.mix(FILTERING_DB.out.versions)
@@ -432,7 +432,7 @@ workflow MIRPLAN {
         if (!params.skip_filt_genome) {
             
             // Remove those sequences that do not align with the reference genome
-            FILTERING_GENOME(ch_fastq, "genome", null, ch_versions)
+            FILTERING_GENOME(ch_fastq, "genome", null)
 
             // Save the software version
             ch_versions = ch_versions.mix(FILTERING_GENOME.out.versions)
@@ -495,7 +495,7 @@ workflow MIRPLAN {
         if (!params.only_preprocessing){
             
             // Create count matrix
-            QUANTIFICATION(ch_fastq, 'raw', params.counts_project_matrix, ch_versions)
+            QUANTIFICATION(ch_fastq, 'raw', params.counts_project_matrix)
 
             // Save the software version
             ch_versions = ch_versions.mix(QUANTIFICATION.out.versions)
@@ -714,8 +714,7 @@ workflow MIRPLAN {
                 params.substitutions,
                 params.five_add,
                 params.three_add,
-                params.ends_modification,
-                ch_versions
+                params.ends_modification
             )
 
             // Save the software version

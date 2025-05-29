@@ -1,0 +1,31 @@
+name: "complete_blastn"
+description: |
+  Indexes the reference, aligns sequences, and appends query and subject
+  sequences to results.
+keywords:
+  - blastn
+  - alignment
+  - index
+components:
+  - blast/makeblastdb
+  - blast/blastn
+  - add_sequences_blast
+input:
+  - ch_input:
+      description: |
+        Query FASTA file and reference FASTA file.
+        Structure: [ val(meta), path(query_fasta), path(reference_fasta) ]
+output:
+  - idxstats:
+      description: |
+        BLAST alignment result file with metadata including ID; contains query
+        and subject sequences.
+        Structure:  [ val(meta), path(txt_file) ]
+  - versions:
+      description: |
+        Files containing software versions
+        Structure: [ path(versions.yml) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

@@ -1,0 +1,138 @@
+nextflow_workflow {
+
+    name "Test Workflow MIRNOTE"
+    script "../main.nf"
+    workflow "MIRNOTE"
+    config "./nextflow.config"
+
+    test("miRNote - Compressed FASTQ") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Glycine max', genome: file(params.modules_testdata_base_path + 'subworkflows/mirnote/GCF_000001735.4_TAIR10.1_genomic.fna', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'subworkflows/mirnote/SRR1848803.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = 'mirbase,srnaanno,pmiren'
+                input[2] = 1
+                input[3] = 0
+                input[4] = 3
+                input[5] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+                { assert workflow.success }
+                { assert path(workflow.out.annotation.get(0).get(1)) ==~ /.*\.gff3/ }
+                { assert snapshot(workflow.out.annotation).match() }
+            }
+        }
+    }
+    test("miRNote - Decompressed FASTA - Only miRBase") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Glycine max', genome: file(params.modules_testdata_base_path + 'subworkflows/mirnote/GCF_000001735.4_TAIR10.1_genomic.fna', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'subworkflows/mirnote/SRR1848803.fasta', checkIfExists: true)
+                ])
+                input[1] = 'mirbase'
+                input[2] = 1
+                input[3] = 0
+                input[4] = 3
+                input[5] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+                { assert workflow.success }
+                { assert path(workflow.out.annotation.get(0).get(1)) ==~ /.*\.gff3/ }
+                { assert snapshot(workflow.out.annotation).match() }
+            }
+        }
+    }
+    test("miRNote - Compressed FASTQ - Only miRBase") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Glycine max', genome: file(params.modules_testdata_base_path + 'subworkflows/mirnote/GCF_000001735.4_TAIR10.1_genomic.fna', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'subworkflows/mirnote/SRR1848803.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = 'mirbase'
+                input[2] = 1
+                input[3] = 0
+                input[4] = 3
+                input[5] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+                { assert workflow.success }
+                { assert path(workflow.out.annotation.get(0).get(1)) ==~ /.*\.gff3/ }
+                { assert snapshot(workflow.out.annotation).match() }
+            }
+        }
+    }
+    test("miRNote - Compressed FASTQ - Only sRNAanno") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Glycine max', genome: file(params.modules_testdata_base_path + 'subworkflows/mirnote/GCF_000001735.4_TAIR10.1_genomic.fna', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'subworkflows/mirnote/SRR1848803.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = 'srnaanno'
+                input[2] = 1
+                input[3] = 0
+                input[4] = 3
+                input[5] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+                { assert workflow.success }
+                { assert path(workflow.out.annotation.get(0).get(1)) ==~ /.*\.gff3/ }
+                { assert snapshot(workflow.out.annotation).match() }
+            }
+        }
+    }
+    test("miRNote - Compressed FASTQ - Only PmiREN") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id: 'file', single_end: true, species: 'Glycine max', genome: file(params.modules_testdata_base_path + 'subworkflows/mirnote/GCF_000001735.4_TAIR10.1_genomic.fna', checkIfExists: true)],
+                    file(params.modules_testdata_base_path + 'subworkflows/mirnote/SRR1848803.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = 'pmiren'
+                input[2] = 1
+                input[3] = 0
+                input[4] = 3
+                input[5] = 4
+                """
+            }
+        }
+
+        then {
+            assertAll{
+                { assert workflow.success }
+                { assert path(workflow.out.annotation.get(0).get(1)) ==~ /.*\.gff3/ }
+                { assert snapshot(workflow.out.annotation).match() }
+            }
+        }
+    }
+}

@@ -1,0 +1,60 @@
+name: "mirnote"
+description: |
+  Identifies miRNAs and isomiRs from a FASTA/FASTQ file.
+keywords:
+  - mirna
+  - isomir
+  - annotation
+components:
+  - counts
+  - rpm
+  - add_counts_to_isomirs_df
+  - prepare_mirna_databases
+  - isomirs_identification
+  - seqkit/fq2fa
+  - seqkit/rmdup
+  - blast/makeblastdb
+  - utils_nfcore_pipeline
+input:
+  - ch_input:
+      description: |
+        FASTA/FASTQ file with metadata including species and associated genome.
+        Structure: [ val(meta)], path(fasta/fastq_file) ]
+  - databases:
+      description: |
+        Comma-separated string specifying databases to use for annotation and
+        their order of preference.
+        Example: "mirbase,srnaanno,pmiren"
+  - substitutions:
+      description: |
+        Maximum number of allowed internal substitutions (not at sequence ends).
+        Type: integer
+  - five_add:
+      description: |
+        Maximum number of non-templated nucleotides allowed at the 5' end.
+        Type: integer
+  - three_add:
+      description: |
+        Maximum number of non-templated nucleotides allowed at the 3' end.
+        Type: integer
+  - ends_modification:
+      description: |
+        Maximum total allowed modifications (substitutions) across both ends (5' + 3').
+        Type: integer
+output:
+  - annotation:
+      description: |
+        GFF3 file containing miRNA and isomiR annotation results.
+        Structure: [ val(meta), path(gff3_file) ]
+  - summary:
+      description: |
+        Channel of maps with summary information about the workflow results.
+        Example keys: id, num_isomirs, etc.
+  - versions:
+      description: |
+        Files containing software versions
+        Structure: [ path(versions.yml) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

@@ -6,7 +6,9 @@
                     {
                         "id": "TEST_9",
                         "group_id": 9,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "TEST_9_0.general_dea_raw.tsv:md5,b1ef1b495c6dd84b8e7928435610e11d",
@@ -23,7 +25,9 @@
                     {
                         "id": "TEST_9",
                         "group_id": 9,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "TEST_9_0.general_dea_sig.tsv:md5,b18210da34255608b2109a28fcd92d25",
@@ -36,17 +40,35 @@
                 ]
             ],
             [
-                "TEST_9.ea_summary.tsv:md5,647a0c14573e63783e4cca49ae077795"
+                [
+                    {
+                        "id": "TEST_9",
+                        "group_id": 9,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_9.ea_summary.tsv:md5,647a0c14573e63783e4cca49ae077795"
+                ]
             ],
             [
-                "TEST_9.dea_summary.tsv:md5,ca03d5dfb9f4774b0be7b157fbc798e5"
+                [
+                    {
+                        "id": "TEST_9",
+                        "group_id": 9,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_9.dea_summary.tsv:md5,ca03d5dfb9f4774b0be7b157fbc798e5"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T16:21:01.783221"
+        "timestamp": "2025-05-27T15:53:31.247322"
     },
     "Differential expression analysis - 1 Factor - Wald": {
         "content": [
@@ -55,7 +77,9 @@
                     {
                         "id": "TEST_1",
                         "group_id": 1,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     "TEST_1_0.dea_raw.tsv:md5,51f8c55ea72db9fa658f4ee02c09569a"
                 ]
@@ -65,23 +89,43 @@
                     {
                         "id": "TEST_1",
                         "group_id": 1,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     "TEST_1_0.dea_sig.tsv:md5,516134152f4e14145af8995ece093d6f"
                 ]
             ],
             [
-                "TEST_1.ea_summary.tsv:md5,6f863899d807fba4b5a79bc3236a3a81"
+                [
+                    {
+                        "id": "TEST_1",
+                        "group_id": 1,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_1.ea_summary.tsv:md5,6f863899d807fba4b5a79bc3236a3a81"
+                ]
             ],
             [
-                "TEST_1.dea_summary.tsv:md5,a961c81407b8636d58ade2678514e6c9"
+                [
+                    {
+                        "id": "TEST_1",
+                        "group_id": 1,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_1.dea_summary.tsv:md5,a961c81407b8636d58ade2678514e6c9"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T16:17:53.35607"
+        "timestamp": "2025-05-27T15:49:25.361867"
     },
     "Differential expression analysis - 1 Factor with multiple levels - Wald": {
         "content": [
@@ -90,7 +134,9 @@
                     {
                         "id": "TEST_10",
                         "group_id": 10,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "TEST_10_1.dea_raw.tsv:md5,452ab914cb44af88b18475bdf89fb38b",
@@ -104,7 +150,9 @@
                     {
                         "id": "TEST_10",
                         "group_id": 10,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "TEST_10_1.dea_sig.tsv:md5,3a08da818047689085b3db1b8f7d3ea8",
@@ -114,17 +162,35 @@
                 ]
             ],
             [
-                "TEST_10.ea_summary.tsv:md5,5dc6514db5cdf217f6b7fd160aae2be7"
+                [
+                    {
+                        "id": "TEST_10",
+                        "group_id": 10,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_10.ea_summary.tsv:md5,5dc6514db5cdf217f6b7fd160aae2be7"
+                ]
             ],
             [
-                "TEST_10.dea_summary.tsv:md5,a9c0dd4c4d9da7d22115b5601299f6db"
+                [
+                    {
+                        "id": "TEST_10",
+                        "group_id": 10,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_10.dea_summary.tsv:md5,a9c0dd4c4d9da7d22115b5601299f6db"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T16:18:35.678707"
+        "timestamp": "2025-05-27T15:50:22.308906"
     },
     "Differential expression analysis - 2 Factor with interaction - Wald": {
         "content": [
@@ -133,7 +199,9 @@
                     {
                         "id": "TEST_8",
                         "group_id": 8,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "TEST_8_1.dea_raw.tsv:md5,1f26ad969f7812de45d79a34dc600407",
@@ -147,7 +215,9 @@
                     {
                         "id": "TEST_8",
                         "group_id": 8,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     [
                         "TEST_8_1.dea_sig.tsv:md5,b93f7cbe769869a31355a14d08d9a062",
@@ -157,17 +227,35 @@
                 ]
             ],
             [
-                "TEST_8.ea_summary.tsv:md5,5156e01e3e6c2e7b9dbfcd75b688395d"
+                [
+                    {
+                        "id": "TEST_8",
+                        "group_id": 8,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_8.ea_summary.tsv:md5,5156e01e3e6c2e7b9dbfcd75b688395d"
+                ]
             ],
             [
-                "TEST_8.dea_summary.tsv:md5,646dc2e6ae0a8b0e62f5218286e037b6"
+                [
+                    {
+                        "id": "TEST_8",
+                        "group_id": 8,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_8.dea_summary.tsv:md5,646dc2e6ae0a8b0e62f5218286e037b6"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T16:19:14.349889"
+        "timestamp": "2025-05-27T15:51:15.30052"
     },
     "Differential expression analysis - Numeric contrast - Wald": {
         "content": [
@@ -176,7 +264,9 @@
                     {
                         "id": "TEST_7",
                         "group_id": 7,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     "TEST_7_0.dea_raw.tsv:md5,e8b42789bf9248216ee160c3d19864bb"
                 ]
@@ -186,22 +276,42 @@
                     {
                         "id": "TEST_7",
                         "group_id": 7,
-                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac"
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
                     },
                     "TEST_7_0.dea_sig.tsv:md5,c79a41a84fa920b79b5234ce2d16f367"
                 ]
             ],
             [
-                "TEST_7.ea_summary.tsv:md5,ac27db06f474985c8827645203355ba5"
+                [
+                    {
+                        "id": "TEST_7",
+                        "group_id": 7,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_7.ea_summary.tsv:md5,ac27db06f474985c8827645203355ba5"
+                ]
             ],
             [
-                "TEST_7.dea_summary.tsv:md5,d34c871aab7356bf6cdd6edb4e9a4d04"
+                [
+                    {
+                        "id": "TEST_7",
+                        "group_id": 7,
+                        "metadata": "test_metadata.tsv:md5,7abeccf5abd9cde8bf77d720df4304ac",
+                        "species": "Arabidopsis thaliana",
+                        "project": "TEST_1"
+                    },
+                    "TEST_7.dea_summary.tsv:md5,d34c871aab7356bf6cdd6edb4e9a4d04"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-06T16:19:37.360339"
+        "timestamp": "2025-05-27T15:51:51.81561"
     }
 }

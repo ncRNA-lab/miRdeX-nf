@@ -1,0 +1,164 @@
+{
+    "Prepare miRNA databases (miRNA > PmiREN > sRNAanno) - Species in miRBase": {
+        "content": [
+            [
+                {
+                    "database": "mirbase",
+                    "mature": "gma_mirbase_mature.collapsed.fa:md5,80bd31cda71db7db7112b203fc636e2d",
+                    "precursor": "gma_mirbase_precursor.collapsed.fa:md5,88e3d46085414c0717c3eb50373e5b11",
+                    "species": "Glycine max",
+                    "species_id": "gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:01:42.954356"
+    },
+    "Prepare miRNA databases (sRNAanno > PmiREN) - Species in sRNAanno": {
+        "content": [
+            [
+                {
+                    "database": "srnaanno",
+                    "mature": "gma_srnaanno_mature.collapsed.fa:md5,56a3490f2ee1e57275887a0bfcdd8c11",
+                    "precursor": "gma_srnaanno_precursor.collapsed.fa:md5,251e4a033da58f3514d9263a4b1759e9",
+                    "species": "Glycine max",
+                    "species_id": "gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:23:21.645399"
+    },
+    "Prepare miRNA databases (miRBase) - Species in miRBase": {
+        "content": [
+            [
+                {
+                    "database": "mirbase",
+                    "mature": "gma_mirbase_mature.collapsed.fa:md5,80bd31cda71db7db7112b203fc636e2d",
+                    "precursor": "gma_mirbase_precursor.collapsed.fa:md5,88e3d46085414c0717c3eb50373e5b11",
+                    "species": "Glycine max",
+                    "species_id": "gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:23:48.02897"
+    },
+    "Prepare miRNA databases (sRNAanno > miRBase) - Species in sRNAanno": {
+        "content": [
+            [
+                {
+                    "database": "srnaanno",
+                    "mature": "gma_srnaanno_mature.collapsed.fa:md5,56a3490f2ee1e57275887a0bfcdd8c11",
+                    "precursor": "gma_srnaanno_precursor.collapsed.fa:md5,251e4a033da58f3514d9263a4b1759e9",
+                    "species": "Glycine max",
+                    "species_id": "gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:23:38.099281"
+    },
+    "Prepare miRNA databases (miRNA > PmiREN > sRNAanno) - Species in sRNAanno": {
+        "content": [
+            [
+                {
+                    "database": "srnaanno",
+                    "mature": "aip_srnaanno_mature.collapsed.fa:md5,30ec4b46ff04ab63069402255ebd6816",
+                    "precursor": "aip_srnaanno_precursor.collapsed.fa:md5,633b288da8376d2ea9f106cbf131e6a5",
+                    "species": "Arachis ipaensis",
+                    "species_id": "aip"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:08:57.406089"
+    },
+    "Prepare miRNA databases (PmiREN > miRBase) - Species in PmiREN": {
+        "content": [
+            [
+                {
+                    "database": "pmiren",
+                    "mature": "gma_pmiren_mature.collapsed.fa:md5,2f13558988f6d38c6886f87f9e05b3b2",
+                    "precursor": "gma_pmiren_precursor.collapsed.fa:md5,38bfdd853561f5a8ad8c1d3ac1a449c0",
+                    "species": "Glycine max",
+                    "species_id": "gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:19:10.087616"
+    },
+    "Prepare miRNA databases (sRNAanno) - Species in sRNAanno": {
+        "content": [
+            [
+                {
+                    "database": "srnaanno",
+                    "mature": "gma_srnaanno_mature.collapsed.fa:md5,56a3490f2ee1e57275887a0bfcdd8c11",
+                    "precursor": "gma_srnaanno_precursor.collapsed.fa:md5,251e4a033da58f3514d9263a4b1759e9",
+                    "species": "Glycine max",
+                    "species_id": "gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:24:02.193275"
+    },
+    "Prepare miRNA databases (PmiREN) - Species in PmiREN": {
+        "content": [
+            [
+                {
+                    "database": "pmiren",
+                    "mature": "Gma_pmiren_mature.collapsed.fa:md5,a7308d3144dae521c4425130160c9361",
+                    "precursor": "Gma_pmiren_precursor.collapsed.fa:md5,9bdd08d0b5c4fb0dde74b0a019b5bc86",
+                    "species": "Glycine max",
+                    "species_id": "Gma"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:28:07.800269"
+    },
+    "Prepare miRNA databases (miRNA > PmiREN > sRNAanno) - Species in PmiREN": {
+        "content": [
+            [
+                {
+                    "database": "pmiren",
+                    "mature": "bju_pmiren_mature.collapsed.fa:md5,de343d3aa6344bc37961bbd2c1d9089d",
+                    "precursor": "bju_pmiren_precursor.collapsed.fa:md5,504f285473d13018b20977c76cbafbc5",
+                    "species": "Brassica juncea",
+                    "species_id": "bju"
+                }
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T12:13:59.411613"
+    }
+}

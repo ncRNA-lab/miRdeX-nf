@@ -10,7 +10,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [id:'TEST'],
+                    [id:'TEST', species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/counts/test.fastq', checkIfExists: true)
                 ]
                 """
@@ -39,7 +39,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [id:'TEST'],
+                    [id:'TEST', species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/counts/test.fastq.gz', checkIfExists: true)
                 ]
                 """

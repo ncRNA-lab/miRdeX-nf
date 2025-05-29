@@ -9,7 +9,7 @@
                         "project": "TEST",
                         "single_end": true,
                         "genome": "genome_test.fasta:md5,f91acf9f75bbffd8f320db394a5dac7e",
-                        "type": "genome",
+                        "ref": "genome",
                         "filtering_genome_total": "5",
                         "filtering_genome_only_align": "4 (80.00%)",
                         "filtering_genome_failed": "1 (20.00%)"
@@ -25,7 +25,7 @@
                         "project": "TEST",
                         "single_end": true,
                         "genome": "genome_test.fasta:md5,f91acf9f75bbffd8f320db394a5dac7e",
-                        "type": "genome",
+                        "ref": "genome",
                         "filtering_genome_total": "5",
                         "filtering_genome_only_align": "4 (80.00%)",
                         "filtering_genome_failed": "1 (20.00%)"
@@ -41,7 +41,7 @@
                         "project": "TEST",
                         "single_end": true,
                         "genome": "genome_test.fasta:md5,f91acf9f75bbffd8f320db394a5dac7e",
-                        "type": "genome",
+                        "ref": "genome",
                         "filtering_genome_total": "5",
                         "filtering_genome_only_align": "4 (80.00%)",
                         "filtering_genome_failed": "1 (20.00%)"
@@ -52,9 +52,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-10T17:29:42.049948"
+        "timestamp": "2025-05-28T10:57:29.968969"
     },
     "Filtering - Database": {
         "content": [
@@ -65,7 +65,7 @@
                         "species": "Glycine max",
                         "project": "TEST",
                         "single_end": true,
-                        "type": "database",
+                        "ref": "database",
                         "filtering_db_total": "5",
                         "filtering_db_only_align": "4 (80.00%)",
                         "filtering_db_failed": "1 (20.00%)"
@@ -80,7 +80,7 @@
                         "species": "Glycine max",
                         "project": "TEST",
                         "single_end": true,
-                        "type": "database",
+                        "ref": "database",
                         "filtering_db_total": "5",
                         "filtering_db_only_align": "4 (80.00%)",
                         "filtering_db_failed": "1 (20.00%)"
@@ -95,7 +95,7 @@
                         "species": "Glycine max",
                         "project": "TEST",
                         "single_end": true,
-                        "type": "database",
+                        "ref": "database",
                         "filtering_db_total": "5",
                         "filtering_db_only_align": "4 (80.00%)",
                         "filtering_db_failed": "1 (20.00%)"
@@ -106,8 +106,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-10T17:29:38.858858"
+        "timestamp": "2025-05-28T10:57:26.332946"
     }
 }

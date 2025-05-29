@@ -1,0 +1,28 @@
+nextflow_workflow {
+
+    name "Test Workflow PIPELINE_COMPLETION"
+    script "../main.nf"
+    workflow "PIPELINE_COMPLETION"
+
+    test("test PIPELINE_COMPLETION successfully completes") {
+
+        when {
+            workflow {
+                """
+                input[0] = Channel.of([sample: 'sample1', comparison_id: 'comp1', group: 1, species: 'Arabidopsis thaliana'])
+                input[1] = Channel.of([file(params.modules_testdata_base_path + 'subworkflows/utils_mirplan_pipeline/versions_file.yml', checkIfExists: true)])
+                input[2] = null
+                input[3] = null
+                input[4] = true
+                input[5] = "${outputDir}"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success}
+            )
+        }
+    }
+}

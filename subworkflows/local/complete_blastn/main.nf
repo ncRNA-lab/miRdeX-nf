@@ -32,10 +32,12 @@ include { BLAST_BLASTN      } from '../../../modules/nf-core/blast/blastn/main'
 workflow COMPLETE_BLASTN {
     take:
         ch_input           // channel: [[id:val(id)], path(query_fasta), path(reference_fasta)]
-        ch_versions        // channel: [ path(versions.yml) ]
 
     main:
-            
+
+        // Empty channel for versions    
+        ch_versions  = Channel.empty()
+        
         /*
         ========================================================================
             Index reference database

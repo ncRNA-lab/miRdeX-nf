@@ -1,0 +1,48 @@
+name: "validation"
+description: |
+  Validates libraries or count tables based on sequencing depth and/or minimum
+  number of biological replicates per sample group.
+keywords:
+  - validation
+  - depth
+  - replicates
+components:
+  - libraries_validation
+  - counts_validation
+input:
+  - ch_input:
+      description: |
+        FASTQ/TSV files for validation. Each element includes an ID, a metadata
+        file path, and either a counts file or a list of library files.
+        Structure: [ val(meta)], path(counts_file or [lib_file1, lib_file2, ...]) ]
+  - type:
+      description: |
+        Specifies the type of input data.
+        Possible values: 'libraries' or 'counts'.
+  - replicates_threshold:
+      description: |
+        Integer threshold for the minimum number of replicates required.
+        Type: Integer (>0)
+  - depth_threshold:
+      description: |
+        Integer threshold for minimum sequencing depth.
+        Type: Integer (>0)
+        Note: Not used when type is 'counts'.
+output:
+  - files:
+      description: |
+        FASTQ files passing validation.
+        Structure: [ val(meta), path(fastq_files) ]
+  - projects:
+      description: |
+        Channel of summary results for each project.
+        Each element is a map object containing workflow output metrics.
+        Structure: [ val(summary) ]
+  - versions:
+      description: |
+        Files containing software versions
+        Structure: [ path(versions.yml) ]
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

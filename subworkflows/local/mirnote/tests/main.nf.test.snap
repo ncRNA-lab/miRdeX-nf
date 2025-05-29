@@ -1,0 +1,28 @@
+{
+    "miRNOote": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file",
+                        "single_end": true,
+                        "species": "Glycine max",
+                        "genome": "GCF_000001735.4_TAIR10.1_genomic.fna:md5,cdd0e8abffbe11ad045f89e30f2721c1",
+                        "species_id": "gma",
+                        "database": "mirbase",
+                        "mature": "gma_mirbase_mature.collapsed.fa:md5,80bd31cda71db7db7112b203fc636e2d",
+                        "precursor": "gma_mirbase_precursor.collapsed.fa:md5,88e3d46085414c0717c3eb50373e5b11",
+                        "run": "file",
+                        "genome_id": "GCF_000001735.4_TAIR10.1_genomic"
+                    },
+                    "file.gff3:md5,b9f776e291486f6498b2b6a7bb795380"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T10:33:00.409374"
+    }
+}

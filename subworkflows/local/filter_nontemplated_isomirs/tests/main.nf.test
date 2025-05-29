@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow FILTER_NONTEMPLATED_ISOMIRS"
-    script "subworkflows/local/filter_nontemplated_isomirs/main.nf"
+    script "../main.nf"
     workflow "FILTER_NONTEMPLATED_ISOMIRS"
 
     test("Filter non-templated isomirs") {
@@ -10,17 +10,17 @@ nextflow_workflow {
 
             workflow  {
                 """
-                input[0] = [
+                input[0] = Channel.of([
                     [ id: 'file', single_end: true],
                     file(params.modules_testdata_base_path + 'subworkflows/filter_nontemplated_isomirs/file_non_templated.tsv', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/filter_nontemplated_isomirs/genome.fna', checkIfExists: true)
-                ]
+                ])
                 """
             }
         }
 
         then {
-            println(workflow.out.iso)
+
             assertAll{
 
                 // Verify that the process has been successfully executed.

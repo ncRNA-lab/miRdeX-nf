@@ -1,0 +1,97 @@
+nextflow_workflow {
+
+    name "Test Workflow PIPELINE_INITIALISATION"
+    script "../main.nf"
+    workflow "PIPELINE_INITIALISATION"
+
+    test("test PIPELINE_INITIALISATION successfully completes with valid parameters") {
+
+        when {
+            params {
+                // Input
+                input  = "${projectDir}/testdata/subworkflows/utils_mirplan_pipeline/samplesheet.csv"
+                outdir = "${projectDir}/testdata/subworkflows/utils_mirplan_pipeline"
+
+                email                       = null
+                email_on_fail               = null
+                plaintext_email             = false
+                publish_dir_mode             = 'copy'
+                help                        = false
+                help_full                    = false
+                show_hidden                  = false
+
+                // Execution mode options
+                only_preprocessing          = false
+                from_counts                 = false
+                from_dea                    = false
+
+                // Parameters for QC
+                extra_fastqc_args           = ''
+                extra_multiqc_args          = ''
+
+                // Parameters for Trimming
+                trimming_adapters           = "${projectDir}/assets/illumina_adapters.fa"
+                trimming_min_len            = 20
+                trimming_max_len            = 25
+                custom_fastp_args           = null // cambiar a trimming_custom_args?
+
+                // Parameters for validation
+                validation_depth            = 500000
+                validation_rep              = 2
+
+                // Parameters for filtering
+                filtering_db_file           = "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/01-Databases/01-RNAcentral/RNAcenral_viridiplantae_snrna_snorna_rrna_trna.fasta" 
+                bowtie_filt_db_ext_args     = ""
+                bowtie_filt_genome_ext_args = ""
+
+                // Parameters for quantification.
+                counts_project_matrix        = false
+                min_counts                   = 5
+                min_samples                  = 3
+
+                // Parameters for DEA.
+                ea_p_value                   = 0.05
+                dea_alpha                    = 0.05
+                
+                // Parameters for annotation
+                databases                    = 'mirbase,pmiren,srnaanno'
+                mirna_classes                = 'ref_miRNA,iso_5p,iso_3p,iso_add3p,iso_add5p,iso_snv_seed,iso_snv_central_offset,iso_snv_central,iso_snv_central_supp,iso_snv,Mixed,Mixed_shift,Undefined'
+                substitutions                = 1
+                five_add                     = 0
+                three_add                    = 3
+                ends_modification            = 4
+                annotation_unitas            = false
+                bowtie_nti_ext_args          = ""
+                counts                       = 0
+                rpm                          = 0
+
+                // Global analysis
+                global_matrix              =  false
+                global_fields              =  'Species,Treatment'
+
+                // Skip parameters
+                skip_fastqc                  = false
+                skip_multiqc                 = false
+                skip_qc_trim                 = false
+                skip_filt_db                 = false
+                skip_filt_genome             = false
+                skip_annotation              = false
+            }
+            workflow {
+                """
+                input[0] = false
+                input[1] = true
+                input[2] = "${outputDir}"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success}
+            )
+        }
+
+    }
+
+}

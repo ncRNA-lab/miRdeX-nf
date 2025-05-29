@@ -11,8 +11,10 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_1_0', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true)],
-                    file(params.modules_testdata_base_path + 'modules/counts_validation/test.counts.tsv', checkIfExists: true)
+                    [id:'TEST_1_0', species: 'Arabidopsis thaliana', project:'TEST_1'],
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test.counts.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true),
+                    1
                 ])
                 input[1] = 2
                 """
@@ -48,8 +50,10 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_1_0', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true)],
-                    file(params.modules_testdata_base_path + 'modules/counts_validation/test_notvalid.counts.tsv', checkIfExists: true)
+                    [id:'TEST_1_0', species: 'Arabidopsis thaliana', project:'TEST_1'],
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test_notvalid.counts.tsv', checkIfExists: true),
+                    file(params.modules_testdata_base_path + 'modules/counts_validation/test_metadata.tsv', checkIfExists: true),
+                    1
                 ])
                 input[1] = 2
                 """

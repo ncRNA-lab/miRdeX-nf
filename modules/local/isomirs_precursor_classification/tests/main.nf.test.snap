@@ -28,9 +28,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:19:56.127675167"
+        "timestamp": "2025-05-27T14:10:17.037606"
     },
     "Isomirs precursor classification - All": {
         "content": [
@@ -61,9 +61,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:19:52.572321311"
+        "timestamp": "2025-05-27T14:10:13.34262"
     },
     "Isomirs precursor classification - Only non-canonical miRNAs (all)": {
         "content": [
@@ -94,9 +94,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T11:01:40.215076195"
+        "timestamp": "2025-05-27T14:10:21.124503"
     },
     "Isomirs precursor classification - Only non-canonical miRNAs (templated)": {
         "content": [
@@ -127,9 +127,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:20:01.508105321"
+        "timestamp": "2025-05-27T14:10:24.598888"
     },
     "Isomirs precursor classification - Only non-canonical miRNAs (non-templated)": {
         "content": [
@@ -160,8 +160,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:20:06.871600793"
+        "timestamp": "2025-05-27T14:10:28.485536"
     }
 }

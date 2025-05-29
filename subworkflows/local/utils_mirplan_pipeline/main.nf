@@ -28,7 +28,6 @@ workflow PIPELINE_INITIALISATION {
     take:
     version             // boolean: Display version and exit
     validate_params     // boolean: Boolean whether to validate parameters against the schema at runtime
-    nextflow_cli_args   //   array: List of positional nextflow CLI args
     outdir              //  string: The output directory where the results will be saved
 
     main:
@@ -79,20 +78,20 @@ workflow PIPELINE_COMPLETION {
     main:
 
     // Get the parameters from the pipeline
-    // summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
     
-    // // Completion email
-    // workflow.onComplete {
-    //     if (email || email_on_fail) {
-    //         sendCompletionEmail(
-    //             summary_params,
-    //             email,
-    //             email_on_fail,
-    //             plaintext_email,
-    //             outdir
-    //         )
-    //     }
-    // }
+    // Completion email
+    workflow.onComplete {
+        if (email || email_on_fail) {
+            sendCompletionEmail(
+                summary_params,
+                email,
+                email_on_fail,
+                plaintext_email,
+                outdir
+            )
+        }
+    }
 
     workflow.onError {
         log.error "Pipeline failed."
@@ -492,7 +491,7 @@ def validateAccessionList(file_path) {
         
         return is_accession_list
 
-    } catch (Exception e) {
+    } catch (Exception _e) {
         return false
     }
 

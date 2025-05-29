@@ -12,9 +12,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:53:01.410986594"
+        "timestamp": "2025-05-27T13:42:58.990531"
     },
     "RNA to DNA - .fq extension": {
         "content": [
@@ -29,9 +29,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:53:07.497606964"
+        "timestamp": "2025-05-27T13:43:05.868423"
     },
     "RNA to DNA - .fasta extension": {
         "content": [
@@ -46,9 +46,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:52:58.070363554"
+        "timestamp": "2025-05-27T13:42:55.757027"
     },
     "DNA to RNA - .fastq extension": {
         "content": [
@@ -63,9 +63,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:53:04.523561689"
+        "timestamp": "2025-05-27T13:43:02.330306"
     },
     "RNA to DNA - .fa extension": {
         "content": [
@@ -80,9 +80,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:52:55.188135375"
+        "timestamp": "2025-05-27T13:42:52.396552"
     },
     "DNA to RNA - .fasta extension": {
         "content": [
@@ -97,9 +97,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:52:52.079151812"
+        "timestamp": "2025-05-27T13:42:49.110062"
     },
     "DNA to RNA - .fa extension": {
         "content": [
@@ -114,9 +114,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:52:49.042944599"
+        "timestamp": "2025-05-27T13:42:45.806436"
     },
     "RNA to DNA - .fastq extension": {
         "content": [
@@ -131,8 +131,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-26T23:53:10.633559955"
+        "timestamp": "2025-05-27T13:43:09.203906"
     }
 }

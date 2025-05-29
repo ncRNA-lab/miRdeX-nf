@@ -19,6 +19,7 @@ nextflow_workflow {
                     [[id:'SAMPLE6', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)]                 
                 )
                 input[1] = 'raw'
+                input[2] = true
                 """
             }
         }
@@ -53,6 +54,77 @@ nextflow_workflow {
                     [[id:'SAMPLE6', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)]                 
                 )
                 input[1] = 'rpm'
+                input[2] = true
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.group_matrix.get(0).get(1)) ==~ /.*\.rpm\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.group_matrix ).match() }
+            }
+        }
+    }
+    test("Quantification - Raw - Only subprojects") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of(
+                    [[id:'SAMPLE1', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE2', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE3', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE4', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE5', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE5.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE6', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)]                 
+                )
+                input[1] = 'raw'
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+
+            assertAll{
+
+                // Verify that the workflow has been successfully executed.
+                { assert workflow.success }
+
+                // Verify that the necessary output files are generated.
+                { assert path(workflow.out.group_matrix.get(0).get(1)) ==~ /.*\.raw\.tsv/ }
+
+                // Use snapshots to verify
+                { assert snapshot( workflow.out.group_matrix ).match() }
+            }
+        }
+    }
+    test("Quantification - RPM - Only subprojects") {
+
+        when {
+
+            workflow  {
+                """
+                input[0] = Channel.of(
+                    [[id:'SAMPLE1', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE1.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE2', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE2.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE3', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE3.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE4', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE4.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE5', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE5.fastq.gz', checkIfExists: true)],
+                    [[id:'SAMPLE6', species: 'Glycine max', project: 'TEST', metadata: file(params.modules_testdata_base_path + 'modules/test_metadata.tsv', checkIfExists: true), valid_groups: [1]], file(params.modules_testdata_base_path + 'modules/libraries_validation/SAMPLE6.fastq.gz', checkIfExists: true)]                 
+                )
+                input[1] = 'rpm'
+                input[2] = false
                 """
             }
         }

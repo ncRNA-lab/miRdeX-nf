@@ -21,15 +21,17 @@ include { COUNTS_MATRIX } from "../../../modules/local/counts_matrix"
 workflow QUANTIFICATION {
 
     take:
-        libraries
+        ch_input
         type                    // value: 'raw' or 'rpm'
         counts_project_matrix   // value: true or false
-        ch_versions             // channel: [ path(versions.yml) ]
 
     main:
 
+        // Create empty channel for versions
+        ch_versions             = Channel.empty()
+
         // Calculate the raw counts
-        COUNTS(libraries)
+        COUNTS(ch_input)
 
         // Change the meta.id from file to project.
         ch_counts = COUNTS.out.raw

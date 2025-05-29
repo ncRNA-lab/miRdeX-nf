@@ -1,0 +1,36 @@
+{
+    "Complete Blastn - Compressed input file": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file_mature.blast.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T10:45:11.662756"
+    },
+    "Complete Blastn": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "file"
+                    },
+                    "file_mature.blast.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T10:44:07.303438"
+    }
+}

@@ -10,7 +10,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [   
-                    [id: 'SAMPLE1'], 
+                    [id: 'SAMPLE1', species: 'Arabidopsis thaliana', project: 'TEST_1'], 
                     file(params.modules_testdata_base_path + 'modules/rpm/SAMPLE1.raw.tsv', checkIfExists: true)
                 ]
                 """

@@ -10,7 +10,7 @@ nextflow_process {
             process {
                 """
                 input[0] = [
-                    [ id: 'file' ],
+                    [ id: 'file', species: 'Arabidopsis thaliana', project: 'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/merge_and_filter_mature_precursor_blast/file_mature.blast.tsv', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'modules/merge_and_filter_mature_precursor_blast/file_precursor.blast.tsv', checkIfExists: true)
                 ]

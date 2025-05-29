@@ -1,4 +1,111 @@
 {
+    "Libraries validation - Valid": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "SAMPLE1",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "16022716",
+                        "depth_validity": "valid",
+                        "replicates_validity": "valid",
+                        "valid_groups": [
+                            "1"
+                        ],
+                        "notvalid_groups": [
+                            
+                        ]
+                    },
+                    "SAMPLE1.valid.fastq.gz:md5,4345f6c4941a2d9291b2565e36142b1d"
+                ],
+                [
+                    {
+                        "id": "SAMPLE2",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "17600922",
+                        "depth_validity": "valid",
+                        "replicates_validity": "valid",
+                        "valid_groups": [
+                            "1"
+                        ],
+                        "notvalid_groups": [
+                            
+                        ]
+                    },
+                    "SAMPLE2.valid.fastq.gz:md5,58a4d0a65bc2c7a51577f0d3fadaf024"
+                ],
+                [
+                    {
+                        "id": "SAMPLE3",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "15849560",
+                        "depth_validity": "valid",
+                        "replicates_validity": "valid",
+                        "valid_groups": [
+                            "1"
+                        ],
+                        "notvalid_groups": [
+                            
+                        ]
+                    },
+                    "SAMPLE3.valid.fastq.gz:md5,c7143e30b71b177bd0270bfd279d7e3a"
+                ],
+                [
+                    {
+                        "id": "SAMPLE4",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "14794553",
+                        "depth_validity": "valid",
+                        "replicates_validity": "valid",
+                        "valid_groups": [
+                            "1"
+                        ],
+                        "notvalid_groups": [
+                            
+                        ]
+                    },
+                    "SAMPLE4.valid.fastq.gz:md5,2ed91011385287cf14673a832f597068"
+                ],
+                [
+                    {
+                        "id": "SAMPLE5",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "16977623",
+                        "depth_validity": "valid",
+                        "replicates_validity": "valid",
+                        "valid_groups": [
+                            "1"
+                        ],
+                        "notvalid_groups": [
+                            
+                        ]
+                    },
+                    "SAMPLE5.valid.fastq.gz:md5,0e7c3d9dcc1b0d92decbdb8234fb38da"
+                ],
+                [
+                    {
+                        "id": "SAMPLE6",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "18485787",
+                        "depth_validity": "valid",
+                        "replicates_validity": "valid",
+                        "valid_groups": [
+                            "1"
+                        ],
+                        "notvalid_groups": [
+                            
+                        ]
+                    },
+                    "SAMPLE6.valid.fastq.gz:md5,ea12df280a4d46352dcf18aa1c7a05ce"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T16:19:13.068544"
+    },
     "Libraries validation - Not-valid - Depth": {
         "content": [
             [
@@ -102,9 +209,36 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-11T16:33:45.698648"
+        "timestamp": "2025-05-28T16:23:02.500193"
+    },
+    "Validation - Counts - Not-valid": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1_0_1",
+                        "group_id": "1",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "NULL",
+                        "depth_validity": "NULL",
+                        "replicates_validity": "not-valid",
+                        "group": "TEST_1_0_1",
+                        "valid_groups": "NULL",
+                        "notvalid_groups": "NULL",
+                        "num_valid_samples": "0",
+                        "num_notvalid_samples": "6"
+                    },
+                    "TEST_1_0_1.notvalid.tsv:md5,e7fc05b953115f5a9305505c77e72afa"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T16:45:05.850018"
     },
     "Libraries validation - Not-valid - Replicates": {
         "content": [
@@ -177,8 +311,35 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-11T16:37:11.381725"
+        "timestamp": "2025-05-28T16:29:29.061136"
+    },
+    "Validation - Counts - Valid": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1_0_1",
+                        "group_id": "1",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "depth": "NULL",
+                        "depth_validity": "NULL",
+                        "replicates_validity": "valid",
+                        "group": "TEST_1_0_1",
+                        "valid_groups": "NULL",
+                        "notvalid_groups": "NULL",
+                        "num_valid_samples": "6",
+                        "num_notvalid_samples": "0"
+                    },
+                    "TEST_1_0_1.valid.tsv:md5,1f5e667e6f822b18ac50ea169f6e1481"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T16:37:17.183492"
     }
 }

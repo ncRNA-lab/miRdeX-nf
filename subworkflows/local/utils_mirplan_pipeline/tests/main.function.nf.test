@@ -1,89 +1,338 @@
-nextflow_workflow {
+nextflow_function {
 
     name "Test Functions"
     script "../main.nf"
 
-    test("Test Function validateInputParameters") {
+    test("Test Function validateInputParameters success") {
 
         function "validateInputParameters"
 
         when {
-
             params {
+                // Input
+                input                       = null
+
+                // Boilerplate options
+                outdir                      = null
+                email                       = null
+                email_on_fail               = null
+                plaintext_email             = false
+                publish_dir_mode             = 'copy'
+                help                        = false
+                help_full                    = false
+                show_hidden                  = false
+
+                // Execution mode options
+                only_preprocessing          = false
+                from_counts                 = false
+                from_dea                    = false
+
+                // Parameters for QC
+                extra_fastqc_args           = ''
+                extra_multiqc_args          = ''
+
+                // Parameters for Trimming
+                trimming_adapters           = "${projectDir}/assets/illumina_adapters.fa"
+                trimming_min_len            = 20
+                trimming_max_len            = 25
+                custom_fastp_args           = null // cambiar a trimming_custom_args?
+
+                // Parameters for validation
+                validation_depth            = 500000
+                validation_rep              = 2
 
                 // Parameters for filtering
-                filtering_db_mismatches = 0
-                filtering_genome_mismatches = 1
+                filtering_db_file           = "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/01-Databases/01-RNAcentral/RNAcenral_viridiplantae_snrna_snorna_rrna_trna.fasta" 
+                bowtie_filt_db_ext_args     = ""
+                bowtie_filt_genome_ext_args = ""
 
                 // Parameters for quantification.
-                min_counts = 5
-                min_samples = 3
+                counts_project_matrix        = false
+                min_counts                   = 5
+                min_samples                  = 3
 
                 // Parameters for DEA.
-                ea_p_value = 0.7 // CAMBIAAAAAAAAAAAAR A 0.05
-                dea_alpha = 0.05
-
+                ea_p_value                   = 0.05
+                dea_alpha                    = 0.05
+                
                 // Parameters for annotation
-                annotation_mismatches = 1
-                annotation_mirbase = false
-                annotation_srnaanno = false
-                annotation_pmiren = false
-                annotation_unitas = false
-                annotation_min_db = 2
-                annotation_mirbase_taxon = 'Viridiplantae'
-            
-                // Optional outputs parameters
-                counts_project_matrix = false
+                databases                    = 'mirbase,pmiren,srnaanno'
+                mirna_classes                = 'ref_miRNA,iso_5p,iso_3p,iso_add3p,iso_add5p,iso_snv_seed,iso_snv_central_offset,iso_snv_central,iso_snv_central_supp,iso_snv,Mixed,Mixed_shift,Undefined'
+                substitutions                = 1
+                five_add                     = 0
+                three_add                    = 3
+                ends_modification            = 4
+                annotation_unitas            = false
+                bowtie_nti_ext_args          = ""
+                counts                       = 0
+                rpm                          = 0
+
+                // Global analysis
+                global_matrix              =  false
+                global_fields              =  'Species,Treatment'
 
                 // Skip parameters
-                skip_qc_trim = false
-                skip_fastqc = false
-                skip_multiqc = false
-                skip_filt_db = false
-                skip_filt_genome = false
-                skip_dea = false
-                skip_annotation = false
-                
-                // Only parameters
-                only_preprocessing = false
-                
-                // From parameters
-                from_counts = false
-
-                // Schema validation default options
-                validate_params = true
-
-            
-                fasta                  = "genome.fasta"
-                gtf                    = "genome.gtf"
-                gff                    = "genome.gff"
-                transcript_fasta       = "transcripts.fasta"
-                skip_bbsplit           = true
-                bbsplit_fasta_list     = null
-                remove_ribo_rna        = false
-                ribo_database_manifest = null
-                with_umi               = false
-                skip_umi_extract       = false
-                skip_alignment         = false
-                aligner                = "star"
-                skip_pseudo_alignment  = false
-                pseudo_aligner         = "salmon"
-                rsem_index             = "rsem_index"
+                skip_fastqc                  = false
+                skip_multiqc                 = false
+                skip_qc_trim                 = false
+                skip_filt_db                 = false
+                skip_filt_genome             = false
+                skip_annotation              = false
             }
         }
 
         then {
-            assertAll{
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
 
-                // Verify that the workflow has been successfully executed.
-                { assert workflow.success }
+    }
 
-                // Verify that the necessary output files are generated.
-                { assert path(workflow.out.files.get(0).get(1)) ==~ /.*\.valid\.fastq\.gz/ }
+    test("Test Function createProjectTableWarn success") {
 
-                // Use snapshots to verify
-                { assert snapshot( workflow.out.files ).match() }
+        function "createProjectTableWarn"
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+
+    }
+
+    test("Test Function fromCountsWarn success") {
+
+        function "fromCountsWarn"
+
+        when {
+            function {
+                """
+                input[0] = [
+                    'extra_fastqc_args',
+                    'extra_multiqc_args',
+                    'trimming_adapters',
+                    'trimming_min_len',
+                    'trimming_max_len',
+                    'custom_fastp_args',
+                    'validation_depth',
+                    'filtering_db_mismatches',
+                    'filtering_genome_mismatches',
+                    'skip_qc_trim',
+                    'skip_fastqc',
+                    'skip_multiqc',
+                    'skip_filt_db',
+                    'skip_filt_genome'
+                ]
+                """
             }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function onlyPreprocessingWarn success") {
+
+        function "onlyPreprocessingWarn"
+
+        when {
+            function {
+                """
+                input[0] = [
+                    'skip_quantification',
+                    'skip_dea',
+                    'skip_annotation',
+                    'databases',
+                    'min_counts',
+                    'min_samples',
+                    'ea_p_value',
+                    'dea_alpha',
+                    'counts_project_matrix'
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function skipDeaWarn success") {
+
+        function "skipDeaWarn"
+
+        when {
+            function {
+                """
+                input[0] = ['databases']
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function validateAndAssignGenome success") {
+
+        function "validateAndAssignGenome"
+
+        when {
+            function {
+                """
+                input[0] = [
+                    "Glycine max",
+                    "PRJNA720229",
+                    "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/PRJNA720229_3.counts.tsv",
+                    "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/03-Metadata/glma_m_PRJNA720229.tsv",
+                    [],
+                    "3"
+                ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function notTsvFilesError success") {
+
+        function "notTsvFilesError"
+
+        when {
+            params {
+                from_counts = true
+            }
+            function {
+                """
+                input[0] = []
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function validateGroupInputUsage success") {
+
+        function "validateGroupInputUsage"
+
+        when {
+            params {
+                from_counts = true
+            }
+            function {
+                """
+                input[0] = [2, [], 3]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function validateAccessionList -  AccessionList valid - success") {
+
+        function "validateGroupInputUsage"
+
+        when {
+            params {
+                from_counts = true
+            }
+            function {
+                """
+                input[0] = file(params.modules_testdata_base_path + 'subworkflows/utils_mirplan_pipeline/accession_valid.txt', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function validateAccessionList -  AccessionList notvalid - success") {
+
+        function "validateAccessionList"
+
+        when {
+            function {
+                """
+                input[0] = file(params.modules_testdata_base_path + 'subworkflows/utils_mirplan_pipeline/accesion_notvalid.txt', checkIfExists: true)
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert !function.result }
+            )
+        }
+    }
+    test("Test Function formatDbChannel success") {
+
+        function "formatDbChannel"
+
+        when {
+            function {
+                """
+                input[0] = Channel.of(["mature1.fa", "precursor1.fa"])
+                input[1] = "mirbase"
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
+        }
+    }
+    test("Test Function summaryToTsv success") {
+
+        function "summaryToTsv"
+
+        when {
+            function {
+                """
+                input[0] = Channel.of([sample: "sample1", valid: "true", num_seqs: 1999])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert function.success },
+                { assert snapshot(function.result).match() }
+            )
         }
     }
 }

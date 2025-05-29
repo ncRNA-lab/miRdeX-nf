@@ -34,10 +34,12 @@ include { BOWTIE_BUILD } from '../../../modules/nf-core/bowtie/build'
 workflow FILTER_NONTEMPLATED_ISOMIRS {
     take:
         ch_input           // channel: [[id:val(id)], path(blast_tsv), path(genome)]
-        ch_versions 
 
     main:
 
+        // Create empty channel for versions
+        ch_versions  = Channel.empty()
+        
         /*
         ========================================================================
             1. Create the query fasta file

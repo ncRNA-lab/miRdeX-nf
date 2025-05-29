@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow COMPLETE_BLASTN"
-    script "subworkflows/local/complete_blastn/main.nf"
+    script "../main.nf"
     workflow "COMPLETE_BLASTN"
 
     test("Complete Blastn") {
@@ -10,11 +10,11 @@ nextflow_workflow {
 
             workflow  {
                  """
-                input[0] = [
+                input[0] = Channel.of([
                     [id: 'file'],
                     file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/file.fasta', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/mature.fa', checkIfExists: true)
-                ]
+                ])
                 """
             }
         }
@@ -38,11 +38,11 @@ nextflow_workflow {
 
             workflow  {
                  """
-                input[0] = [
+                input[0] = Channel.of([
                     [ id: 'file' ],
                     file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/file.fasta.gz', checkIfExists: true),
                     file(params.modules_testdata_base_path + 'subworkflows/complete_blastn/mature.fa', checkIfExists: true)
-                ]
+                ])
                 """
             }
         }

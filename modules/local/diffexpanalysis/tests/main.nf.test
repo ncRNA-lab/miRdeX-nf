@@ -11,7 +11,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_1', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true)],
+                    [id:'TEST_1', group_id: 1, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true), species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/dea/TEST_1.counts.tsv', checkIfExists: true)
                 ])
                 input[1] = 0.05
@@ -22,6 +22,7 @@ nextflow_process {
         }
 
         then {
+            println(process.out.raw.get(0).get(1) )
 
             assertAll{
 
@@ -31,8 +32,8 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert process.out.raw.get(0).get(1) ==~ /.*\.dea_raw\.tsv/ }
                 { assert process.out.sig.get(0).get(1) ==~ /.*\.dea_sig\.tsv/ }
-                { assert process.out.easum.get(0) ==~ /.*TEST_1\.ea_summary\.tsv/ }
-                { assert process.out.deasum.get(0) ==~ /.*TEST_1\.dea_summary\.tsv/ }
+                { assert process.out.easum.get(0).get(1) ==~ /.*\.ea_summary\.tsv/ }
+                { assert process.out.deasum.get(0).get(1) ==~ /.*\.dea_summary\.tsv/ }
 
                 // Use snapshots to verify
                 {
@@ -40,7 +41,7 @@ nextflow_process {
                         process.out.raw,
                         process.out.sig,
                         process.out.easum,
-                        process.out.deasum
+                        process.out.deasum,
                     ).match() 
                 }
             }
@@ -53,7 +54,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_10', group_id: 10, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true)],
+                    [id:'TEST_10', group_id: 10, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true), species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/dea/TEST_10.counts.tsv', checkIfExists: true)
                 ])
                 input[1] = 0.05
@@ -73,8 +74,9 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert process.out.raw.get(0).get(1).get(0) ==~ /.*\.dea_raw\.tsv/ }
                 { assert process.out.sig.get(0).get(1).get(0) ==~ /.*\.dea_sig\.tsv/ }
-                { assert process.out.easum.get(0) ==~ /.*TEST_10\.ea_summary\.tsv/ }
-                { assert process.out.deasum.get(0) ==~ /.*TEST_10\.dea_summary\.tsv/ }
+                { assert process.out.easum.get(0).get(1) ==~ /.*\.ea_summary\.tsv/ }
+                { assert process.out.deasum.get(0).get(1) ==~ /.*\.dea_summary\.tsv/ }
+
 
                 // Use snapshots to verify
                 {
@@ -82,7 +84,7 @@ nextflow_process {
                         process.out.raw,
                         process.out.sig,
                         process.out.easum,
-                        process.out.deasum
+                        process.out.deasum,
                     ).match() 
                 }
             }
@@ -95,7 +97,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_8', group_id: 8, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true)],
+                    [id:'TEST_8', group_id: 8, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true), species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/dea/TEST_8.counts.tsv', checkIfExists: true)
                 ])
                 input[1] = 0.05
@@ -115,8 +117,9 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert process.out.raw.get(0).get(1).get(0) ==~ /.*\.dea_raw\.tsv/ }
                 { assert process.out.sig.get(0).get(1).get(0) ==~ /.*\.dea_sig\.tsv/ }
-                { assert process.out.easum.get(0) ==~ /.*TEST_8\.ea_summary\.tsv/ }
-                { assert process.out.deasum.get(0) ==~ /.*TEST_8\.dea_summary\.tsv/ }
+                { assert process.out.easum.get(0).get(1) ==~ /.*\.ea_summary\.tsv/ }
+                { assert process.out.deasum.get(0).get(1) ==~ /.*\.dea_summary\.tsv/ }
+
 
                 // Use snapshots to verify
                 {
@@ -124,7 +127,7 @@ nextflow_process {
                         process.out.raw,
                         process.out.sig,
                         process.out.easum,
-                        process.out.deasum
+                        process.out.deasum,
                     ).match() 
                 }
             }
@@ -136,7 +139,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_7', group_id: 7, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true)],
+                    [id:'TEST_7', group_id: 7, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true), species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/dea/TEST_7.counts.tsv', checkIfExists: true)
                 ])
                 input[1] = 0.05
@@ -156,8 +159,9 @@ nextflow_process {
                 // Verify that the necessary output files are generated.
                 { assert process.out.raw.get(0).get(1) ==~ /.*\.dea_raw\.tsv/ }
                 { assert process.out.sig.get(0).get(1) ==~ /.*\.dea_sig\.tsv/ }
-                { assert process.out.easum.get(0) ==~ /.*TEST_7\.ea_summary\.tsv/ }
-                { assert process.out.deasum.get(0) ==~ /.*TEST_7\.dea_summary\.tsv/ }
+                { assert process.out.easum.get(0).get(1) ==~ /.*\.ea_summary\.tsv/ }
+                { assert process.out.deasum.get(0).get(1) ==~ /.*\.dea_summary\.tsv/ }
+
 
                 // Use snapshots to verify
                 {
@@ -165,7 +169,7 @@ nextflow_process {
                         process.out.raw,
                         process.out.sig,
                         process.out.easum,
-                        process.out.deasum
+                        process.out.deasum,
                     ).match() 
                 }
             }
@@ -178,7 +182,7 @@ nextflow_process {
             process {
                 """
                 input[0] = Channel.of([
-                    [id:'TEST_9', group_id: 9, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true)],
+                    [id:'TEST_9', group_id: 9, metadata: file(params.modules_testdata_base_path + 'modules/dea/test_metadata.tsv', checkIfExists: true), species: 'Arabidopsis thaliana', project:'TEST_1'],
                     file(params.modules_testdata_base_path + 'modules/dea/TEST_9.counts.tsv', checkIfExists: true)
                 ])
                 input[1] = 0.05
@@ -196,10 +200,11 @@ nextflow_process {
                 { assert process.success }
 
                 // Verify that the necessary output files are generated.
-                { assert process.out.raw.get(0).get(1).get(0) ==~ /.*\..*dea_raw\.tsv/ }
-                { assert process.out.sig.get(0).get(1).get(0) ==~ /.*\..*dea_sig\.tsv/ }
-                { assert process.out.easum.get(0) ==~ /.*TEST_9\.ea_summary\.tsv/ }
-                { assert process.out.deasum.get(0) ==~ /.*TEST_9\.dea_summary\.tsv/ }
+                { assert process.out.raw.get(0).get(1).get(0) ==~ /.*dea_raw\.tsv/ }
+                { assert process.out.sig.get(0).get(1).get(0) ==~ /.*dea_sig\.tsv/ }
+                { assert process.out.easum.get(0).get(1) ==~ /.*\.ea_summary\.tsv/ }
+                { assert process.out.deasum.get(0).get(1) ==~ /.*\.dea_summary\.tsv/ }
+
 
                 // Use snapshots to verify
                 {
@@ -207,7 +212,7 @@ nextflow_process {
                         process.out.raw,
                         process.out.sig,
                         process.out.easum,
-                        process.out.deasum
+                        process.out.deasum,
                     ).match() 
                 }
             }

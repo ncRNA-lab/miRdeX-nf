@@ -13,14 +13,86 @@
                         ],
                         "group_id": "1"
                     },
+                    "TEST_1.raw.tsv:md5,34e2018ad97de003354c4117aaba5eff"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T15:32:47.188131"
+    },
+    "Quantification - RPM": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species": "Glycine max",
+                        "project": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "valid_groups": [
+                            1
+                        ],
+                        "group_id": "1"
+                    },
+                    "TEST_1.rpm.tsv:md5,2592bac9797f61d34a94ed6a2d26daf3"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T15:45:11.051748"
+    },
+    "Quantification - Raw - Only subprojects": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species": "Glycine max",
+                        "project": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "valid_groups": [
+                            1
+                        ],
+                        "group_id": "1"
+                    },
                     "TEST_1.raw.tsv:md5,f09b79a467ab219e59b56f8ddb4d87b7"
                 ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-02-11T13:04:06.354043"
+        "timestamp": "2025-05-28T15:56:56.702315"
+    },
+    "Quantification - RPM - Only subprojects": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "TEST_1",
+                        "species": "Glycine max",
+                        "project": "TEST",
+                        "metadata": "test_metadata.tsv:md5,6d170ca33413ff2ccc16a14e23ee25f9",
+                        "valid_groups": [
+                            1
+                        ],
+                        "group_id": "1"
+                    },
+                    "TEST_1.rpm.tsv:md5,f90aebb6f65a7e840604ed57fc897e63"
+                ]
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.6"
+        },
+        "timestamp": "2025-05-28T16:06:58.178025"
     }
 }

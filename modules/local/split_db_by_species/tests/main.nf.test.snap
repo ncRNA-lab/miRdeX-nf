@@ -12,9 +12,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:21.53328506"
+        "timestamp": "2025-05-27T14:30:17.865844"
     },
     "Non-existing species - PmiREN": {
         "content": [
@@ -29,9 +29,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:24.792717644"
+        "timestamp": "2025-05-27T14:30:22.093388"
     },
     "Arabidopsis thaliana - miRBase": {
         "content": [
@@ -46,9 +46,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:09.285627544"
+        "timestamp": "2025-05-27T14:30:05.634135"
     },
     "Arabidopsis thaliana - sRNAanno": {
         "content": [
@@ -63,9 +63,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:15.514060488"
+        "timestamp": "2025-05-27T14:30:11.775658"
     },
     "Non-existing species - miRBase": {
         "content": [
@@ -80,9 +80,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:12.392502181"
+        "timestamp": "2025-05-27T14:30:08.772001"
     },
     "Non-existing species - sRNAanno": {
         "content": [
@@ -97,8 +97,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "24.10.6"
         },
-        "timestamp": "2025-04-27T01:22:18.468728363"
+        "timestamp": "2025-05-27T14:30:14.847215"
     }
 }
