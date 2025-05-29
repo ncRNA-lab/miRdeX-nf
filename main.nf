@@ -57,7 +57,6 @@ workflow {
         PIPELINE_INITIALISATION(
             params.version,
             params.validate_params,
-            args,
             params.outdir
         )
 

@@ -66,8 +66,8 @@ workflow PREPARE_MIRNA_DATABASES {
     // Combine databases channel with species_ids channel
     ch_species_ids
         .combine(DNA_RNA_CONVERTER.out.file_conv)
-        .map{ species_id, species, map, file_db ->
-            [[id:"${species_id}_${map.id}", db_id:map.id, species_id: species_id, species: species], species_id, file_db]
+        .map{ species_id, species_name, map, file_db ->
+            [[id:"${species_id}_${map.id}", db_id:map.id, species_id: species_id, species: species_name], species_id, file_db]
         }.set{ch_species_ids_db}
     
     // Create a DB file for each species
@@ -82,7 +82,7 @@ workflow PREPARE_MIRNA_DATABASES {
         .groupTuple(by:0)
         .map { species_info ->
             // Get the required information from the channel element
-            def species = species_info[0]
+            def species_n = species_info[0]
             def db_info = species_info[1]
             def paths = species_info[2]
 
@@ -93,40 +93,34 @@ workflow PREPARE_MIRNA_DATABASES {
                 def path = paths[i]
                 result[db_name] = path
             }
-            return [species_id: db_info.species_id[0], species: species] + result
+            return [species_id: db_info.species_id[0], species: species_n] + result
         }
         .set{ ch_databases }
 
     // Select the reference database according to its order of preference
     ch_databases
-        .map{ meta ->
-            // Create a map to store the selected files
-            def selectedFiles = [:]
-            def selectedDatabase = null
+        .map { meta ->
+            def matureFile = null
+            def precursorFile = null
 
-            // Iterate through the list of databases
-            for (db in db_list) {
-                def mature = meta."${db}_mature"
-                def precursor = meta."${db}_precursor"
-                
-                // Check if the database is not empty
+            def db = db_list.find { db ->
+                def mature = meta["${db}_mature"]
+                def precursor = meta["${db}_precursor"]
                 if (!mature.getName().contains('EMPTY') && !precursor.getName().contains('EMPTY')) {
-                    selectedDatabase = db
                     matureFile = mature
                     precursorFile = precursor
-                    break
+                    return true
                 }
+                return false
             }
 
-            // If no database has the species_id, assign NULL to the db fields
-            if (!selectedDatabase) {
-                selectedDatabase = 'NULL'
+            if (!db) {
+                db = 'NULL'
                 matureFile = 'NULL'
                 precursorFile = 'NULL'
             }
 
-            // Create a new map removing previous DB-related information
-            def result = meta.findAll { key, value -> 
+            def result = meta.findAll { key, _value -> 
                 key != 'pmiren_mature' &&
                 key != 'srnaanno_mature' &&
                 key != 'srnaanno_precursor' &&
@@ -135,14 +129,13 @@ workflow PREPARE_MIRNA_DATABASES {
                 key != 'mirbase_mature'
             }
 
-            // Add the selected database and its files to the new map
-            result['database'] = selectedDatabase
+            result['database'] = db
             result['mature'] = matureFile
             result['precursor'] = precursorFile
             return result
         }
         .filter { meta -> meta.database != 'NULL' }
-        .set{ch_selected_database }
+        .set { ch_selected_database }
 
     emit:
         dbs = ch_selected_database     // channel: [ id:val(str), db_id:val(str), species_id:val(str), species: val(str), database:val(str), mature: path(File), precursor:path(File) ]

@@ -12,7 +12,7 @@ process ADD_SEQUENCES_BLAST {
 
     output:
     tuple val(meta), path("*.blast.tsv") , emit: bseqs
-    path "versions.yml"                           , emit: versions
+    path "versions.yml"                  , emit: versions
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"

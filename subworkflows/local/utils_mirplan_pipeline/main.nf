@@ -16,6 +16,7 @@ include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipelin
 include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
 include { paramsSummaryMap          } from 'plugin/nf-schema'
 include { softwareVersionsToYAML    } from '../../nf-core/utils_nfcore_pipeline'
+include { getWorkflowVersion        } from '../../nf-core/utils_nextflow_pipeline'    
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -729,18 +730,19 @@ def writeSampleSheet(ch_to_write, publishDir, output_path) {
             def species = item[0]
             def project = item[1]
             def records = item.drop(2)
-            
+
             def filePath = new File(output_path).parent
             new File(filePath).mkdirs()
 
             def header = "Species,Project,File,Metadata,Genome,Group\n"
             def fileContent = []
 
-            for (i in 0..<records[0].size()) {
-                def row = [species, project] + records.collect { it[i] }
-                fileContent << row.join(',')
+            def numRows = records[0].size()
+            fileContent = (0..<numRows).collect { i ->
+                ([species, project] + records.collect { it[i] }).join(',')
             }
 
+            // Añadir contenido existente si el archivo ya existe
             if (new File(output_path).exists()) {
                 def existingContent = new File(output_path).text.readLines().drop(1)
                 fileContent = existingContent + fileContent
@@ -755,6 +757,53 @@ def writeSampleSheet(ch_to_write, publishDir, output_path) {
             }
         }
 }
+
+// def writeSampleSheet(ch_to_write, publishDir, output_path) {
+
+//     ch_to_write
+//         .map { meta, file ->
+//             def filename = file.getName()
+//             def published_path = "${publishDir}/${meta.species.replaceAll(' ', '_')}/${meta.project}/${filename}"
+//             [
+//                 meta.species.toString(),
+//                 meta.project.toString(),
+//                 published_path.toString(),
+//                 meta.metadata.toString(),
+//                 meta.genome.toString(),
+//                 meta.group_id.toString()
+//             ]
+//         }
+//         .groupTuple(by: [0,1])
+//         .subscribe { item ->
+//             def species = item[0]
+//             def project = item[1]
+//             def records = item.drop(2)
+            
+//             def filePath = new File(output_path).parent
+//             new File(filePath).mkdirs()
+
+//             def header = "Species,Project,File,Metadata,Genome,Group\n"
+//             def fileContent = []
+
+//             for (i in 0..<records[0].size()) {
+//                 def row = [species, project] + records.collect { it[i] }
+//                 fileContent << row.join(',')
+//             }
+
+//             if (new File(output_path).exists()) {
+//                 def existingContent = new File(output_path).text.readLines().drop(1)
+//                 fileContent = existingContent + fileContent
+//             }
+
+//             fileContent = new LinkedHashSet(fileContent).toList()
+//             def fileContentString = fileContent.join('\n')
+
+//             new File(output_path).withWriter('UTF-8') { writer ->
+//                 writer << header
+//                 writer << fileContentString + '\n'
+//             }
+//         }
+// }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

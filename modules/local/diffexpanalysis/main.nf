@@ -8,20 +8,20 @@ process DIFFEXPANALYSIS {
         'docker.io/antoglz/diffexp:latest' }"
 
     input:
-    tuple val(meta), path(matrix)
+    tuple val(meta), path(matrix), path(metadata), val(group_id)
     val alpha
     val min_counts
     val min_samples
 
     output:
-    tuple val(meta), path("*_raw.tsv")                    , emit: raw
-    tuple val(meta), path("*_sig.tsv")                    , emit: sig
-    tuple val(meta), path("*.volcano.png")                , emit: volcano
-    tuple val(meta), path("01-PCA")                       , emit: pca
-    tuple val(meta), path("02-SERE_dendrogram")           , emit: sere
-    tuple val(meta), path("03-Mean_vs_variance")          , emit: var
-    tuple val(meta), path("${meta.id}.ea_summary.tsv")    , emit: easum
-    tuple val(meta), path("${meta.id}.dea_summary.tsv")   , emit: deasum
+    tuple val(meta), path("*_raw.tsv")              , emit: raw
+    tuple val(meta), path("*_sig.tsv")              , emit: sig
+    tuple val(meta), path("*.volcano.png")          , emit: volcano
+    tuple val(meta), path("01-PCA")                 , emit: pca
+    tuple val(meta), path("02-SERE_dendrogram")     , emit: sere
+    tuple val(meta), path("03-Mean_vs_variance")    , emit: var
+    tuple val(meta), path("*.ea_summary.tsv")       , emit: easum
+    tuple val(meta), path("*.dea_summary.tsv")      , emit: deasum
     path  "versions.yml", emit: versions
 
     script:
@@ -29,9 +29,9 @@ process DIFFEXPANALYSIS {
     """
     04-Diff_exp_analysis.r \
         --id ${prefix} \
-        --group_id ${meta.group_id} \
+        --group_id ${group_id} \
         --counts ${matrix} \
-        --metadata ${meta.metadata} \
+        --metadata ${metadata} \
         --alpha ${alpha} \
         --min_counts ${min_counts} \
         --min_samples ${min_samples}

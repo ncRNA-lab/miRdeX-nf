@@ -1,0 +1,95 @@
+name: libraries_validation
+description: |
+  Validates libraries based on sequencing depth and number of biological
+  replicates criteria.
+keywords:
+  - validation
+  - filtering
+  - libraries
+tools:
+  - "pandas":
+      description: "Python library for data manipulation and analysis"
+      homepage: "https://pandas.pydata.org/"
+      documentation: "https://pandas.pydata.org/docs/"
+      tool_dev_url: "https://github.com/pandas-dev/pandas"
+      doi: "10.5281/zenodo.3509134"
+      licence: ["BSD-3-Clause"]
+      identifiers:
+        - "biotools:pandas"
+        - "conda:pandas"
+  - "numpy":
+      description: "NumPy is the fundamental package for scientific computing in Python"
+      homepage: "https://numpy.org/"
+      documentation: "https://numpy.org/doc/2.2/"
+      tool_dev_url: "https://github.com/numpy/numpy"
+      doi: "10.1038/s41586-020-2649-2"
+      licence: ["BSD-3-Clause"]
+inputs:
+
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1', condition:'control' ]
+    - fastq_files:
+        type: file
+        description: |
+          FASTQ files corresponding to the sequencing reads for the sample.
+    - metadata:
+        type: file
+        description: |
+          TSV file containing metadata associated with the project to which
+          the sample belongs.
+  - depth_threshold:
+      type: float
+      description: |
+        Sequencing depth threshold; minimum number of reads required for a
+        sample to be considered valid.
+  - rep_threshold:
+      type: integer
+      description: |
+        Biological replicates threshold; minimum number of biological replicates
+        required to validate a sample.
+outputs:
+  - valid:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information corresponding to valid samples.
+            e.g. [ id:'sample', ...]
+      - "*.valid.fastq.gz":
+          type: file
+          description: |
+            Compressed FASTQ files of samples that meet the criteria for
+            sequencing depth and number of biological replicates.
+          pattern: "*.valid.fastq.gz"
+          optional: true
+  - notvalid:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information corresponding to invalid samples.
+            e.g. [ id:'sample', ...]
+      - "*.notvalid.fastq.gz":
+          type: file
+          description: |
+            Compressed FASTQ files of samples that do not meet the criteria for
+            sequencing depth and number of biological replicates.
+          pattern: "*.notvalid.fastq.gz"
+          optional: true
+  - sumprojects:
+      type: file
+      description: |
+        TSV summary file at the project level showing validation results for
+        sequencing depth and biological replicates.
+      pattern: "*.sum_projects.tsv"
+  - sumlibraries:
+      type: file
+      description: |
+        TSV summary file at the library level showing validation results for
+        sequencing depth and biological replicates.
+      pattern: "*.sum_libraries.tsv"
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"

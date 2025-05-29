@@ -194,7 +194,7 @@ workflow MIRNOTE {
         .set{ ch_to_identify_isomirs }
     
     // Identify isomiRs
-    ISOMIRS_IDENTIFICATION(ch_to_identify_isomirs, ch_versions)
+    ISOMIRS_IDENTIFICATION(ch_to_identify_isomirs)
 
     // Save the software version
     ch_versions = ch_versions.mix(ISOMIRS_IDENTIFICATION.out.versions)

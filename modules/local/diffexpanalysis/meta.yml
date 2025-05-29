@@ -1,10 +1,16 @@
-name: annotate_dea_results
-description: Annotate the miRNA sequences present in a DESeq2 results table.
+name: diffexpanalysis
+description: Performs a Differential Expression Analysis (DEA) of small RNAs.
 keywords:
-  - annotation
-  - miRNA
+  - differential expression analysis
+  - srnas
   - deseq2
 tools:
+  - "R":
+      description: "A Language and Environment for Statistical Computing"
+      homepage: https://www.r-project.org/
+      documentation: https://www.r-project.org/
+      licence: ["GPL v2"]
+      identifier: ""
   - "deseq2":
       description: "Differential gene expression analysis based on the negative binomial
         distribution"
@@ -14,43 +20,168 @@ tools:
       doi: "10.1186/s13059-014-0550-8"
       licence: ["LGPL >=3"]
       identifier: biotools:deseq2
+  - "sartools":
+      description: "SARTools is a R package dedicated to the differential analysis of RNA-seq data."
+      homepage: "https://github.com/PF2-pasteur-fr/SARTools"
+      documentation: "https://github.com/PF2-pasteur-fr/SARTools/blob/master/vignettes/SARTools.Rmd"
+      tool_dev_url: "https://github.com/PF2-pasteur-fr/SARTools"
+      doi: "10.1371/journal.pone.0157022"
+      licence: ["GPL-3"]
+      identifier: biotools:sartools
+  - "degreport":
+      description: |
+        "Create a cromphensive report of DEG list coming from any analysis of RNAseq data"
+      homepage: "https://www.bioconductor.org/packages/release/bioc/html/DEGreport.html"
+      documentation: "https://lpantano.github.io/DEGreport/"
+      tool_dev_url: "https://github.com/lpantano/DEGreport"
+      doi: "doi:10.18129/B9.bioc.DEGreport"
+      licence: ["MIT"]
+      identifier: biotools:degreport
+  - "plotly":
+      description: "Create interactive web graphics via plotly.js."
+      homepage: "https://plotlY.com/"
+      documentation: "https://plotly.com/r/"
+      tool_dev_url: "https://github.com/plotly"
+      licence: ["MIT"]
+      identifier: plotly
+  - "dendextend":
+      description: "dendextend: Extending R's Dendrogram Functionality."
+      homepage: "https://cran.r-project.org/web/packages/dendextend/index.html"
+      documentation: "https://cran.r-project.org/web/packages/dendextend/vignettes/dendextend.html"
+      tool_dev_url: "https://github.com/talgalili/dendextend"
+      licence: ["GPL (>=2)"]
+      doi: "10.1093/bioinformatics/btv428"
+      identifier: dendextend
 input:
   - - meta:
         type: map
         description: |
-          Groovy Map containing sample information
-          e.g. [ id:'test', single_end:false ]
-    - blast_tsv:
+          Groovy Map containing sample metadata.
+          e.g. [ id: 'sample1', species: 'Arabidopsis thaliana' ]
+    - matrix:
         type: file
         description: |
-          TSV file resulting from the combination of BLAST results obtained
-          using mature miRNAs and miRNA precursors as references.
-    - counts_tsv:
+          TSV file containing the raw counts matrix, where rows represent
+          nucleotide sequences and columns represent different samples.
+          The first column must be the sequence identifier.
+    - metadata:
         type: file
         description: |
-          Two-column TSV file (sequence, counts) with the counts of each
-          nucleotide sequence.
-  - - threshold:
+          Metadata table associated with the samples in the project.
+    - group_id:
         type: integer
         description: |
-          Minimum count threshold that a sequence must meet to be considered
-          valid. In the resulting file, an additional column indicates 'PASS'
-          if the sequence exceeds this threshold or 'REJECT' if it does not.
+          Integer identifier indicating the experimental group or project
+          to which the counts matrix belongs.
+  - alpha:
+      type: float
+      description: |
+        Alpha threshold used for the differential expression analysis.
+        This value typically represents the significance level for adjusted p-values
+        (e.g., 0.05) below which a gene or sequence is considered differentially expressed.
+  - min_counts:
+      type: integer
+      description: |
+        Minimum number of raw counts a nucleotide sequence must have
+        in at least `min_samples` samples to be retained in the count matrix
+        prior to performing differential expression analysis.
+  - min_samples:
+      type: integer
+      description: |
+        Minimum number of samples in which a nucleotide sequence must reach
+        at least `min_counts` in order to be retained for downstream analysis.
 output:
-  - isocounts:
+  - raw:
       - meta:
           type: map
           description: |
             Groovy Map containing sample information
             e.g. [ id:'test', single_end:false ]
-      - "*.tsv":
+      - "*_raw.tsv":
           type: file
           description: |
-            TSV file resulting from the combination of BLAST results obtained
-            using mature miRNAs and miRNA precursors as references. The file
-            includes the counts for each sequence and indicates whether each
-            sequence meets the count threshold ('PASS') or not ('REJECT').
-          pattern: "*.tsv"
+            TSV file containing the full results of the differential expression analysis 
+            (DESeq2) including all sequences (significant and non-significant).
+          pattern: "*_raw.tsv"
+  - sig:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*_sig.tsv":
+          type: file
+          description: |
+            TSV file containing only the significantly differentially expressed sequences 
+            from the differential expression analysis.
+          pattern: "*_sig.tsv"
+  - volcano:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.volcano.png":
+          type: file
+          description: |
+            Volcano plot image visualizing the differential expression results.
+          pattern: "*.volcano.png"
+  - pca:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "01-PCA":
+          type: directory
+          description: |
+            Directory containing files and data related to the Principal Component Analysis (PCA).
+          pattern: "01-PCA"
+  - sere:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "02-SERE_dendrogram":
+          type: directory
+          description: |
+            Directory containing results related to the Simple Error Rate
+            Estimation (SERE) analysis, including dendrograms and related files.
+          pattern: "02-SERE_dendrogram"
+  - var:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "03-Mean_vs_variance":
+          type: directory
+          description: |
+            Directory containing plots and data related to the mean versus variance analysis of expression data.
+          pattern: "03-Mean_vs_variance"
+  - easum:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.ea_summary.tsv":
+          type: file
+          description: |
+            Summary TSV file of the exploratory analysis (EA) results.
+          pattern: "*.ea_summary.tsv"
+  - deasum:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.dea_summary.tsv":
+          type: file
+          description: |
+            Summary TSV file of the differential expression analysis (DEA) results.
+          pattern: "*.dea_summary.tsv"
   - versions:
     - versions.yml:
         type: file

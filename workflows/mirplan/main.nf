@@ -555,9 +555,16 @@ workflow MIRPLAN {
             7. SUBWORKFLOW: Differential Expression Analysis
         ============================================================================
         */
-        
+
+        // Prepare the input channel for the differential expression analysis.
+        ch_counts
+            .map{ meta, file ->
+                return [meta, file, meta.metadata, meta.group_id]
+            }
+            .set{ ch_counts_to_dea }
+
         // Perform exploratory and differential expression analyses.
-        DIFFEXPANALYSIS(ch_counts, params.dea_alpha, params.min_counts, params.min_samples)
+        DIFFEXPANALYSIS(ch_counts_to_dea, params.dea_alpha, params.min_counts, params.min_samples)
 
         // Save the software version
         ch_versions = ch_versions.mix(DIFFEXPANALYSIS.out.versions)
@@ -820,6 +827,7 @@ workflow MIRPLAN {
 
             // Add annotation to DEA results dataframe
             ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, params.mirna_classes)
+            ANNOTATE_DEA_RESULTS.out.fam_sum.view()
 
             // Save the software version
             ch_versions = ch_versions.mix(ANNOTATE_DEA_RESULTS.out.versions)

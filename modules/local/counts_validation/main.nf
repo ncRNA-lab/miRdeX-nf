@@ -15,21 +15,38 @@ process COUNTS_VALIDATION {
     tuple val(meta), path('*.valid.tsv')    , emit: valid, optional: true
     tuple val(meta), path('*.notvalid.tsv') , emit: notvalid, optional: true
     path '*.sum.tsv'                        , emit: summary
+    path  "versions.yml"                    , emit: versions
 
     script:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
     02-Validate_counts_matrix.py \
-        -i ${meta.id} \
+        -i ${prefix} \
         -g ${group_id} \
         -c ${counts} \
         -m ${metadata} \
         -r ${rep_threshold} \
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        numpy: \$(python3 -c "import numpy as np; print(np.__version__)")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+    END_VERSIONS
     """
 
     stub:
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${meta.id}_${group_id}.valid.tsv
-    touch ${meta.id}_${group_id}.notvalid.tsv
+    touch ${prefix}_${group_id}.valid.tsv
+    touch ${prefix}_${group_id}.notvalid.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 -c "import platform; print(platform.python_version())")
+        numpy: \$(python3 -c "import numpy as np; print(np.__version__)")
+        pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
+    END_VERSIONS
     """
 }
 

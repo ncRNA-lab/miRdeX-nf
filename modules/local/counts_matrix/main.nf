@@ -13,7 +13,7 @@ process COUNTS_MATRIX {
     val counts_project_matrix
 
     output:
-    tuple val(meta), path("${meta.id}?*.{raw,rpm}.tsv"), emit: matrix
+    tuple val(meta), path("${meta.id}*.{raw,rpm}.tsv"), emit: matrix
     path  "versions.yml"                              , emit: versions
 
     script:
