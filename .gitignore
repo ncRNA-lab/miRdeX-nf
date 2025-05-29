@@ -5,7 +5,7 @@ data/Additional_info/01-Databases/02-Annotation_databases/
 bin/.Rhistory
 
 # Ignore personal configuration files
-config/mail.config
+conf/mail.config
 
 # Ignore some specific files
 main_sin_subworflows.nf
