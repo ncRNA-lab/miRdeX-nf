@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
-arth, PRJNA736042, SRR14760596, control, tuyv, 1, L.0, 16d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA736042, SRR14760598, control, tuyv, 2, L.0, 16d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA736042, SRR14760604, treated, tuyv, 1, L.0, 16d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA736042, SRR14760606, treated, tuyv, 2, L.0, 16d, Col-0, rosette-leaves, D.0, G.0, single

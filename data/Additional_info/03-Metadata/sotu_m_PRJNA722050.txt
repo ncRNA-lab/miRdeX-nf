@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-sotu, PRJNA722050, SRR14241256, treated, cadmium-excess, 3, L.0, 12h, Atlantic, root, seedling-stage, G.0, single
-sotu, PRJNA722050, SRR14241257, treated, cadmium-excess, 2, L.0, 12h, Atlantic, root, seedling-stage, G.0, single
-sotu, PRJNA722050, SRR14241258, treated, cadmium-excess, 1, L.0, 12h, Atlantic, root, seedling-stage, G.0, single
-sotu, PRJNA722050, SRR14241259, control, cadmium-excess, 3, L.0, 0h, Atlantic, root, seedling-stage, G.0, single
-sotu, PRJNA722050, SRR14241260, control, cadmium-excess, 2, L.0, 0h, Atlantic, root, seedling-stage, G.0, single
-sotu, PRJNA722050, SRR14241261, control, cadmium-excess, 1, L.0, 0h, Atlantic, root, seedling-stage, G.0, single

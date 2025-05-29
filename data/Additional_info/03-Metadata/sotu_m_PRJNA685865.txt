@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-sotu, PRJNA685865, SRR13264443, control, phytophthora-infestans(88069):phytophthora-infestans(11388), 1, L.0, 5d, Sarpo-Mira, leaves, D.0, G.0, single
-sotu, PRJNA685865, SRR13264444, control, phytophthora-infestans(88069):phytophthora-infestans(11388), 2, L.0, 5d, Sarpo-Mira, leaves, D.0, G.0, single
-sotu, PRJNA685865, SRR13264445, treated, phytophthora-infestans(88069), 1, L.0, 5d, Sarpo-Mira, leaves, D.0, G.0, single
-sotu, PRJNA685865, SRR13264446, treated, phytophthora-infestans(88069), 2, L.0, 5d, Sarpo-Mira, leaves, D.0, G.0, single
-sotu, PRJNA685865, SRR13264447, treated, phytophthora-infestans(11388), 1, L.0, 5d, Sarpo-Mira, leaves, D.0, G.0, single
-sotu, PRJNA685865, SRR13264448, treated, phytophthora-infestans(11388), 2, L.0, 5d, Sarpo-Mira, leaves, D.0, G.0, single

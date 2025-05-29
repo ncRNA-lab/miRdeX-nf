@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-orsa, PRJNA657181, SRR12453568, treated, meloidogyne-graminicola, 1, L.0, 3d, Nipponbare, gall, 17d, G.0, single
-orsa, PRJNA657181, SRR12453569, treated, meloidogyne-graminicola, 2, L.0, 3d, Nipponbare, gall, 17d, G.0, single
-orsa, PRJNA657181, SRR12453570, treated, meloidogyne-graminicola, 3, L.0, 3d, Nipponbare, gall, 17d, G.0, single
-orsa, PRJNA657181, SRR12453571, control, meloidogyne-graminicola, 1, L.0, 3d, Nipponbare, root, 17d, G.0, single
-orsa, PRJNA657181, SRR12453572, control, meloidogyne-graminicola, 2, L.0, 3d, Nipponbare, root, 17d, G.0, single
-orsa, PRJNA657181, SRR12453573, control, meloidogyne-graminicola, 3, L.0, 3d, Nipponbare, root, 17d, G.0, single

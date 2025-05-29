@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
-cila, PRJNA328189, SRR3823160, control, cold, 1, 25ºC, 6h, Y134, leaves, four-leaf-stage, G.0, single
-cila, PRJNA328189, SRR3823161, control, cold, 2, 25ºC, 6h, Y134, leaves, four-leaf-stage, G.0, single
-cila, PRJNA328189, SRR3823164, treated, cold, 1, 4ºC, 6h, Y134, leaves, four-leaf-stage, G.0, single
-cila, PRJNA328189, SRR3823165, treated, cold, 2, 4ºC, 6h, Y134, leaves, four-leaf-stage, G.0, single

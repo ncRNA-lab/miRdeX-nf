@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-soly, PRJNA305725, SRR2989577, control, alternaria-solani, 1, L.0, 72h, Pusa-Ruby, leaves, 20d, G.0, single
-soly, PRJNA305725, SRR2989578, control, alternaria-solani, 2, L.0, 72h, Pusa-Ruby, leaves, 20d, G.0, single
-soly, PRJNA305725, SRR2989579, treated, alternaria-solani, 3, 105CFU/ml, 72h, Pusa-Ruby, leaves, 20d, G.0, single
-soly, PRJNA305725, SRR2989580, treated, alternaria-solani, 1, 105CFU/ml, 72h, Pusa-Ruby, leaves, 20d, G.0, single

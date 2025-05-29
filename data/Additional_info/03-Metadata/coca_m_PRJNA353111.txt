@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-coca, PRJNA353111, SRR5074354, treated, drought, 1, L.0, T.0, Conilon(clone120), leaves, 9mo, G.T, single
-coca, PRJNA353111, SRR5074355, control, drought, 2, L.0, T.0, Conilon(clone120), leaves, 9mo, G.T, single
-coca, PRJNA353111, SRR5074357, control, drought, 1, L.0, T.0, Conilon(clone120), leaves, 9mo, G.T, single
-coca, PRJNA353111, SRR5074364, treated, drought, 2, L.0, T.0, Conilon(clone120), leaves, 9mo, G.T, single

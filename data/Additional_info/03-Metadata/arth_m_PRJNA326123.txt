@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
-arth, PRJNA326123, SRR3680806, control, alternaria-brassicicola, 1, L.0, 3d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA326123, SRR3680808, control, alternaria-brassicicola, 2, L.0, 3d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA326123, SRR3680810, control, alternaria-brassicicola, 3, L.0, 3d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA326123, SRR3680812, treated, alternaria-brassicicola, 1, 1x10^6spores/ml, 3d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA326123, SRR3680814, treated, alternaria-brassicicola, 2, 1x10^6spores/ml, 3d, Col-0, rosette-leaves, D.0, G.0, single
-arth, PRJNA326123, SRR3680816, treated, alternaria-brassicicola, 3, 1x10^6spores/ml, 3d, Col-0, rosette-leaves, D.0, G.0, single

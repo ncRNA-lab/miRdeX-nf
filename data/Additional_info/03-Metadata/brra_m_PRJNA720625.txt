@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-brra, PRJNA720625, SRR14183388, control, cold, 1, 25ºC, 48h, CV.0, seed, D.0, G.0, single
-brra, PRJNA720625, SRR14183389, control, cold, 2, 25ºC, 48h, CV.0, seed, D.0, G.0, single
-brra, PRJNA720625, SRR14183390, control, cold, 3, 25ºC, 48h, CV.0, seed, D.0, G.0, single
-brra, PRJNA720625, SRR14183391, treated, cold, 1, 4ºC, 25d, CV.0, seed, D.0, G.0, single
-brra, PRJNA720625, SRR14183392, treated, cold, 2, 4ºC, 25d, CV.0, seed, D.0, G.0, single
-brra, PRJNA720625, SRR14183393, treated, cold, 3, 4ºC, 25d, CV.0, seed, D.0, G.0, single

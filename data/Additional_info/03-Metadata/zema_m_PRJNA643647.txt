@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-zema, PRJNA643647, SRR12133945, treated, heat, 3, 42ºC, 24h, inbred-line-CM1, leaves, three-leaf-stage, G.R, single
-zema, PRJNA643647, SRR12133946, treated, heat, 2, 42ºC, 24h, inbred-line-CM1, leaves, three-leaf-stage, G.R, single
-zema, PRJNA643647, SRR12133947, treated, heat, 1, 42ºC, 24h, inbred-line-CM1, leaves, three-leaf-stage, G.R, single
-zema, PRJNA643647, SRR12133948, control, heat, 3, L.0, 24h, inbred-line-CM1, leaves, three-leaf-stage, G.R, single
-zema, PRJNA643647, SRR12133949, control, heat, 2, L.0, 24h, inbred-line-CM1, leaves, three-leaf-stage, G.R, single
-zema, PRJNA643647, SRR12133950, control, heat, 1, L.0, 24h, inbred-line-CM1, leaves, three-leaf-stage, G.R, single

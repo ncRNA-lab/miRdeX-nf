@@ -1,9 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-nibe, PRJNA526723, SRR8716992, control, psv-p, 1, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716993, control, psv-p, 2, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716994, control, psv-p, 3, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716995, control, psv-p, 4, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716996, treated, psv-p, 1, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716997, treated, psv-p, 2, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716998, treated, psv-p, 3, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single
-nibe, PRJNA526723, SRR8716999, treated, psv-p, 4, L.0, 5d, CV.0, leaves, four-leaf-stage, G.0, single

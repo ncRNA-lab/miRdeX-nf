@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-ciar, PRJNA954857, SRR24186612, treated, drought, 2, 4-7%SM, T.0, CV.0, root, 14d, G.0, single
-ciar, PRJNA954857, SRR24186613, treated, drought, 1, 4-7%SM, T.0, CV.0, root, 14d, G.0, single
-ciar, PRJNA954857, SRR24186614, control, drought, 2, 14-16%SM, T.0, CV.0, root, 14d, G.0, single
-ciar, PRJNA954857, SRR24186615, control, drought, 1, 14-16%SM, T.0, CV.0, root, 14d, G.0, single
-ciar, PRJNA954857, SRR24200892, treated, drought, 3, 4-7%SM, T.0, CV.0, root, 14d, G.0, single
-ciar, PRJNA954857, SRR24200893, control, drought, 3, 14-16%SM, T.0, CV.0, root, 14d, G.0, single

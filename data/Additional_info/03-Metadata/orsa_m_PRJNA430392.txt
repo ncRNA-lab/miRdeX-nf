@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-orsa, PRJNA430392, SRR6498699, control, magnaporthe-oryzae, 1, L.0, T.0, TN67, leaves, 3w, G.0, single
-orsa, PRJNA430392, SRR6498700, treated, magnaporthe-oryzae, 1, 1x105spores/ml, T.0, TN67, leaves, 3w, G.0, single
-orsa, PRJNA430392, SRR6498701, control, magnaporthe-oryzae, 2, L.0, T.0, TN67, leaves, 3w, G.0, single
-orsa, PRJNA430392, SRR6498702, treated, magnaporthe-oryzae, 2, 1x105spores/ml, T.0, TN67, leaves, 3w, G.0, single

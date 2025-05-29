@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-casi, PRJNA838286, SRR19215437, treated, didymella-bellidis, 3, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA838286, SRR19215438, treated, didymella-bellidis, 2, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA838286, SRR19215439, treated, didymella-bellidis, 1, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA838286, SRR19215440, control, didymella-bellidis, 3, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA838286, SRR19215441, control, didymella-bellidis, 2, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA838286, SRR19215442, control, didymella-bellidis, 1, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single

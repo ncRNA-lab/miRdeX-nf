@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-brdi, PRJEB60467, ERR10975713, control, heat, 1, L.0, T.0, BD23-1, shoot, 23d, G.0, single
-brdi, PRJEB60467, ERR10975714, control, heat, 2, L.0, T.0, BD23-1, shoot, 23d, G.0, single
-brdi, PRJEB60467, ERR10975715, control, heat, 3, L.0, T.0, BD23-1, shoot, 23d, G.0, single
-brdi, PRJEB60467, ERR10975716, treated, heat, 1, L.0, T.0, BD23-1, shoot, 23d, G.0, single
-brdi, PRJEB60467, ERR10975717, treated, heat, 2, L.0, T.0, BD23-1, shoot, 23d, G.0, single
-brdi, PRJEB60467, ERR10975718, treated, heat, 3, L.0, T.0, BD23-1, shoot, 23d, G.0, single

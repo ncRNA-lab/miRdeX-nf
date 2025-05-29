@@ -1,9 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-trae, PRJNA289147, SRR19441421, treated, puccinia-striiformis, 4, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441422, treated, puccinia-striiformis, 3, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441423, treated, puccinia-striiformis, 2, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441424, treated, puccinia-striiformis, 1, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441425, control, puccinia-striiformis, 4, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441426, control, puccinia-striiformis, 3, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441427, control, puccinia-striiformis, 2, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single
-trae, PRJNA289147, SRR19441428, control, puccinia-striiformis, 1, L.0, 8d, Avocet, whole-shoot, tillering, G.S, single

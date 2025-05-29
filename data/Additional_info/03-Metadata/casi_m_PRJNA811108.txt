@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-casi, PRJNA811108, SRR18163558, treated, epicoccum-nigrum, 3, L.0, 48h, CV.0, leaves, D.0, G.0, single
-casi, PRJNA811108, SRR18163559, treated, epicoccum-nigrum, 2, L.0, 48h, CV.0, leaves, D.0, G.0, single
-casi, PRJNA811108, SRR18163560, treated, epicoccum-nigrum, 1, L.0, 48h, CV.0, leaves, D.0, G.0, single
-casi, PRJNA811108, SRR18163561, control, epicoccum-nigrum, 3, L.0, 48h, CV.0, leaves, D.0, G.0, single
-casi, PRJNA811108, SRR18163562, control, epicoccum-nigrum, 2, L.0, 48h, CV.0, leaves, D.0, G.0, single
-casi, PRJNA811108, SRR18163563, control, epicoccum-nigrum, 1, L.0, 48h, CV.0, leaves, D.0, G.0, single

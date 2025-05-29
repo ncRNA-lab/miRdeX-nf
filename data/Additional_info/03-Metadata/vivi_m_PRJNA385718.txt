@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-vivi, PRJNA385718, SRR5514673, control, ay-phytoplasma, 1, L.0, T.0, Chardonnay, leaves, 7y, G.0, single
-vivi, PRJNA385718, SRR5514674, control, ay-phytoplasma, 2, L.0, T.0, Chardonnay, leaves, 7y, G.0, single
-vivi, PRJNA385718, SRR5514675, control, ay-phytoplasma, 3, L.0, T.0, Chardonnay, leaves, 7y, G.0, single
-vivi, PRJNA385718, SRR5514676, treated, ay-phytoplasma, 1, L.0, T.0, Chardonnay, leaves, 7y, G.0, single
-vivi, PRJNA385718, SRR5514677, treated, ay-phytoplasma, 2, L.0, T.0, Chardonnay, leaves, 7y, G.0, single
-vivi, PRJNA385718, SRR5514678, treated, ay-phytoplasma, 3, L.0, T.0, Chardonnay, leaves, 7y, G.0, single

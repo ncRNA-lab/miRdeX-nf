@@ -216,7 +216,7 @@ def validateInputParameters() {
             'trimming_adapters',
             'trimming_min_len',
             'trimming_max_len',
-            'custom_fastp_args',
+            'trimming_custom_args',
             'validation_depth',
             'filtering_db_mismatches',
             'filtering_genome_mismatches',
@@ -248,14 +248,24 @@ def validateInputParameters() {
 
         // Parameters not compatible with '--only_preprocessing'
         def nextStepsParams = [
-            'skip_quantification',
             'skip_annotation',
             'databases',
+            'mirna_classes',
+            'substitutions',
+            'five_add',
+            'three_add',
+            'ends_modification',
+            'annotation_unitas',
+            'bowtie_nti_ext_args',
+            'counts',
+            'rpm',
             'min_counts',
             'min_samples',
             'ea_p_value',
             'dea_alpha',
-            'counts_project_matrix'
+            'counts_project_matrix',
+            'global_matrix',
+            'global_fields'
         ]
 
         // Check if any of the parameters associated with previous steps of the
@@ -280,12 +290,16 @@ def validateInputParameters() {
         // Parameters not compatible with '--skip_annotation'
         def nextStepsParams = [
             'databases',
+            'mirna_classes',
             'substitutions',
-            'three_add',
             'five_add',
+            'three_add',
             'ends_modification',
-            'rpm',
+            'annotation_unitas',
+            'bowtie_nti_ext_args',
             'counts',
+            'rpm',
+            'global_matrix'
         ]
         
         // Check if any of the parameters associated with previous steps of the

@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-pima, PRJNA747874, SRR15185401, treated, pi-deficiency, 3, L.0, T.0, CV.0, root, seedling-stage, G.0, single
-pima, PRJNA747874, SRR15185402, treated, pi-deficiency, 2, L.0, T.0, CV.0, root, seedling-stage, G.0, single
-pima, PRJNA747874, SRR15185403, treated, pi-deficiency, 1, L.0, T.0, CV.0, root, seedling-stage, G.0, single
-pima, PRJNA747874, SRR15185404, control, pi-deficiency, 3, L.0, T.0, CV.0, root, seedling-stage, G.0, single
-pima, PRJNA747874, SRR15185407, control, pi-deficiency, 2, L.0, T.0, CV.0, root, seedling-stage, G.0, single
-pima, PRJNA747874, SRR15185408, control, pi-deficiency, 1, L.0, T.0, CV.0, root, seedling-stage, G.0, single

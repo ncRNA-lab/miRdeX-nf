@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-mado, PRJNA475703, SRR7294207, control, alternaria-alternata, 1, L.0, T.0, Golden-delicious, leaves, 4w, G.0, single
-mado, PRJNA475703, SRR7294208, treated, alternaria-alternata, 1, 2x10^5cfu/ml, T.0, Golden-delicious, leaves, 4w, G.0, single
-mado, PRJNA475703, SRR7294209, control, alternaria-alternata, 2, L.0, T.0, Golden-delicious, leaves, 4w, G.0, single
-mado, PRJNA475703, SRR7294210, treated, alternaria-alternata, 2, 2x10^5cfu/ml, T.0, Golden-delicious, leaves, 4w, G.0, single

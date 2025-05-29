@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-casi, PRJNA490143, SRR7814089, control, colletotrichum-gloeosporioides, 1, L.0, 5d, Shuchazao, leaves, 3y, G.0, single
-casi, PRJNA490143, SRR7814090, control, colletotrichum-gloeosporioides, 2, L.0, 5d, Shuchazao, leaves, 3y, G.0, single
-casi, PRJNA490143, SRR7814091, control, colletotrichum-gloeosporioides, 3, L.0, 5d, Shuchazao, leaves, 3y, G.0, single
-casi, PRJNA490143, SRR7814092, treated, colletotrichum-gloeosporioides, 1, 1x10^6mlneg1, 5d, Shuchazao, leaves, 3y, G.0, single
-casi, PRJNA490143, SRR7814093, treated, colletotrichum-gloeosporioides, 2, 1x10^6mlneg1, 5d, Shuchazao, leaves, 3y, G.0, single
-casi, PRJNA490143, SRR7814094, treated, colletotrichum-gloeosporioides, 3, 1x10^6mlneg1, 5d, Shuchazao, leaves, 3y, G.0, single

@@ -1,5 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-trae, PRJNA326175, SRR3690677, control, cold, 1, L.0, T.0, JM22, young-spike, 3w, G.0, single
-trae, PRJNA326175, SRR3690678, control, cold, 2, L.0, T.0, JM22, young-spike, 3w, G.0, single
-trae, PRJNA326175, SRR3690679, treated, cold, 1, L.0, T.0, JM22, young-spike, 3w, G.0, single
-trae, PRJNA326175, SRR3690680, treated, cold, 2, L.0, T.0, JM22, young-spike, 3w, G.0, single

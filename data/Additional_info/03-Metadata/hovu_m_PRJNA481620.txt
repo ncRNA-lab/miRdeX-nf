@@ -1,9 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Dev_state, Genotype, Library
-hovu, PRJNA481620, SRR7543962, treated, aluminium-excess, 1, 10uM, 24h, XZ29, root, 20d, G.T, single
-hovu, PRJNA481620, SRR7543963, treated, aluminium-excess, 2, 10uM, 24h, XZ29, root, 20d, G.T, single
-hovu, PRJNA481620, SRR7543964, control, aluminium-excess, 1, 0uM, 24h, XZ29, root, 20d, G.T, single
-hovu, PRJNA481620, SRR7543965, control, aluminium-excess, 2, 0uM, 24h, XZ29, root, 20d, G.T, single
-hovu, PRJNA481620, SRR7543966, treated, aluminium-excess, 1, 10uM, 24h, GoldenPromise, root, 20d, G.S, single
-hovu, PRJNA481620, SRR7543967, treated, aluminium-excess, 2, 10uM, 24h, GoldenPromise, root, 20d, G.S, single
-hovu, PRJNA481620, SRR7543968, control, aluminium-excess, 1, 0uM, 24h, GoldenPromise, root, 20d, G.S, single
-hovu, PRJNA481620, SRR7543969, control, aluminium-excess, 2, 0uM, 24h, GoldenPromise, root, 20d, G.S, single

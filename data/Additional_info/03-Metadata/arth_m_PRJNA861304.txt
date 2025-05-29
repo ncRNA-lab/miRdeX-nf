@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-arth, PRJNA861304, SRR20438775, treated, fe-deficiency, 3, L.0, 4d, Col-0, shoot, D.0, G.0, single
-arth, PRJNA861304, SRR20438776, treated, fe-deficiency, 2, L.0, 4d, Col-0, shoot, D.0, G.0, single
-arth, PRJNA861304, SRR20438777, treated, fe-deficiency, 1, L.0, 4d, Col-0, shoot, D.0, G.0, single
-arth, PRJNA861304, SRR20438778, control, fe-deficiency, 3, L.0, 4d, Col-0, shoot, D.0, G.0, single
-arth, PRJNA861304, SRR20438779, control, fe-deficiency, 2, L.0, 4d, Col-0, shoot, D.0, G.0, single
-arth, PRJNA861304, SRR20438780, control, fe-deficiency, 1, L.0, 4d, Col-0, shoot, D.0, G.0, single

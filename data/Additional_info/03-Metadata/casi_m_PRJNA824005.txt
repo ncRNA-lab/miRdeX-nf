@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-casi, PRJNA824005, SRR18654195, control, epicoccum-sorghinum, 3, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA824005, SRR18654196, control, epicoccum-sorghinum, 2, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA824005, SRR18654197, control, epicoccum-sorghinum, 1, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA824005, SRR18654198, treated, epicoccum-sorghinum, 3, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA824005, SRR18654199, treated, epicoccum-sorghinum, 2, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA824005, SRR18654200, treated, epicoccum-sorghinum, 1, L.0, 2d, Fuding-dabaicha, leaves, 5y, G.0, single

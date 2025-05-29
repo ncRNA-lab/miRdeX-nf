@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-orsa, PRJEB2597, ERR037690, treated, drought, 2, 20%PEG-600, T.0, Nipponbare, leaves, 14d, G.0, single
-orsa, PRJEB2597, ERR037691, treated, drought, 1, 20%PEG-600, T.0, Nipponbare, leaves, 14d, G.0, single
-orsa, PRJEB2597, ERR037692, treated, salt, 2, 200mM, T.0, Nipponbare, leaves, 14d, G.0, single
-orsa, PRJEB2597, ERR037693, treated, salt, 1, 200mM, T.0, Nipponbare, leaves, 14d, G.0, single
-orsa, PRJEB2597, ERR037694, control, drought:salt, 2, L.0, T.0, Nipponbare, leaves, 14d, G.0, single
-orsa, PRJEB2597, ERR037695, control, drought:salt, 1, L.0, T.0, Nipponbare, leaves, 14d, G.0, single

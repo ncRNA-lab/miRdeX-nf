@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-nibe, PRJNA723580, SRR14295187, treated, rsv, 1, L.0, 7d, CV.0, leaves, D.0, G.0, single
-nibe, PRJNA723580, SRR14295189, treated, rsv, 2, L.0, 7d, CV.0, leaves, D.0, G.0, single
-nibe, PRJNA723580, SRR14295191, treated, rsv, 3, L.0, 7d, CV.0, leaves, D.0, G.0, single
-nibe, PRJNA723580, SRR14295193, control, rsv, 1, L.0, 7d, CV.0, leaves, D.0, G.0, single
-nibe, PRJNA723580, SRR14295195, control, rsv, 2, L.0, 7d, CV.0, leaves, D.0, G.0, single
-nibe, PRJNA723580, SRR14295197, control, rsv, 3, L.0, 7d, CV.0, leaves, D.0, G.0, single

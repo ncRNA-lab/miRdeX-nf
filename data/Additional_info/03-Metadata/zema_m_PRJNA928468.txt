@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-zema, PRJNA928468, SRR23248069, treated, salt, 3, L.0, T.0, CV.0, seed, D.0, G.0, single
-zema, PRJNA928468, SRR23248070, treated, salt, 2, L.0, T.0, CV.0, seed, D.0, G.0, single
-zema, PRJNA928468, SRR23248071, treated, salt, 1, L.0, T.0, CV.0, seed, D.0, G.0, single
-zema, PRJNA928468, SRR23248072, control, salt, 3, L.0, T.0, CV.0, seed, D.0, G.0, single
-zema, PRJNA928468, SRR23248073, control, salt, 2, L.0, T.0, CV.0, seed, D.0, G.0, single
-zema, PRJNA928468, SRR23248074, control, salt, 1, L.0, T.0, CV.0, seed, D.0, G.0, single

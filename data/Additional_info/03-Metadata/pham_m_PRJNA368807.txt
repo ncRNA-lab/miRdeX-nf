@@ -1,6 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-pham, PRJNA368807, SRR5204506, treated, cymmv&orsv, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single
-pham, PRJNA368807, SRR5204512, treated, cymmv&orsv, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single
-pham, PRJNA368807, SRR5204516, treated, cymmv&orsv, 3, L.0, T.0, CV.0, leaves, D.0, G.0, single
-pham, PRJNA368807, SRR5204504, control, cymmv&orsv, 1, L.0, T.0, CV.0, leaves, D.0, G.0, single
-pham, PRJNA368807, SRR5204508, control, cymmv&orsv, 2, L.0, T.0, CV.0, leaves, D.0, G.0, single

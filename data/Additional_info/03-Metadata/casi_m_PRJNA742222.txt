@@ -1,7 +1,0 @@
-Specie, Project, Run, Condition, Stress, Replicate, Level, Time, Cultivar, Tissue, Age/Dev-state, Genotype, Library
-casi, PRJNA742222, SRR14996693, treated, pestaiotiopsis-trachicarpicola, 3, L.0, 1d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA742222, SRR14996694, treated, pestaiotiopsis-trachicarpicola, 2, L.0, 1d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA742222, SRR14996695, treated, pestaiotiopsis-trachicarpicola, 1, L.0, 1d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA742222, SRR14996696, control, pestaiotiopsis-trachicarpicola, 3, L.0, 1d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA742222, SRR14996697, control, pestaiotiopsis-trachicarpicola, 2, L.0, 1d, Fuding-dabaicha, leaves, 5y, G.0, single
-casi, PRJNA742222, SRR14996698, control, pestaiotiopsis-trachicarpicola, 1, L.0, 1d, Fuding-dabaicha, leaves, 5y, G.0, single
