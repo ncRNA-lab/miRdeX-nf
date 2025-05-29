@@ -4,6 +4,9 @@ data/Additional_info/01-Databases/01-RNAcentral/
 data/Additional_info/01-Databases/02-Annotation_databases/
 bin/.Rhistory
 
+# Ignore personal configuration files
+config/mail.config
+
 # Ignore some specific files
 main_sin_subworflows.nf
 Singularity.sif
