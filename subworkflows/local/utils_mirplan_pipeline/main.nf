@@ -223,8 +223,8 @@ def validateInputParameters() {
             'skip_qc_trim',
             'skip_fastqc',
             'skip_multiqc',
-            'skip_filt_db',
-            'skip_filt_genome'
+            'filt_db',
+            'filt_genome'
         ]
 
         // Check if any of the parameters associated with previous steps of the
@@ -297,7 +297,7 @@ def validateInputParameters() {
         
         // If that condition is TRUE, show the corresponding warning...
         if (filteredParams && !ignoreParams.contains('skip_annotation')) {
-            skipDeaWarn(filteredParams)
+            skipAnnotationWarn(filteredParams)
         }
     }
 }
@@ -340,6 +340,19 @@ def onlyPreprocessingWarn(providedParams) {
     """.stripIndent(true)
 }
 
+
+//
+// Print a warning if using '--skip_annotation'
+//
+
+def skipAnnotationWarn(providedParams) {
+    log.warn """'--skip_annotation' has been provided. The annotation step and all downstream 
+        processes that depend on it will be skipped. The following parameters will be ignored:
+        ${providedParams.collect { "--$it" }.join(', ')}
+    """.stripIndent(true)
+}
+
+
 //
 // Verifies whether the input samples have an associated genome or if one can
 // be assigned. The input is the content of the samplesheet, and the output is
@@ -362,7 +375,7 @@ def validateAndAssignGenome (item) {
     }
 
     // If no valid genome found, throw an error
-    if (predetermined_genome == null && !params.skip_filt_genome) {
+    if (predetermined_genome == null && params.filt_genome) {
         log.error("There is no genome associated with the following file:\n${item[2]}")
     }
 

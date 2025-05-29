@@ -382,10 +382,10 @@ workflow MIRPLAN {
         ============================================================================
         */
 
-        if (!params.skip_filt_db) {
+        if (params.filt_db) {
 
             // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-            FILTERING_DB(ch_fastq, "database", params.filtering_db_file)
+            FILTERING_DB(ch_fastq, "database", params.filt_db)
 
             // Save the software version
             ch_versions = ch_versions.mix(FILTERING_DB.out.versions)
@@ -432,7 +432,7 @@ workflow MIRPLAN {
         ============================================================================
         */
 
-        if (!params.skip_filt_genome) {
+        if (params.filt_genome) {
             
             // Remove those sequences that do not align with the reference genome
             FILTERING_GENOME(ch_fastq, "genome", null)
@@ -830,7 +830,6 @@ workflow MIRPLAN {
 
             // Add annotation to DEA results dataframe
             ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, params.mirna_classes)
-            ANNOTATE_DEA_RESULTS.out.fam_sum.view()
 
             // Save the software version
             ch_versions = ch_versions.mix(ANNOTATE_DEA_RESULTS.out.versions)
@@ -867,6 +866,9 @@ workflow MIRPLAN {
 
             // Prepare the channel to create the absence-presence matrix
             ANNOTATE_DEA_RESULTS.out.unique
+                .filter { _meta, file ->
+                    !file.getName().endsWith('_EMPTY.unique.tsv')
+                }
                 .map{meta, file -> [file, meta.metadata, meta.samples]}
                 .collect()
                 .map{ list ->

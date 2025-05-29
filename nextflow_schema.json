@@ -105,7 +105,7 @@
           "fa_icon": "fas fa-ruler-horizontal",
           "description": "Maximum read length"
         },
-        "custom_fastp_args": {
+        "trimming_custom_args": {
           "type": "string",
           "fa_icon": "fas fa-plus",
           "description": "User-defined extra parameters to customize fastp behavior during read trimming."
@@ -139,11 +139,15 @@
       "description": "Options to configure filtering of sequencing reads based on database or genome alignment criteria.",
       "default": "",
       "properties": {
-        "filtering_db_file": {
+        "filt_db": {
           "type": "string",
-          "description": "Path to the reference database file used for filtering.",
-          "fa_icon": "fas fa-database",
-          "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/data/Additional_info/01-Databases/01-RNAcentral/RNAcenral_viridiplantae_snrna_snorna_rrna_trna.fasta"
+          "description": "Path to the FASTA file used to remove sequences from the libraries. Database-based filtering is only performed if this file is provided.",
+          "fa_icon": "fas fa-database"
+        },
+        "filt_genome": {
+          "type": "boolean",
+          "description": "Indicates whether the libraries are aligned to the species genome.",
+          "fa_icon": "fas fa-dna"
         },
         "bowtie_filt_db_ext_args": {
           "type": "string",
@@ -193,7 +197,7 @@
       "properties": {
         "ea_p_value": {
           "type": "number",
-          "default": 0.2,
+          "default": 0.05,
           "description": "P-value threshold for Mann-Whitney and Wilcoxon tests used to assess whether sample groups are spatially separated in Principal Component Analysis (PCA).",
           "fa_icon": "fas fa-check-circle"
         },
@@ -298,16 +302,6 @@
           "type": "boolean",
           "fa_icon": "fas fa-forward",
           "description": "Skip FastQC and MultiQC on trimmed reads."
-        },
-        "skip_filt_db": {
-          "type": "boolean",
-          "fa_icon": "fas fa-forward",
-          "description": "Skip filtering reads using the reference database."
-        },
-        "skip_filt_genome": {
-          "type": "boolean",
-          "fa_icon": "fas fa-forward",
-          "description": "Skip filtering reads using the reference genome."
         },
         "skip_annotation": {
           "type": "boolean",
