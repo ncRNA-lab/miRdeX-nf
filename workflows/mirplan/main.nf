@@ -510,7 +510,7 @@ workflow MIRPLAN {
                     return [id, meta, file]
                 }
                 .set{ quantification_subproject_ch }
-
+            
             ch_pipeline_summary
                 .map{ item -> [item.group, item]}
                 .groupTuple(by:0)
@@ -565,6 +565,9 @@ workflow MIRPLAN {
                 return [meta, file, meta.metadata, meta.group_id]
             }
             .set{ ch_counts_to_dea }
+
+        
+        ch_counts_to_dea.view()
 
         // Perform exploratory and differential expression analyses.
         DIFFEXPANALYSIS(ch_counts_to_dea, params.dea_alpha, params.min_counts, params.min_samples)

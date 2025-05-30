@@ -26,7 +26,10 @@ process COUNTS {
     echo -e "seq\traw" > ${prefix}.raw.tsv
 
     # Calculate absolute counts
-    awk 'NR%4==2' "${file_d}" | sort | uniq -c | sort -nr | awk 'BEGIN{FS=" "; OFS="\\t"} {print \$2, \$1}' >> ${prefix}.raw.tsv
+    workdir=\$(pwd)
+    mkdir -p "\$workdir/tmp"
+    awk 'NR%4==2' "${file_d}" | sort -T "\$workdir/tmp"| uniq -c | sort -nr -T "\$workdir/tmp" | awk 'BEGIN{FS=" "; OFS="\\t"} {print \$2, \$1}' >> ${prefix}.raw.tsv
+    rm -r "\$workdir/tmp"
     """
     
     stub:

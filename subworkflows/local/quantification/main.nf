@@ -60,21 +60,25 @@ workflow QUANTIFICATION {
 
         // Create a new ID and set the group_id
         COUNTS_MATRIX.out.matrix
-            .map{ meta, file ->
+            .flatMap { meta, file ->
+                def files = (file instanceof List) ? file : [file]
+                def output = []
 
-                // Get the filename
-                //def fileName = file.toString().split('/').last().replace('.counts.tsv', '')
-                def fileName = file.toString().split('/').last().replaceAll(/\.raw\.tsv|\.rpm\.tsv$/, '')
+                files.each { f ->
+                    def fileName = f.getName().replaceAll(/\.raw\.tsv|\.rpm\.tsv$/, '')
+                    def parts = fileName.split('_')
+                    def group_id = parts.size() > 1 ? parts[1] : 'unknown'
 
-                // Create the id and group_id using the filename
-                def group_id = fileName.split('_')[1]
+                    def updatedMeta = meta.clone()
+                    updatedMeta.id = fileName
+                    updatedMeta.group_id = group_id
 
-                // Assign this values to the corresponding fields of the map
-                meta.id = fileName
-                meta.group_id = group_id
-                return [meta, file]
+                    output << [updatedMeta, f]
+                }
+
+                return output
             }
-            .set{ ch_counts_matrix }
+            .set { ch_counts_matrix }
 
     emit:
         group_matrix    = ch_counts_matrix
