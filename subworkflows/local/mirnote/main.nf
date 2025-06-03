@@ -58,6 +58,7 @@ workflow MIRNOTE {
     five_add                // integer: 0
     three_add               // integer: 3
     ends_modification       // integer: 4
+    only_ref_miRNAs         // bool: true o false
 
     main:
     
@@ -193,8 +194,14 @@ workflow MIRNOTE {
         .map{ meta, file -> [meta, file, meta.mature, meta.precursor, meta.genome]}
         .set{ ch_to_identify_isomirs }
     
-    // Identify isomiRs
-    ISOMIRS_IDENTIFICATION(ch_to_identify_isomirs)
+    // Only reference (canonical) miRNAs
+    if (only_ref_miRNAs) {
+        // Identify isomiRs
+        ISOMIRS_IDENTIFICATION(ch_to_identify_isomirs, true)
+    } else {
+        // Identify isomiRs
+        ISOMIRS_IDENTIFICATION(ch_to_identify_isomirs, false)
+    }
 
     // Save the software version
     ch_versions = ch_versions.mix(ISOMIRS_IDENTIFICATION.out.versions)

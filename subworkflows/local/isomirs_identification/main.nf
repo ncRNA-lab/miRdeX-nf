@@ -45,6 +45,7 @@ include { BOWTIE_BUILD } from '../../../modules/nf-core/bowtie/build'
 workflow ISOMIRS_IDENTIFICATION {
     take:
         ch_input           // channel: [[id:val(id)], path(query_fasta), path(mature_fasta), path(precursor_fasta), path(genome)]
+        only_ref_miRNAs    // bool: True o False
 
     main:
 
@@ -119,78 +120,87 @@ workflow ISOMIRS_IDENTIFICATION {
         //
 
         ISOMIRS_PRECURSOR_CLASSIFICATION(MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST.out.mpblast)
-    
-        //
-        // 2. Remove non-templated sequences that align with the genome.
-        //
 
-        // Prepare the input channel for FILTER_NONTEMPLATED_ISOMIRS process
-        ch_input
-            .map{meta, _file, _mat, _pre, genome -> [meta.id, genome]}
-            .set{ ch_genome }
+        // Execute only if all miRNA variants are to be considered.
+        if( !only_ref_miRNAs ) {
+            //
+            // 2. Remove non-templated sequences that align with the genome.
+            //
 
-        ISOMIRS_PRECURSOR_CLASSIFICATION.out.nontemplated
-            .map{ meta, file  -> [meta.id, meta, file]}
-            .combine(ch_genome, by:0)
-            .map{ _id, meta, file, genome -> [meta, file, genome]}
-            .set{ ch_nontemplated_and_genome }
+            // Prepare the input channel for FILTER_NONTEMPLATED_ISOMIRS process
+            ch_input
+                .map{meta, _file, _mat, _pre, genome -> [meta.id, genome]}
+                .set{ ch_genome }
 
-        // Remove non-templated isomiRs that align to other regions of the genome.
-        FILTER_NONTEMPLATED_ISOMIRS(ch_nontemplated_and_genome)
+            ISOMIRS_PRECURSOR_CLASSIFICATION.out.nontemplated
+                .map{ meta, file  -> [meta.id, meta, file]}
+                .combine(ch_genome, by:0)
+                .map{ _id, meta, file, genome -> [meta, file, genome]}
+                .set{ ch_nontemplated_and_genome }
 
-        // Save the software version
-        ch_versions = ch_versions.mix(FILTER_NONTEMPLATED_ISOMIRS.out.versions)
+            // Remove non-templated isomiRs that align to other regions of the genome.
+            FILTER_NONTEMPLATED_ISOMIRS(ch_nontemplated_and_genome)
 
-        //
-        // 3. Concat the canonical, templated, and non-templated miRNA files
-        //
+            // Save the software version
+            ch_versions = ch_versions.mix(FILTER_NONTEMPLATED_ISOMIRS.out.versions)
 
-        // Prepare the non-templated isomirs channel
-        FILTER_NONTEMPLATED_ISOMIRS.out.iso
-            .map{ meta, file -> [meta.id, meta, file]}
-            .set{ ch_non_templated }
+            //
+            // 3. Concat the canonical, templated, and non-templated miRNA files
+            //
 
-        // Prepare the templated isomirs channel
-        ISOMIRS_PRECURSOR_CLASSIFICATION.out.templated
-            .map{ meta, file -> [meta.id, meta, file]}
-            .set{ ch_templated }
+            // Prepare the non-templated isomirs channel
+            FILTER_NONTEMPLATED_ISOMIRS.out.iso
+                .map{ meta, file -> [meta.id, meta, file]}
+                .set{ ch_non_templated }
 
-        // Prepare the canonical miRNAs channel and combine it with the two previous ones.
-        ISOMIRS_PRECURSOR_CLASSIFICATION.out.canon
-            .map{ meta, file -> [meta.id, meta, file]}
-            .join(ch_templated, by:0, remainder:true)
-            .map{ item ->
-                if (item[3] == null){ 
-                    return [item[0], item[1], item[2], null]
-                } else if (item[1] == null){
-                    return [item[0], item[2], null, item[3]]
-                } else {
-                    return [item[0], item[1], item[2], item[4]]
+            // Prepare the templated isomirs channel
+            ISOMIRS_PRECURSOR_CLASSIFICATION.out.templated
+                .map{ meta, file -> [meta.id, meta, file]}
+                .set{ ch_templated }
+
+            // Prepare the canonical miRNAs channel and combine it with the two previous ones.
+            ISOMIRS_PRECURSOR_CLASSIFICATION.out.canon
+                .map{ meta, file -> [meta.id, meta, file]}
+                .join(ch_templated, by:0, remainder:true)
+                .map{ item ->
+                    if (item[3] == null){ 
+                        return [item[0], item[1], item[2], null]
+                    } else if (item[1] == null){
+                        return [item[0], item[2], null, item[3]]
+                    } else {
+                        return [item[0], item[1], item[2], item[4]]
+                    }
                 }
-            }
-            .join(ch_non_templated, by:0, remainder:true)
-            .map{ item ->
-                if (item[1] == null){
-                    return [item[2] + [id: "${item[2].id}.iso", prev_id: item[2].id], [item[3]]]
-                } else if (item[4] == null){ 
-                    return [item[1] + [id: "${item[1].id}.iso", prev_id: item[1].id], [item[2], item[3]]]
-                } else {
-                    return [item[1] + [id: "${item[1].id}.iso", prev_id: item[1].id], [item[2], item[3], item[5]]]
+                .join(ch_non_templated, by:0, remainder:true)
+                .map{ item ->
+                    if (item[1] == null){
+                        return [item[2] + [id: "${item[2].id}.iso", prev_id: item[2].id], [item[3]]]
+                    } else if (item[4] == null){ 
+                        return [item[1] + [id: "${item[1].id}.iso", prev_id: item[1].id], [item[2], item[3]]]
+                    } else {
+                        return [item[1] + [id: "${item[1].id}.iso", prev_id: item[1].id], [item[2], item[3], item[5]]]
+                    }
                 }
-            }
-            .set { ch_files_to_concat }
+                .set { ch_files_to_concat }
 
-        // Concatenate canonical, templated and non-templated sequences files
-        CONCAT_TSV(ch_files_to_concat, false)
+            // Concatenate canonical, templated and non-templated sequences files
+            CONCAT_TSV(ch_files_to_concat, false)
 
-        // Set the original id
-        CONCAT_TSV.out.concat
-            .map { meta, file ->
-                def updatedMeta = meta + [id: meta.prev_id]
-                updatedMeta.remove('prev_id') 
-                return [updatedMeta, file]
-            }
-            .set { ch_output }
+            // Set the original id
+            CONCAT_TSV.out.concat
+                .map { meta, file ->
+                    def updatedMeta = meta + [id: meta.prev_id]
+                    updatedMeta.remove('prev_id') 
+                    return [updatedMeta, file]
+                }
+                .set { ch_output }
+                
+        } else {
+            // Only reference (canonical) miRNAs will be considered
+            ISOMIRS_PRECURSOR_CLASSIFICATION.out.canon
+                .map { meta, file -> [meta, file] }
+                .set { ch_output }
+        }
 
     emit:
         iso      = ch_output        // channel: [[id:val(id)], path(tsv_file)]

@@ -720,15 +720,34 @@ workflow MIRPLAN {
                     .set{ch_dea_sig}
             }
 
-            // Identify miRNA sequences
-            ANNOTATION(
-                ch_fastq,
-                params.databases,
-                params.substitutions,
-                params.five_add,
-                params.three_add,
-                params.ends_modification
-            )
+            // Only reference (canonical) miRNAs will be considered
+            if (params.mirna_classes == 'ref_miRNA') {
+
+                // Identify miRNA sequences
+                ANNOTATION(
+                    ch_fastq,
+                    params.databases,
+                    params.substitutions,
+                    params.five_add,
+                    params.three_add,
+                    params.ends_modification,
+                    true
+                )
+
+            // Other classes of miRNAs will be considered
+            } else {
+
+                // Identify miRNA sequences
+                ANNOTATION(
+                    ch_fastq,
+                    params.databases,
+                    params.substitutions,
+                    params.five_add,
+                    params.three_add,
+                    params.ends_modification,
+                    false
+                )
+            }
 
             // Save the software version
             ch_versions = ch_versions.mix(ANNOTATION.out.versions)
