@@ -14,8 +14,8 @@ process DIFFEXPANALYSIS {
     val min_samples
 
     output:
-    tuple val(meta), path("*_raw.tsv")              , emit: raw
-    tuple val(meta), path("*_sig.tsv")              , emit: sig
+    tuple val(meta), path("*_raw*.tsv")              , emit: raw
+    tuple val(meta), path("*_sig*.tsv")              , emit: sig
     tuple val(meta), path("*.volcano.png")          , emit: volcano
     tuple val(meta), path("01-PCA")                 , emit: pca
     tuple val(meta), path("02-SERE_dendrogram")     , emit: sere
@@ -35,6 +35,22 @@ process DIFFEXPANALYSIS {
         --alpha ${alpha} \
         --min_counts ${min_counts} \
         --min_samples ${min_samples}
+
+    # Check if the output files are empty
+    for file in *.dea_*.tsv; do
+        # Get the number of lines
+        num_lines=\$(wc -l < "\$file")
+        
+        # Check if the file is empty (empty or it only has the header)
+        if [ "\$num_lines" -le 1 ]; then
+
+            # Create file new name
+            new_name="\${file%.tsv}_EMPTY.tsv"
+            
+            # Change the name of the file
+            mv "\$file" "\$new_name"
+        fi
+    done
     
     # Create versions file
     cat <<-END_VERSIONS > versions.yml

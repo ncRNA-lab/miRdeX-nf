@@ -18,8 +18,10 @@ process ISOMIRS_PRECURSOR_CLASSIFICATION {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
+    
     # Create temporary directory
-    mkdir -p tmp
+    workdir=\$(pwd)
+    mkdir -p "\$workdir/tmp"
 
     # Save the canonical miRNAs in a table
     awk -F'\t' '\$14 == \$15' "${mpblast_tsv}" > "${prefix}.canonical.tsv"
@@ -27,9 +29,9 @@ process ISOMIRS_PRECURSOR_CLASSIFICATION {
     # If there are canonical sequences...
     if [ -s "${prefix}.canonical.tsv" ]; then
         # Save only the sequences in a new TXT file
-        cut -f14 "${prefix}.canonical.tsv" | sort | uniq > tmp/canonical_seqs.txt
+        cut -f14 "${prefix}.canonical.tsv" | sort -T "\$workdir/tmp" | uniq > \$workdir/tmp/canonical_seqs.txt
         # Remove any row from the original table that contains a canonical sequence.
-        awk -F'\t' 'NR==FNR {canon[\$1]; next} !(\$14 in canon)' tmp/canonical_seqs.txt "${mpblast_tsv}"  > "${prefix}.non_canonical.tsv"
+        awk -F'\t' 'NR==FNR {canon[\$1]; next} !(\$14 in canon)' \$workdir/tmp/canonical_seqs.txt "${mpblast_tsv}"  > "${prefix}.non_canonical.tsv"
     else
         mv "${prefix}.canonical.tsv" "${prefix}.EMPTY_canonical.tsv"
         cat "${mpblast_tsv}" > "${prefix}.non_canonical.tsv"
@@ -43,9 +45,9 @@ process ISOMIRS_PRECURSOR_CLASSIFICATION {
     # If there are non-canonical templated sequences...
     if [ -s "${prefix}.templated.tsv" ]; then
         # Save only the sequences in a new TXT file
-        cut -f14 "${prefix}.templated.tsv" | sort | uniq > tmp/templated_seqs.txt
+        cut -f14 "${prefix}.templated.tsv" | sort -T "\$workdir/tmp" | uniq > \$workdir/tmp/templated_seqs.txt
         # Remove any row from the original table that contains a templated sequence.
-        awk -F'\t' 'NR==FNR {seq[\$1]; next} !(\$14 in seq)' tmp/templated_seqs.txt "${prefix}.non_canonical.tsv" > "${prefix}.non_templated.tsv"
+        awk -F'\t' 'NR==FNR {seq[\$1]; next} !(\$14 in seq)' \$workdir/tmp/templated_seqs.txt "${prefix}.non_canonical.tsv" > "${prefix}.non_templated.tsv"
     else
         mv "${prefix}.templated.tsv" "${prefix}.EMPTY_templated.tsv"
         cat "${prefix}.non_canonical.tsv" > "${prefix}.non_templated.tsv"
@@ -55,6 +57,8 @@ process ISOMIRS_PRECURSOR_CLASSIFICATION {
     if [ ! -s "${prefix}.non_templated.tsv" ]; then
         mv "${prefix}.non_templated.tsv" "${prefix}.EMPTY_non_templated.tsv"
     fi
+
+    rm -r "\$workdir/tmp"
     """
 
     stub:

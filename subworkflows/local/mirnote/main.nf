@@ -53,6 +53,7 @@ workflow MIRNOTE {
 
     take:
     ch_input                // channel: [[id:val(id), species:val(species), genome:val(genome)], fasta/fastq]
+    ch_species              // channel: [ 'species_name', 'species_name2', ... ]
     databases               // string: "mirbase,srnaanno,pmiren"
     substitutions           // integer: 1
     five_add                // integer: 0
@@ -72,15 +73,8 @@ workflow MIRNOTE {
     ========================================================================================
     */
 
-    // Get the input species names
-    ch_input
-        .map{it[0].species}
-        .unique()
-        .collect()
-        .set{ch_species_names}
-
     // Prepare the databases for the annotation
-    PREPARE_MIRNA_DATABASES(ch_species_names, databases)
+    PREPARE_MIRNA_DATABASES(ch_species, databases)
 
     // Use the species_id to combine the databases and input channels
     PREPARE_MIRNA_DATABASES.out.dbs
@@ -258,7 +252,6 @@ workflow MIRNOTE {
         
         // Add raw counts to isomiRs dataframe
         ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts, params.counts)
-
 
         // Add RPM to isomiRs dataframe
         if (params.rpm  > 0){

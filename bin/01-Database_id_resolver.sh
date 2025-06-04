@@ -197,9 +197,10 @@ get_mirbase_species_ids () {
     # Arguments
     local mirbase_fasta_path="${1}"
     local mirbase_species_id_table="${2}"
+    local temporary_dir="${3}"
 
     # Create a temporary file
-    temp_file=$(mktemp)
+    temp_file=$(mktemp --tmpdir="$temporary_dir")
 
     # Extract ID and Species, remove duplicates, and save in CSV file
     awk '/^>/ {
@@ -219,7 +220,7 @@ get_mirbase_species_ids () {
         
         # Print the last element
         printf "\n";
-    }' "$mirbase_fasta_path" | sort | uniq > "$temp_file"
+    }' "$mirbase_fasta_path" | sort -T "$temporary_dir" | uniq > "$temp_file"
 
     # Remove white spaces from the end of each row
     sed 's/[[:space:]]*$//' "$temp_file" > "$mirbase_species_id_table"
@@ -269,26 +270,26 @@ merge_and_compare_tables(){
     local temporary_dir="${8}"
 
     # Create temporary directory
-    mkdir -p $temporary_dir"/tmp"
+    mkdir -p $temporary_dir"/tmp_mc"
 
-    # Sort files to be joined
-    LC_ALL=C sort -k $key1 -t',' -f $table1 -o $temporary_dir"/tmp/table1.csv"
-    LC_ALL=C sort -k $key2 -t',' -f $table2 -o $temporary_dir"/tmp/table2.csv"
+    # Sort files to be joined    
+    LANG=en_EN sort -T $temporary_dir"/tmp_mc" -t',' -f -k "${key1},${key1}" "$table1" > "$temporary_dir/tmp_mc/table1.csv"
+    LANG=en_EN sort -T $temporary_dir"/tmp_mc" -t',' -f -k "${key2},${key2}" "$table2" > "$temporary_dir/tmp_mc/table2.csv"
 
     # Alignment
-    join -1 $key1 -2 $key2 -t',' -o $output_cols -e "NULL" -a 1 -a 2 $temporary_dir"/tmp/table1.csv" $temporary_dir"/tmp/table2.csv" > $temporary_dir"/tmp/pre_results.csv"
+    LANG=en_EN join -1 $key1 -2 $key2 -t',' -i -o $output_cols -e "NULL" -a 1 -a 2 $temporary_dir"/tmp_mc/table1.csv" $temporary_dir"/tmp_mc/table2.csv" > $temporary_dir"/tmp_mc/pre_results.csv"
 
     # Merge the columns with the species names into one.
-    awk -F',' '{ if ($1 == "NULL") { print $2 "," $3 "," $4 } else { print $1 "," $3 "," $4 } }' $temporary_dir"/tmp/pre_results.csv" > $temporary_dir"/tmp/results.csv"
+    awk -F',' '{ if ($1 == "NULL") { print $2 "," $3 "," $4 } else { print $1 "," $3 "," $4 } }' $temporary_dir"/tmp_mc/pre_results.csv" > $temporary_dir"/tmp_mc/results.csv"
 
     # Add a final column with the ultimate identifier that will be assigned to each species (use the mirbase identifier unless it doesn't have one)
-    awk 'BEGIN {FS=OFS=","} {print $1, $2, $3, ($2 == "NULL") ? tolower($3) : tolower($2)}' $temporary_dir"/tmp/results.csv" > $output_dir_path_species
+    awk 'BEGIN {FS=OFS=","} {print $1, $2, $3, ($2 == "NULL") ? tolower($3) : tolower($2)}' $temporary_dir"/tmp_mc/results.csv" > $output_dir_path_species
 
     # Verify which species do not have the same identifier in both databases.
     awk -F',' '{ if ($2 != "NULL" && $3 != "NULL" && tolower($2) != tolower($3)) { print } }' $output_dir_path_species > $output_dir_path_diff
 
     # Delete temporary directory
-    rm -r $temporary_dir"/tmp"
+    rm -r $temporary_dir"/tmp_mc"
 }
 
 
@@ -321,12 +322,13 @@ replace_mismatched_ids(){
     local database_id_col="${3}"
     local new_id_col="${4}"
     local ids_table_csv="${5}"
+    local temporary_dir="${6}"
 
     # Create temporary directory
     mkdir -p ./tmp_replace
 
     # Get ids from fasta file
-    grep '^>' $fasta_in_path | awk -F'[>-]' '{print $2}' | sort | uniq > ./tmp_replace/ids.txt
+    grep '^>' $fasta_in_path | awk -F'[>-]' '{print $2}' | sort -T "$temporary_dir" | uniq > ./tmp_replace/ids.txt
 
     # Create a file with new ids
     awk -F, -v database_id_col="$database_id_col" -v new_id_col="$new_id_col" 'NR==FNR { ids[$database_id_col]=$new_id_col; next } { if (tolower($1) in ids) $1=ids[tolower($1)]; print tolower($0)}' "$ids_table_csv" "./tmp_replace/ids.txt" > "./tmp_replace/new_ids.txt"
@@ -536,6 +538,8 @@ main () {
     arguments_management "$@"
     
     # Create a temporary and outpur dir
+    workdir=$(pwd)
+    mkdir -p "$workdir/tmp"
     mkdir -p tmp
     mkdir -p 01-Mod_databases
 
@@ -547,18 +551,18 @@ main () {
 
         # Get PmiREN species ids
         echo "Obtaining identifiers from PmiREN database..."
-        get_PmiREN_species_ids "$pmiren" tmp/pmiren_species_mature_ids.txt mature
-        get_PmiREN_species_ids "$pmiren_hairpin" tmp/pmiren_species_hairpin_ids.txt hairpin
+        get_PmiREN_species_ids "$pmiren" $workdir/tmp/pmiren_species_mature_ids.txt mature
+        get_PmiREN_species_ids "$pmiren_hairpin" $workdir/tmp/pmiren_species_hairpin_ids.txt hairpin
         echo "Done!"
 
         # Merge mature and hairpin
         echo "Comparing identifiers between precursor and mature miRNA files..."
-        merge_and_compare_tables tmp/pmiren_species_mature_ids.txt tmp/pmiren_species_hairpin_ids.txt 2 2 '1.2,2.2,1.1,2.1' tmp/01-pmiren_species_ids.csv tmp/01-pmiren_species_ids_diff.csv ./tmp
+        merge_and_compare_tables $workdir/tmp/pmiren_species_mature_ids.txt $workdir/tmp/pmiren_species_hairpin_ids.txt 2 2 '1.2,2.2,1.1,2.1' $workdir/tmp/01-pmiren_species_ids.csv $workdir/tmp/01-pmiren_species_ids_diff.csv $workdir/tmp
         echo "Done!"
 
         # Save the path of the file to merge in a variable
-        file_to_merge=tmp/01-pmiren_species_ids.csv
-        file_to_merge_diff=tmp/01-pmiren_species_ids_diff.csv
+        file_to_merge=$workdir/tmp/01-pmiren_species_ids.csv
+        file_to_merge_diff=$workdir/tmp/01-pmiren_species_ids_diff.csv
 
         # If only PmiREN has been provided
         if [ -z "$mirbase" ] && [ -z "$srnaanno" ]; then
@@ -578,7 +582,7 @@ main () {
             awk -F, '{OFS=","; print $1,"NULL",$3,"NULL",$3}' $file_to_merge > $final_ids_file_out
 
             # Sort and add header to IDs file
-            sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
+            sort -T "$workdir/tmp" -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
             sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
         fi
     fi
@@ -591,18 +595,18 @@ main () {
 
         # Get miRBase species ids
         echo "Obtaining identifiers from miRBase database..."
-        get_mirbase_species_ids $mirbase tmp/mirbase_mature_species_ids.txt
-        get_mirbase_species_ids $mirbase_hairpin tmp/mirbase_hairpin_species_ids.txt
+        get_mirbase_species_ids $mirbase $workdir/tmp/mirbase_mature_species_ids.txt "$workdir/tmp"
+        get_mirbase_species_ids $mirbase_hairpin $workdir/tmp/mirbase_hairpin_species_ids.txt "$workdir/tmp"
         echo "Done!"
 
         # Merge mature and hairpin
         echo "Comparing identifiers between precursor and mature miRNA files..."
-        merge_and_compare_tables tmp/mirbase_mature_species_ids.txt tmp/mirbase_hairpin_species_ids.txt 2 2 '1.2,2.2,1.1,2.1' tmp/02-mirbase_species_ids.csv tmp/02-mirbase_species_ids_diff.csv ./tmp
+        merge_and_compare_tables $workdir/tmp/mirbase_mature_species_ids.txt $workdir/tmp/mirbase_hairpin_species_ids.txt 2 2 '1.2,2.2,1.1,2.1' $workdir/tmp/02-mirbase_species_ids.csv $workdir/tmp/02-mirbase_species_ids_diff.csv $workdir/tmp
         echo "Done!"
         
         # Save the path of the file to merge in a variable
-        file_to_merge=tmp/02-mirbase_species_ids.csv
-        file_to_merge_diff=tmp/02-mirbase_species_ids_diff.csv
+        file_to_merge=$workdir/tmp/02-mirbase_species_ids.csv
+        file_to_merge_diff=$workdir/tmp/02-mirbase_species_ids_diff.csv
 
         # If only miRBase has been provided
         if [ -z "$pmiren" ] && [ -z "$srnaanno" ]; then
@@ -636,18 +640,18 @@ main () {
 
         # Merge miRBase and PmiREN tables
         echo "Comparing identifiers between miRBase and PmiREN databases..."
-        merge_and_compare_tables tmp/02-mirbase_species_ids.csv tmp/01-pmiren_species_ids.csv 1 1 '1.1,2.1,1.4,2.4' tmp/03-mirbase_pmiren_species_ids.csv tmp/03-mirbase_pmiren_species_ids_diff.csv ./tmp
+        merge_and_compare_tables $workdir/tmp/02-mirbase_species_ids.csv $workdir/tmp/01-pmiren_species_ids.csv 1 1 '1.1,2.1,1.4,2.4' $workdir/tmp/03-mirbase_pmiren_species_ids.csv $workdir/tmp/03-mirbase_pmiren_species_ids_diff.csv $workdir/tmp
         echo "Done!"
         
         # Save the path of the file to merge in a variable
-        file_to_merge=tmp/03-mirbase_pmiren_species_ids.csv
-        file_to_merge_diff=tmp/03-mirbase_pmiren_species_ids_diff.csv
+        file_to_merge=$workdir/tmp/03-mirbase_pmiren_species_ids.csv
+        file_to_merge_diff=$workdir/tmp/03-mirbase_pmiren_species_ids_diff.csv
 
         ## 4. Check if there are species with the same identifier
         ############################################################################
 
         # Check if there is any duplicate identifier."
-        duplicate_ids=$(cut -d ',' -f 4 "$file_to_merge" | sort | uniq -d)
+        duplicate_ids=$(cut -d ',' -f 4 "$file_to_merge" | sort -T "$workdir/tmp" | uniq -d)
         if [ -n "$duplicate_ids" ]; then
 
             # Print identifiers
@@ -712,25 +716,25 @@ main () {
         mkdir -p $output_pmiren
 
         # Create database file using species files
-        cat $pmiren > tmp/temporal_mature.fa
-        cat $pmiren_hairpin > tmp/temporal_hairpin.fa
+        cat $pmiren > $workdir/tmp/temporal_mature.fa
+        cat $pmiren_hairpin > $workdir/tmp/temporal_hairpin.fa
 
         # Replace identifiers in PmiREN so that both databases match (PmiREN)
-        replace_mismatched_ids tmp/temporal_mature.fa $output_pmiren/pmiren_mature.fa 3 4 "$file_to_merge_diff"
-        replace_mismatched_ids tmp/temporal_hairpin.fa $output_pmiren/pmiren_hairpin.fa 3 4 "$file_to_merge_diff"
+        replace_mismatched_ids $workdir/tmp/temporal_mature.fa $output_pmiren/pmiren_mature.fa 3 4 "$file_to_merge_diff" "$workdir/tmp"
+        replace_mismatched_ids $workdir/tmp/temporal_hairpin.fa $output_pmiren/pmiren_hairpin.fa 3 4 "$file_to_merge_diff" "$workdir/tmp"
 
         # Modify miR names (MIR -> miR)
         sed -i 's/[Mm][Ii][Rr]/miR/g' $output_pmiren/pmiren_hairpin.fa
 
         # Replace identifiers in PmiREN so that both databases match (miRBase)
-        replace_mismatched_ids $mirbase $output_mirbase/mirbase_mature.fa 2 4 "$file_to_merge_diff"
-        replace_mismatched_ids $mirbase_hairpin $output_mirbase/mirbase_hairpin.fa 2 4 "$file_to_merge_diff"
+        replace_mismatched_ids $mirbase $output_mirbase/mirbase_mature.fa 2 4 "$file_to_merge_diff" "$workdir/tmp"
+        replace_mismatched_ids $mirbase_hairpin $output_mirbase/mirbase_hairpin.fa 2 4 "$file_to_merge_diff" "$workdir/tmp"
 
         # Modify miR names (MIR -> miR)
         sed -i 's/[Mm][Ii][Rr]/miR/g' $output_mirbase/mirbase_hairpin.fa
 
         # Delete temporary directory
-        rm -rf tmp/temporal_*
+        rm -rf $workdir/tmp/temporal_*
             
         # Execute only if srnaanno has not been provided
         if [ -z "$srnaanno" ]; then
@@ -740,7 +744,7 @@ main () {
             awk -F, '{OFS=","; print $1,$2,$3,"NULL",$4}' $file_to_merge > $final_ids_file_out
 
             # Sort and add header to IDs file
-            sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
+            sort -T "$workdir/tmp" -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
             sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
         fi
     fi
@@ -758,7 +762,7 @@ main () {
         mkdir -p $output_srnaanno
 
         # Create an empty file_to_merge if only sRNAanno has been provided
-        [ -z "$mirbase" ] && [ -z "$pmiren" ] && file_to_merge="tmp/sRNAanno_ids.csv" && touch "$file_to_merge"
+        [ -z "$mirbase" ] && [ -z "$pmiren" ] && file_to_merge="$workdir/tmp/sRNAanno_ids.csv" && touch "$file_to_merge"
 
         # Check if the file species
         echo "Assigning identifiers to the sRNAanno database..."
@@ -810,7 +814,7 @@ main () {
         fi
 
         # Sort and add header to IDs file
-        sort -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
+        sort -T "$workdir/tmp" -t',' -k1,1 $final_ids_file_out > tmp.csv && mv tmp.csv $final_ids_file_out
         sed -i '1i\species,mirbase,pmiren,srnaanno,final_id' $final_ids_file_out
     fi
 

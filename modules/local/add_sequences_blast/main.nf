@@ -22,6 +22,11 @@ process ADD_SEQUENCES_BLAST {
     def s_fasta_name = s_is_compressed ? subject_fasta.getBaseName() : subject_fasta
     """
     #!/bin/bash
+    
+    # Create temporary directory
+    workdir=\$(pwd)
+    mkdir -p "\$workdir/tmp"
+
     if [ "${q_is_compressed}" == "true" ]; then
         gzip -c -d ${query_fasta} > ${q_fasta_name}
     fi
@@ -30,8 +35,8 @@ process ADD_SEQUENCES_BLAST {
     fi
 
     # Get the sequence ids
-    cut -f1 "${blast_tsv}" | sort | uniq > query_ids.txt
-    cut -f2 "${blast_tsv}" | sort | uniq > subject_ids.txt
+    cut -f1 "${blast_tsv}" | sort -T "\$workdir/tmp" | uniq > query_ids.txt
+    cut -f2 "${blast_tsv}" | sort -T "\$workdir/tmp" | uniq > subject_ids.txt
 
     # Get the sequences
     seqkit grep -f query_ids.txt "${query_fasta}" | seqkit fx2tab | awk -F'\t' '{split(\$1, a, " "); print a[1] "\t" \$2}' > query_seqs.tsv
@@ -40,6 +45,8 @@ process ADD_SEQUENCES_BLAST {
     # Merge the data
     awk 'FNR==NR {seqs[\$1]=\$2; next} {print \$0 "\t" seqs[\$1]}' query_seqs.tsv "${blast_tsv}" > tmp_with_q.tsv
     awk 'FNR==NR {seqs[\$1]=\$2; next} {print \$0 "\t" seqs[\$2]}' subject_seqs.tsv tmp_with_q.tsv > "${prefix}.blast.tsv"
+
+    rm -r "\$workdir/tmp"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

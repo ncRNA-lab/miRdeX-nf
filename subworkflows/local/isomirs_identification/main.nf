@@ -123,6 +123,7 @@ workflow ISOMIRS_IDENTIFICATION {
 
         // Execute only if all miRNA variants are to be considered.
         if( !only_ref_miRNAs ) {
+
             //
             // 2. Remove non-templated sequences that align with the genome.
             //
@@ -196,6 +197,7 @@ workflow ISOMIRS_IDENTIFICATION {
                 .set { ch_output }
                 
         } else {
+            
             // Only reference (canonical) miRNAs will be considered
             ISOMIRS_PRECURSOR_CLASSIFICATION.out.canon
                 .map { meta, file -> [meta, file] }

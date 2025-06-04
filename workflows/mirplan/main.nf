@@ -566,9 +566,6 @@ workflow MIRPLAN {
             }
             .set{ ch_counts_to_dea }
 
-        
-        ch_counts_to_dea.view()
-
         // Perform exploratory and differential expression analyses.
         DIFFEXPANALYSIS(ch_counts_to_dea, params.dea_alpha, params.min_counts, params.min_samples)
 
@@ -668,8 +665,11 @@ workflow MIRPLAN {
             .map{ item -> [item.Group, item]}
             .set{ ch_dea_summ_to_sig }
 
-        // Change the meta.id from project to file.
+        // Change the meta.id from project to file and remove EMPTY files
         DIFFEXPANALYSIS.out.sig
+            .filter { _meta, file ->
+                !file.getName().endsWith('dea_sig_EMPTY.tsv')
+            }
             .map { meta, file ->
                 def updatedMeta = meta.clone()
                 updatedMeta.id = file.getName().replaceFirst(/\.dea_sig\.tsv$/, '')
@@ -711,6 +711,8 @@ workflow MIRPLAN {
                 }
                 .set{ ch_dea_ea_sig}
 
+                ch_dea_ea_sig.view()
+
                 // Filter the groups using the exploratory analysis results
                 ch_dea_ea_sig = filterByMwwPvalue(ch_dea_ea_sig, params.ea_p_value)
 
@@ -720,12 +722,20 @@ workflow MIRPLAN {
                     .set{ch_dea_sig}
             }
 
+            // Get the input species names
+            ch_input
+                .map{it[0].species}
+                .unique()
+                .collect()
+                .set{ch_species_names}  
+
             // Only reference (canonical) miRNAs will be considered
             if (params.mirna_classes == 'ref_miRNA') {
 
                 // Identify miRNA sequences
                 ANNOTATION(
                     ch_fastq,
+                    ch_species_names,
                     params.databases,
                     params.substitutions,
                     params.five_add,
@@ -740,6 +750,7 @@ workflow MIRPLAN {
                 // Identify miRNA sequences
                 ANNOTATION(
                     ch_fastq,
+                    ch_species_names,
                     params.databases,
                     params.substitutions,
                     params.five_add,

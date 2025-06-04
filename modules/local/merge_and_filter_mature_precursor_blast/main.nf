@@ -105,32 +105,34 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
 
     ### MAIN
     main () {
+    
         # Create temporary directory
-        mkdir -p tmp
+        workdir=\$(pwd)
+        mkdir -p "\$workdir/tmp"
 
         # Expand and clean TSV tables (Prepare mature miRNA identifiers to find their precursors)
-        expand_and_clean_tsv "${mature}" tmp/mature_expanded_cleaned.tsv
-        expand_and_clean_tsv "${precursor}" tmp/precursor_expanded_cleaned.tsv
+        expand_and_clean_tsv "${mature}" \$workdir/tmp/mature_expanded_cleaned.tsv
+        expand_and_clean_tsv "${precursor}" \$workdir/tmp/precursor_expanded_cleaned.tsv
 
         # Create the key column for the files to be merged
-        create_key_column tmp/mature_expanded_cleaned.tsv tmp/mature_with_key.tsv
-        create_key_column tmp/precursor_expanded_cleaned.tsv tmp/precursor_with_key.tsv
+        create_key_column \$workdir/tmp/mature_expanded_cleaned.tsv \$workdir/tmp/mature_with_key.tsv
+        create_key_column \$workdir/tmp/precursor_expanded_cleaned.tsv \$workdir/tmp/precursor_with_key.tsv
 
         # Sort the TSV files to be merged
-        sort -k1,1 tmp/mature_with_key.tsv > tmp/mature_sorted.tsv
-        sort -k1,1 tmp/precursor_with_key.tsv > tmp/precursor_sorted.tsv
+        sort -T "\$workdir/tmp" -k1,1 tmp/mature_with_key.tsv > \$workdir/tmp/mature_sorted.tsv
+        sort -T "\$workdir/tmp" -k1,1 tmp/precursor_with_key.tsv > \$workdir/tmp/precursor_sorted.tsv
 
         # Inner Join
-        join -t  \$'\t' -1 1 -2 1 tmp/mature_sorted.tsv tmp/precursor_sorted.tsv > tmp/joined_table.tsv
+        join -t  \$'\t' -1 1 -2 1 \$workdir/tmp/mature_sorted.tsv \$workdir/tmp/precursor_sorted.tsv > \$workdir/tmp/joined_table.tsv
 
         # Remove undesired columns
-        cut --complement -f1,4,18,20,32 tmp/joined_table.tsv > tmp/isomirs_all.tsv
+        cut --complement -f1,4,18,20,32 \$workdir/tmp/joined_table.tsv > \$workdir/tmp/isomirs_all.tsv
         
         # Select most likely references for each sequence
-        select_most_likely_references tmp/isomirs_all.tsv tmp/isomirs_best_alig_within_same_pre.tsv 
+        select_most_likely_references \$workdir/tmp/isomirs_all.tsv \$workdir/tmp/isomirs_best_alig_within_same_pre.tsv 
         
         # Select the most probable alignment within the same precursor.
-        select_best_alignment_precursor tmp/isomirs_best_alig_within_same_pre.tsv "${prefix}.mpblast.tsv"
+        select_best_alignment_precursor \$workdir/tmp/isomirs_best_alig_within_same_pre.tsv "${prefix}.mpblast.tsv"
 
         # Add empty suffix if the file is empty
         if [ ! -s "${prefix}.mpblast.tsv" ]; then
