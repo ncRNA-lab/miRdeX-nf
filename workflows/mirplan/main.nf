@@ -121,7 +121,7 @@ workflow MIRPLAN {
 
     ch_input
         .map { item ->
-                [[species: item[0], species_id: 'null', project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
+                [[species: item[0], project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
         }
         .set{ ch_input }
     
@@ -180,7 +180,7 @@ workflow MIRPLAN {
                 // Crear un nuevo elemento por cada SRR, asignándolo a 'sample'
                 samples.collect { srr -> [sample: srr] + newMeta }
             }.set{ ch_pipeline_summary }
-        
+            
         // Create FASTA file for the annotation step
         TSV_TO_FASTA(ch_counts, 0, 1, true)
         
@@ -239,13 +239,13 @@ workflow MIRPLAN {
         // Add the Input information to the summary channel
         ch_input_files.fastq
             .map { meta, _file ->
-                [meta.id, [sample: meta.id, species: meta.species, species_id: meta.species_id, project: meta.project, input: 'Local']]
+                [meta.id, [sample: meta.id, species: meta.species, project: meta.project, input: 'Local']]
             }
             .set{ch_pipeline_summary}
 
         FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS.out.reads
             .map { meta, _file ->
-                [meta.id, [sample: meta.id, species: meta.species, species_id: meta.species_id, project: meta.project, input: 'Downloaded']]
+                [meta.id, [sample: meta.id, species: meta.species, project: meta.project, input: 'Downloaded']]
             }
             .concat(ch_pipeline_summary)
             .set{ch_pipeline_summary}
@@ -343,8 +343,8 @@ workflow MIRPLAN {
 
         // Prepare the projects results channel for the summary channel.
         VALIDATION.out.projects
-        .map{ item -> [item.project, item] }
-        .set{ ch_validation_projects }
+            .map{ item -> [item.project, item] }
+            .set{ ch_validation_projects }
 
         // Add the validation information to the summary channel.
         VALIDATION.out.files
@@ -370,7 +370,12 @@ workflow MIRPLAN {
                     group_validity: projects_sum.validity
                 ]
             }
-            .set { ch_pipeline_summary }
+            .map { record ->
+                def new_record = record.clone()
+                new_record.Validation_check = (record.group_validity == 'valid') ? 'OK' : 'FAIL'
+                return new_record
+            }
+            .set { ch_pipeline_summary }    
 
         // Select only the valid libraries
         ch_fastq = VALIDATION.out.files
@@ -510,7 +515,7 @@ workflow MIRPLAN {
                     return [id, meta, file]
                 }
                 .set{ quantification_subproject_ch }
-            
+
             ch_pipeline_summary
                 .map{ item -> [item.group, item]}
                 .groupTuple(by:0)
@@ -656,8 +661,22 @@ workflow MIRPLAN {
                 // Combinar los campos originales del segundo elemento con los adicionales
                 pip_summary + additionalFields
             }
+            .map { record ->
+                def new_record = record.clone()
+                def isNumeric = { val -> 
+                    try { val as Double; return true } catch (e) { return false }
+                }
+
+                def mww = record['p-value(mww)']
+                new_record.EA_check = (isNumeric(mww) && (mww as Double) < params.ea_p_value) ? 'OK' : 'FAIL'
+
+                def padj_str = record['padj<alpha'] as String
+                new_record.DEA_check = (padj_str != 'NA' && padj_str != '0') ? 'OK' : 'FAIL'
+
+                return new_record
+            }
             .set{ ch_pipeline_summary }
-            
+                    
         // Prepare the channel for the next steps of the workflow.
         DIFFEXPANALYSIS.out.deasum
             .map{it -> it[1]}
@@ -710,8 +729,6 @@ workflow MIRPLAN {
                     return [dea_meta, dea_file, ea_file]
                 }
                 .set{ ch_dea_ea_sig}
-
-                ch_dea_ea_sig.view()
 
                 // Filter the groups using the exploratory analysis results
                 ch_dea_ea_sig = filterByMwwPvalue(ch_dea_ea_sig, params.ea_p_value)
@@ -816,7 +833,14 @@ workflow MIRPLAN {
                     }
 
                     return updatedItem
-                }.set{ch_pipeline_summary}
+                }
+                .map { record ->
+                    def new_record = record.clone()
+                    def db = record.database
+                    new_record.Annotation_check = (db != 'NA') ? 'OK' : 'FAIL'
+                    return new_record
+                }
+                .set{ch_pipeline_summary}
             
             // Prepare the input chennel for CONCAT_UNIQUE_GFF3 process
             if (!params.from_counts){
@@ -857,9 +881,13 @@ workflow MIRPLAN {
 
             // Combine both channels
             dea_ea_files
-                .combine(ch_mirna_annot, by:0)
-                .map{item -> return[item[1], item[2], item[4]]}
-                .set{ch_group_miRNAs_input}
+                .combine(ch_mirna_annot, by: 0)
+                .map { item ->
+                    // Add the species id to the output meta
+                    def new_meta = item[1].clone()
+                    return [new_meta, item[2], item[4]]
+                }
+                .set { ch_group_miRNAs_input }
 
             // Add annotation to DEA results dataframe
             ANNOTATE_DEA_RESULTS(ch_group_miRNAs_input, params.mirna_classes)
@@ -895,7 +923,14 @@ workflow MIRPLAN {
                     }
 
                     return updatedItem
-                }.set{ch_pipeline_summary}
+                }
+                .map { record ->
+                    def new_record = record.clone()
+                    def fam = record.fam_members_same_pattern
+                    new_record.DEA_annotation_check = (fam != 'NA') ? 'OK' : 'FAIL'
+                    return new_record
+                }
+                .set{ch_pipeline_summary}
 
             // Prepare the channel to create the absence-presence matrix
             ANNOTATE_DEA_RESULTS.out.unique
@@ -930,35 +965,35 @@ workflow MIRPLAN {
             ============================================================================
             */
 
-            // Create global matrices
-            if (params.global_matrix){
-                // Create the both presence-absence and log2fc matrices  
-                BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)
+            // // Create global matrices
+            // if (params.global_matrix){
+            //     // Create the both presence-absence and log2fc matrices  
+            //     BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)
 
-                // Save the software version
-                ch_versions = ch_versions.mix(BUILD_MIRNA_EVENT_MATRIX.out.versions)
-            }
+            //     // Save the software version
+            //     ch_versions = ch_versions.mix(BUILD_MIRNA_EVENT_MATRIX.out.versions)
+            // }
         }        
     }
 
-    // Specify which samples have been discarded at any stage of the pipeline.
+    // Move the check fields to the end
     ch_pipeline_summary
-        .map { item ->
-            // List of invalid values
-            def invalidValues = ['NA', 'not-valid', 'not-quantified']
-            // Flag to indicate if an invalid value has been found
-            def stopProcessing = false
-            // Iterate over the map keys and check the values
-            item.each { key, value ->
-                // If an invalid value is found, mark all subsequent ones as "NA"
-                if (stopProcessing || invalidValues.contains(value)) {
-                    item[key] = 'NA'
-                    stopProcessing = true
-                }
+        .map { record ->
+            def reordered = new LinkedHashMap()
+
+            // Añadir primero las claves que NO terminan en '_check'
+            record.keySet().findAll { !it.endsWith('_check') }.each { key ->
+                reordered[key] = record[key]
             }
-            return item
+
+            // Luego añadir las claves que SÍ terminan en '_check'
+            record.keySet().findAll { it.endsWith('_check') }.each { key ->
+                reordered[key] = record[key]
+            }
+
+            return reordered
         }
-        .set{ ch_pipeline_summary }
+        .set { ch_pipeline_summary }
 
 
     emit:

@@ -105,7 +105,7 @@ workflow PIPELINE_COMPLETION {
     // Sort the summary chanel
     summary
         .toSortedList { a, b -> 
-            a.comparison_id <=> b.comparison_id ?: a.group <=> b.group ?: a.species <=> b.species
+            a.species <=> b.species ?: a.group <=> b.group ?: a.comparison_id <=> b.comparison_id ?: a.sample <=> b.sample
         }
         .flatMap()
         .set{ch_sorted_summary}

@@ -218,6 +218,74 @@ createBoxplot <- function(data, x, y, max_labels, x_lab, y_lab, z, legend_title)
 }
 
 
+#' Normalize miRNA family names by grouping related subsets
+#'
+#' This function normalizes the `miRNA_fam` column of a data frame by unifying 
+#' different representations of the same miRNA family groups. It accounts for:
+#' - Variations in ordering (e.g., "miR170/miR171" vs "miR171/miR170")
+#' - Subsets of larger groups (e.g., "miR170" being part of "miR170/miR171/miR138")
+#'
+#' The function identifies superset groups and assigns a consistent, sorted 
+#' representation for each unique family combination.
+#'
+#' @param df A data frame containing a column of miRNA family names.
+#' @param column The name of the column containing miRNA family group identifiers.
+#'               Defaults to "miRNA_fam".
+#' 
+#' @return A data frame with the `miRNA_fam` column normalized so that all related 
+#'         groups are represented by their most complete and sorted group name.
+#' 
+#' @examples
+#' df <- data.frame(miRNA_fam = c("miR170", "miR171/miR170", "miR170/miR171/miR138"))
+#' normalize_miRNA_fam_column(df)
+
+normalize_miRNA_fam_column <- function(df, column = "miRNA_fam") {
+  # Get all unique miRNA family names
+  miRNA_fams <- unique(df[[column]])
+  
+  # Split each family name by "/", sort its components, and store as list
+  fam_sets <- lapply(miRNA_fams, function(x) sort(unlist(strsplit(x, "/"))))
+  
+  # Name each list element with its original miRNA family name
+  names(fam_sets) <- miRNA_fams
+  
+  # Dictionary to store replacement mapping (from original to normalized name)
+  replacements <- list()
+  
+  # Iterate through all miRNA families to find if they are subsets of larger groups
+  for (i in seq_along(fam_sets)) {
+    base_fam <- fam_sets[[i]]
+    base_name <- names(fam_sets)[i]
+    
+    for (j in seq_along(fam_sets)) {
+      compare_fam <- fam_sets[[j]]
+      compare_name <- names(fam_sets)[j]
+      
+      # If base is fully contained in compare, and compare is larger, use the full group
+      if (all(base_fam %in% compare_fam) && length(compare_fam) > length(base_fam)) {
+        # Normalize the larger group by sorting its components
+        sorted_group <- paste(sort(compare_fam), collapse = "/")
+        replacements[[base_name]] <- sorted_group
+        break
+      }
+    }
+  }
+  
+  # For families not mapped to larger groups, assign their sorted form
+  for (name in miRNA_fams) {
+    if (is.null(replacements[[name]])) {
+      sorted_group <- paste(sort(unlist(strsplit(name, "/"))), collapse = "/")
+      replacements[[name]] <- sorted_group
+    }
+  }
+  
+  # Apply replacements to the data frame column
+  df[[column]] <- vapply(df[[column]], function(x) replacements[[x]], character(1))
+  
+  return(df)
+}
+
+
 ################################################################################
 ##################################### MAIN #####################################
 ################################################################################
@@ -244,11 +312,18 @@ if (!is.null(classes)) {
   gff3_df <- gff3_df[gff3_df$Class %in% classes_v, ]
 }
 
+# Normalize miRNA family names in the GFF3 dataframe to unify family representations
+df_normalized <- normalize_miRNA_fam_column(gff3_df)
+
 # Check if all the duplications has the same isomiR class
-gff3_check_df <- gff3_df %>%
+gff3_check_df <- df_normalized %>%
   group_by(Read) %>%
   mutate(
-    Class_check = if (n_distinct(Class, na.rm = TRUE) == 1) first(Class) else "Undefined"
+    Class_check = case_when(
+      n_distinct(miRNA_fam, na.rm = TRUE) > 1 ~ "miRNA_undefined",
+      n_distinct(Class, na.rm = TRUE) > 1 ~ "variant_undefined",
+      TRUE ~ first(Class)
+    )
   ) %>%
   ungroup()
 
@@ -265,6 +340,7 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
   # Remove duplicated sequences 
   gff3_uniq <- gff3_check_df %>%
     select(Read, UID, miRNA_fam, Class_check) %>%
+    filter(Class_check != "variant_undefined" & Class_check != "miRNA_undefined") %>%
     distinct()
   
   # Merge DEA results dataframe with gff3 dataframe

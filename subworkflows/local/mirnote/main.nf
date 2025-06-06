@@ -76,7 +76,7 @@ workflow MIRNOTE {
     // Prepare the databases for the annotation
     PREPARE_MIRNA_DATABASES(ch_species, databases)
 
-    // Use the species_id to combine the databases and input channels
+    // Use the species name to combine the databases and input channels
     PREPARE_MIRNA_DATABASES.out.dbs
         .map{ meta -> [meta.species, meta]}
         .set{ ch_species_db }
@@ -231,7 +231,11 @@ workflow MIRNOTE {
     */
 
     // Input channel for ISOMIRS_MIRNA_CLASSIFICATION module
-    ch_isomirs = ISOMIRS_IDENTIFICATION.out.iso
+    ISOMIRS_IDENTIFICATION.out.iso
+        .filter { _meta, file ->
+            !file.getName().contains('EMPTY')
+        }
+        .set{ch_isomirs}
 
     // Add counts to isomiRs dataframe
     if (params.counts  > 0 || params.rpm  > 0) {

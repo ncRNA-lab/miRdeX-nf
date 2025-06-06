@@ -149,11 +149,11 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
             real_col = next(c for c in group_rows.columns if c.lower() == col.lower())
             real_columns.append(real_col)
 
+            # Remove control values 
+            non_control_vals = group_rows[group_rows['Treatment'] != 'None']
+            
             # Get unique values from that column (ignoring NaN)
-            unique_vals = group_rows[real_col].dropna().unique()
-
-            # Remove 'None' element from Treatment column levels
-            unique_vals = [val for val in unique_vals if not (col == 'treatment' and val == 'None')]
+            unique_vals = non_control_vals[real_col].dropna().unique()
             
             # If there is only one unique value, assign an ID
             if len(unique_vals) == 1:
@@ -246,6 +246,67 @@ def get_events_ids(samples_list:str, metadata_list:int, samples_list_str:str, fi
     return ids_dic
 
 
+def normalize_miRNA_families(miRNA_list):
+    '''
+    This function standardizes and consolidates miRNA family names found across
+    different annotation tables. In miRNA differential expression results, the
+    same functional group may be annotated with different names or orderings.
+    For example, 'miR170' and 'miR170/miR171' refer to overlapping groups, while
+    'miR171/miR170' is a permutation of 'miR170/miR171'.
+
+    The goal of this function is to:
+    - Identify miRNA families that are subsets of larger, more comprehensive families.
+    - Promote each miRNA family name to the most complete version found (i.e., the one
+      that includes all its members and potentially more).
+    - Ensure consistent ordering of names within groups, so that different permutations
+      (e.g., 'miR171/miR170' vs. 'miR170/miR171') are treated as the same.
+
+    The function assumes that miRNA families are represented as strings, with each
+    member separated by a forward slash (e.g., 'miR170/miR171').
+
+    Parameters
+    ----------
+    miRNA_list : list of str
+        A list of miRNA family names. Each string may represent a single miRNA or
+        a composite group (e.g., 'miR138/miR170/miR171').
+
+    Returns
+    -------
+    dict
+        A dictionary mapping each original (normalized) miRNA family string
+        (sorted alphabetically by members) to the most inclusive group that contains it.
+        For example:
+            {
+                'miR170': 'miR138/miR170/miR171',
+                'miR170/miR171': 'miR138/miR170/miR171',
+                'miR171/miR170': 'miR138/miR170/miR171',
+                'miR138/miR170/miR171': 'miR138/miR170/miR171'
+            }
+    '''
+
+    # Step 1: convert each miRNA family into a sorted string and a set
+    family_sets = {
+        '/'.join(sorted(fam.split('/'))): set(fam.split('/'))
+        for fam in miRNA_list
+    }
+
+    # Step 2: for each family, find a larger group that includes it (if any)
+    normalized_map = {}
+    # Sort families by descending number of members so larger groups are considered first
+    sorted_fams = sorted(family_sets.items(), key=lambda x: -len(x[1]))
+
+    for key1, set1 in sorted_fams:
+        for key2, set2 in sorted_fams:
+            if key1 == key2:
+                continue
+            if set1.issubset(set2):
+                normalized_map[key1] = key2
+                break
+        else:
+            normalized_map[key1] = key1
+
+    return normalized_map
+
 def get_miRNA_families(annot_files_list: list):
     '''
     This function processes a list of annotation files containing differentially
@@ -284,42 +345,43 @@ def get_miRNA_families(annot_files_list: list):
     list
         Sorted list of all unique miRNA family names found in the input files.
     '''
-
-    # Iterate files
     exp_miRNAs = {}
+    all_families = set()
+    df_dict = {}
+
+    # First pass: read all files and collect all unique miRNA family names
     for file in annot_files_list:
-
-        # Get the experiment name
-        file_id = file.split('.')[0]
-
-        # Read the file
         df = pd.read_csv(file, sep='\t')
-        
-        # Group by 'general_annot' and find the index of the row with the maximum value in 'baseMean'
+        df_dict[file] = df
+        all_families.update(df['miRNA_fam'].dropna().unique())
+
+    # Normalize all miRNA family names (across all files)
+    norm_map = normalize_miRNA_families(all_families)
+
+    # Second pass: process each file using normalized family names
+    for file, df in df_dict.items():
+        file_id = file.split('.')[0]  # use filename prefix as experiment ID
+
+        # Apply normalization to miRNA family column
+        df['miRNA_fam'] = df['miRNA_fam'].apply(
+            lambda x: norm_map['/'.join(sorted(x.split('/')))]
+        )
+
+        # For each unique family, find the row with the highest baseMean
         indices = df.groupby('miRNA_fam')['baseMean'].idxmax()
 
-        # Complete the dictionary with the corresponding values
-        miRNAs = []
-        for index in indices:
-            # Retrieve the row in the DataFrame at the specified index
-            row = df.loc[index]
-            # Extract the values in the 'general_annot' and 'log2FoldChange' columns for the current row
-            general_annot = row['miRNA_fam']
-            log2FoldChange = row['Shrunkenlog2FoldChange']
-            # Append a tuple containing 'general_annot' and 'log2FoldChange' to the dictonary
-            if file_id not in exp_miRNAs:
-                # If it doesn't exist, initialize it as an empty list.
-                exp_miRNAs[file_id] = []
-            # Add elements
-            exp_miRNAs[file_id].append((general_annot, log2FoldChange))
-        
-        # Get unique miRNAs
-        miRNAs += set(df['miRNA_fam'].unique().tolist())
+        # Build result list for this experiment
+        exp_miRNAs[file_id] = []
+        for idx in indices:
+            row = df.loc[idx]
+            fam = row['miRNA_fam']
+            lfc = row['Shrunkenlog2FoldChange']
+            exp_miRNAs[file_id].append((fam, lfc))
 
-    # Obtain unique miRNA families
-    miRNAs = sorted(list(set(miRNAs)))
+    # Get a sorted list of unique normalized miRNA families
+    final_families = sorted(set(norm_map.values()))
 
-    return exp_miRNAs, miRNAs
+    return exp_miRNAs, final_families
 
 
 def create_miRNA_tables(dic_miRNAs_event: dict, miRNAs_list: list):

@@ -69,7 +69,7 @@ workflow PREPARE_MIRNA_DATABASES {
         .map{ species_id, species_name, map, file_db ->
             [[id:"${species_id}_${map.id}", db_id:map.id, species_id: species_id, species: species_name], species_id, file_db]
         }.set{ch_species_ids_db}
-    
+
     // Create a DB file for each species
     SPLIT_DB_BY_SPECIES(ch_species_ids_db)
 

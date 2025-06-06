@@ -80,6 +80,9 @@ workflow VALIDATION {
                 }
                 .set{ ch_projects_to_lib }
 
+            LIBRARIES_VALIDATION.out.sumprojects.view()
+            ch_libraries_summary.view()
+
             // Combine the valid and invalid libraries into the same channel.
             LIBRARIES_VALIDATION.out.valid
                 .concat(LIBRARIES_VALIDATION.out.notvalid)
