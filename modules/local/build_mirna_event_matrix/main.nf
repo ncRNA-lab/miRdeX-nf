@@ -17,18 +17,28 @@ process BUILD_MIRNA_EVENT_MATRIX {
     path  "versions.yml"                , emit: versions
 
     script:
-    def annotList = annot_file_list.toList()
-    def metaList = metadata_file_list.toList()
-    def samplesList = samples_list.toList()
-    def args = (0..<annotList.size()).collect { i ->
-        "--annotation \"${annotList[i]}\" --metadata \"${metaList[i]}\" --samples \"${samplesList[i]}\""
-    }.join(' ')
+    def files = annot_file_list.flatten().join(' ')
+    def meta_files = metadata_file_list.flatten().join(' ')
+    def samples = samples_list.flatten().join(' ')
     """
+    # Input
+    arr_files=(${files})
+    arr_meta_files=(${meta_files})
+    arr_samples=(${samples})
+
+    # Prepare arguments string
+    args=""
+    for i in "\${!arr_files[@]}"; do
+        args_element="--annotation \${arr_files[\$i]} --metadata \${arr_meta_files[\$i]} --samples \${arr_samples[\$i]}"
+        args+="\$args_element "
+    done
+
+    # Run the python script
     07-miRNA_event_matrix_builder.py \\
-        ${args} \\
+        \$args \\
         --fields ${fields}
 
-    # Create versions file
+    # Versions
     echo "${task.process}:" > versions.yml
     echo "    python: \$(python3 -c 'import platform; print(platform.python_version())')" >> versions.yml
     echo "    pandas: \$(python3 -c 'import pandas as pd; print(pd.__version__)')" >> versions.yml

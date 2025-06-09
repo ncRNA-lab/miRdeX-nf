@@ -13,6 +13,7 @@ include { DIFFEXPANALYSIS           } from "../../modules/local/diffexpanalysis"
 include { ANNOTATE_DEA_RESULTS      } from "../../modules/local/annotate_dea_results"
 include { BUILD_MIRNA_EVENT_MATRIX  } from "../../modules/local/build_mirna_event_matrix"
 include { CONCAT_UNIQUE_GFF3        } from "../../modules/local/concat_unique_gff3"
+include { RENAME_FILE_BY_ID         } from "../../modules/local/rename_file_by_id"
 
 //
 // SUBWORKFLOW: Loaded from subworkflows/local/
@@ -341,41 +342,57 @@ workflow MIRPLAN {
         // Save the software version
         ch_versions = ch_versions.mix(VALIDATION.out.versions)
 
-        // Prepare the projects results channel for the summary channel.
-        VALIDATION.out.projects
-            .map{ item -> [item.project, item] }
-            .set{ ch_validation_projects }
-
-        // Add the validation information to the summary channel.
+        // Get the group info from the metadata
+        VALIDATION.out.files
+            .map{ meta, _file ->  meta.metadata }
+            .unique()
+            .splitCsv( header: true, sep: '\t' )
+            .map{ meta -> [meta.Run, meta]}
+            .set { ch_metadata }
+        
+        // Add sample information to the validation info
         VALIDATION.out.files
             .map{ meta, file -> [meta.id, meta, file]}
-            .combine(ch_pipeline_summary, by:0)
-            .map { _id, meta_lib, _file, meta_sum ->
-                [meta_sum.project, meta_sum + [
-                    depth: meta_lib.depth,
-                    depth_validity: meta_lib.depth_validity,
-                    replicates_validity: meta_lib.replicates_validity
-                ]]
-            }
-            // Modify the summary channel to be at the subproject level (Now a
-            // sample may appear more than once if it belongs to multiple
-            // subprojects).
-            .combine(ch_validation_projects, by:0)
-            .map { _lib_sum, lib_meta, projects_sum ->
-                lib_meta + [
-                    group       : projects_sum.group,
-                    group_id    : projects_sum.group_id,
-                    num_valid_samples: projects_sum.num_valid_samples,
-                    num_notvalid_samples: projects_sum.num_notvalid_samples,
-                    group_validity: projects_sum.validity
+            .combine(ch_metadata, by:0)
+            .map{ id, meta, file, meta2 -> 
+                [ "${meta.project}_${meta2.Group}",
+                    [
+                    run: id,
+                    depth: meta.depth,
+                    depth_validity: meta.depth_validity,
+                    replicates_validity: meta.replicates_validity,
+                    group: "${meta.project}_${meta2.Group}",
+                    group_id: meta2.Group,
+                    ]
                 ]
             }
-            .map { record ->
-                def new_record = record.clone()
-                new_record.Validation_check = (record.group_validity == 'valid') ? 'OK' : 'FAIL'
-                return new_record
+            .set { ch_validation_sample_info }
+
+        // Add group information to validation info
+        VALIDATION.out.projects
+            .map{ item -> [item.group, item] }
+            .set{ ch_validation_projects }
+        
+        ch_validation_sample_info
+            .combine(ch_validation_projects, by:0)
+            .map { group, meta1, meta2 ->
+                def merged = meta1 + meta2
+                merged.validation_check = (meta2.validity == 'valid') ? 'OK' : 'FAIL'
+                merged.remove('validity')
+                merged.remove('project')
+                [meta1.run, merged]
             }
-            .set { ch_pipeline_summary }    
+            .set{ ch_validation_group_info }
+            
+        // Add this informato to summary channel
+        ch_pipeline_summary
+            .combine(ch_validation_group_info, by:0)
+            .map{ id, meta1, meta2 -> 
+                def merged = meta1 + meta2
+                merged.remove('run')
+                return merged
+            }
+            .set{ ch_pipeline_summary }
 
         // Select only the valid libraries
         ch_fastq = VALIDATION.out.files
@@ -402,7 +419,7 @@ workflow MIRPLAN {
             FILTERING_DB.out.unaligned
                 .map{ meta, file -> [meta.id, meta, file]}
                 .set{ filt_db_files_ch }
-                
+            
             ch_pipeline_summary
                 .map{ item -> [item.sample, item]}
                 .groupTuple(by:0)
@@ -668,10 +685,10 @@ workflow MIRPLAN {
                 }
 
                 def mww = record['p-value(mww)']
-                new_record.EA_check = (isNumeric(mww) && (mww as Double) < params.ea_p_value) ? 'OK' : 'FAIL'
+                new_record.ea_check = (isNumeric(mww) && (mww as Double) < params.ea_p_value) ? 'OK' : 'FAIL'
 
                 def padj_str = record['padj<alpha'] as String
-                new_record.DEA_check = (padj_str != 'NA' && padj_str != '0') ? 'OK' : 'FAIL'
+                new_record.dea_check = (padj_str != 'NA' && padj_str != '0') ? 'OK' : 'FAIL'
 
                 return new_record
             }
@@ -784,7 +801,7 @@ workflow MIRPLAN {
             ANNOTATION.out.summary
                 .map{item -> [item.id, item]}
                 .set{ch_annot_summary}
-            
+
             // Add the Annotation data to the ch_pipeline_summary channel
             ch_pipeline_summary
                 .map{ item -> [item.sample, item]}
@@ -837,7 +854,7 @@ workflow MIRPLAN {
                 .map { record ->
                     def new_record = record.clone()
                     def db = record.database
-                    new_record.Annotation_check = (db != 'NA') ? 'OK' : 'FAIL'
+                    new_record.annotation_check = (db != 'NA') ? 'OK' : 'FAIL'
                     return new_record
                 }
                 .set{ch_pipeline_summary}
@@ -927,52 +944,87 @@ workflow MIRPLAN {
                 .map { record ->
                     def new_record = record.clone()
                     def fam = record.fam_members_same_pattern
-                    new_record.DEA_annotation_check = (fam != 'NA') ? 'OK' : 'FAIL'
+                    new_record.dea_annotation_check = (fam != 'NA') ? 'OK' : 'FAIL'
                     return new_record
                 }
                 .set{ch_pipeline_summary}
 
-            // Prepare the channel to create the absence-presence matrix
+            // Prepare the channel to create the absence-presence matrix            
             ANNOTATE_DEA_RESULTS.out.unique
-                .filter { _meta, file ->
-                    !file.getName().endsWith('_EMPTY.unique.tsv')
+                .map { meta, file -> 
+                    [meta.metadata, [meta, file]]
                 }
-                .map{meta, file -> [file, meta.metadata, meta.samples]}
+                .groupTuple(by:0)
+                .map{ metadata_file, pairs ->
+                    def files = pairs.collect { it[1] }
+                    def samples = pairs.collect { it[0].samples.tokenize(',') }
+                    [files, metadata_file, samples]
+                }
                 .collect()
-                .map{ list ->
-                    // Files lists
-                    def files = []
-                    def metas = []
-                    def samples = []
+                .map { item ->
+                    def listas_archivos = []
+                    def listas_metadata = []
+                    def listas_SRR = []
 
-                    list.eachWithIndex { item, idx ->
-                        if (idx % 3 == 0) {
-                            files << item
-                        } else if (idx % 3 == 1) {
-                            metas << item
-                        } else {
-                            samples << item
-                        }
+                    // Recorremos con each de 3 en 3
+                    (0..<item.size()).step(3).each { i ->
+                        listas_archivos << item[i]
+                        listas_metadata << item[i+1]
+                        listas_SRR << item[i+2]
                     }
 
-                    return [files, metas, samples]
+                    return [listas_archivos, listas_metadata, listas_SRR]
                 }
                 .set{ch_to_create_pa_matrix}
-            
+
             /*
             ============================================================================
                 9. Create global matrices
             ============================================================================
             */
+            // Create a channel to rename metadata files
+            ANNOTATE_DEA_RESULTS.out.unique
+                .map{ meta, _file -> [meta, meta.metadata]}
+                .set{ ch_to_rename_metadata }
 
-            // // Create global matrices
-            // if (params.global_matrix){
-            //     // Create the both presence-absence and log2fc matrices  
-            //     BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)
+            // Rename metadata files 
+            RENAME_FILE_BY_ID(ch_to_rename_metadata)
 
-            //     // Save the software version
-            //     ch_versions = ch_versions.mix(BUILD_MIRNA_EVENT_MATRIX.out.versions)
-            // }
+            // Renamed metadata channel
+            RENAME_FILE_BY_ID.out.renamed
+                .map{ meta, file -> [meta.id, meta, file]}
+                .set{ ch_renamed_metadata }
+
+            // Add the new metadata to main channel
+            ANNOTATE_DEA_RESULTS.out.unique
+                .map{ meta, file -> [meta.id, meta, file]}
+                .combine(ch_renamed_metadata, by:0)
+                .map{ _id, meta1, file, _meta2, metadata_file ->
+                    [file, metadata_file, meta1.samples]
+                }
+                .collect()
+                .map { list_elements ->
+
+                    // Agrupar en sublistas de 3 elementos
+                    def groups = list_elements.collate(3)
+
+                    // Extraer listas separadas por posición
+                    def files = groups.collect { it[0] }
+                    def metas = groups.collect { it[1] }
+                    def samples = groups.collect { it[2] }
+
+                    return [files, metas, samples]
+                }
+                .set{ ch_to_create_pa_matrix }
+
+            // Create global matrices
+            if (params.global_matrix){
+                // Create the both presence-absence and log2fc matrices  
+                BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)
+
+                // Save the software version
+                ch_versions = ch_versions.mix(BUILD_MIRNA_EVENT_MATRIX.out.versions)
+            }
         }        
     }
 
