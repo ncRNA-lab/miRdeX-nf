@@ -89,7 +89,7 @@
       "properties": {
         "trimming_adapters": {
           "type": "string",
-          "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/assets/illumina_adapters.fa",
+          "default": "${projectDir}/assets/illumina_adapters.fa",
           "fa_icon": "fas fa-align-center",
           "description": "FASTA file with the adapters that must be removed during the trimming process."
         },
@@ -345,6 +345,12 @@
           "description": "Display version and exit.",
           "fa_icon": "fas fa-question-circle"
         },
+        "custom_config": {
+          "type": "string",
+          "fa_icon": "fas fa-wrench",
+          "description": "Path to an additional Nextflow configuration file to override or extend the default pipeline settings.",
+          "help_text": ""
+        },
         "validate_params": {
           "type": "boolean",
           "default": true,
@@ -369,7 +375,7 @@
         },
         "modules_testdata_base_path": {
           "type": "string",
-          "default": "/home/antonio/Escritorio/Repositorios_GitHub/miRPlan-nf/testdata/",
+          "default": "${projectDir}/testdata/",
           "fa_icon": "fas fa-folder",
           "hidden": true,
           "description": "Base URL or local path to location of pipeline test dataset files."
