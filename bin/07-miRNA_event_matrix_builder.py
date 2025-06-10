@@ -307,6 +307,7 @@ def normalize_miRNA_families(miRNA_list):
 
     return normalized_map
 
+
 def get_miRNA_families(annot_files_list: list):
     '''
     This function processes a list of annotation files containing differentially
@@ -314,36 +315,20 @@ def get_miRNA_families(annot_files_list: list):
     expected to contain miRNA family annotations along with expression
     statistics (e.g., baseMean, log2FoldChange, etc.).
 
-    For each file, the function selects a single representative miRNA family
-    per family group — specifically, the one with the highest `baseMean` value.
-    It then extracts the `Shrunkenlog2FoldChange` associated with that miRNA
-    family, assuming it reflects the expression change for the most
-    representative member.
+    For each miRNA family in each file, the function determines whether the
+    majority of its members are up-regulated (positive log2FC) or down-regulated
+    (negative log2FC). It then selects the member with the highest baseMean
+    from the majority group. If there is a tie (equal number of up- and
+    down-regulated members), it selects the member with the highest baseMean
+    overall.
 
-    The function returns two objects:
-    - A dictionary mapping the experiment identifier (derived from the file name)
-      to a list of tuples containing miRNA family names and their corresponding
-      log2FoldChange values.
-    - A sorted list of all unique miRNA families found across all input files.
-
-    Parameters
-    ----------
-    annot_files_list : list of str
-        List of file paths to the annotation tables (TSV format), each
-        representing the results of differential expression analysis for a given
-        stress event or comparison.
-
-    Returns
-    -------
-    dict
-        Dictionary where keys are experiment identifiers (extracted from the file
-        name before the first dot), and values are lists of tuples. Each tuple
-        contains:
-            - miRNA family name (str)
-            - Shrunken log2FoldChange (float) from the most representative member.
-    
-    list
-        Sorted list of all unique miRNA family names found in the input files.
+    Returns:
+    --------
+    - A dictionary mapping experiment identifiers (derived from file names) to
+        lists of tuples: (miRNA family name, Shrunken log2FoldChange of the
+        representative member).
+    - A sorted list of all unique normalized miRNA family names found across
+        the files.
     '''
     exp_miRNAs = {}
     all_families = set()
@@ -367,20 +352,24 @@ def get_miRNA_families(annot_files_list: list):
             lambda x: norm_map['/'.join(sorted(x.split('/')))]
         )
 
-        # For each unique family, find the row with the highest baseMean
-        indices = df.groupby('miRNA_fam')['baseMean'].idxmax()
-
-        # Build result list for this experiment
         exp_miRNAs[file_id] = []
-        for idx in indices:
+        for fam, group in df.groupby('miRNA_fam'):
+            up_count = (group['Shrunkenlog2FoldChange'] > 0).sum()
+            down_count = (group['Shrunkenlog2FoldChange'] < 0).sum()
+
+            if up_count > down_count:
+                majority_group = group[group['Shrunkenlog2FoldChange'] > 0]
+            elif down_count > up_count:
+                majority_group = group[group['Shrunkenlog2FoldChange'] < 0]
+            else:
+                majority_group = group
+
+            idx = majority_group['baseMean'].idxmax()
             row = df.loc[idx]
-            fam = row['miRNA_fam']
             lfc = row['Shrunkenlog2FoldChange']
             exp_miRNAs[file_id].append((fam, lfc))
 
-    # Get a sorted list of unique normalized miRNA families
     final_families = sorted(set(norm_map.values()))
-
     return exp_miRNAs, final_families
 
 

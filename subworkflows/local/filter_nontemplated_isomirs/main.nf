@@ -54,7 +54,7 @@ workflow FILTER_NONTEMPLATED_ISOMIRS {
             .set{ ch_input_file }
 
         // Create a FASTA file with the non-templated sequences
-        TSV_TO_FASTA(ch_input_file, 1, 14, false)
+        TSV_TO_FASTA(ch_input_file, 1, 14, false, false)
 
         // Remove duplicates
         SEQKIT_RMDUP(TSV_TO_FASTA.out.fasta)

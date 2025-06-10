@@ -391,7 +391,7 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
   }
   
   # Save it in summary file
-  miRNAs_txt <- paste(miRNAs_var, collapse = '/')
+  miRNAs_txt <- paste(miRNAs_var, collapse = '|')
   text <- paste(id, length(miRNAs_v), num_miRNAs_d, miRNAs_txt, sep='\t')
   cat(text, file=paste0(id,'.summary.tsv'), append=TRUE, sep='\n')
   

@@ -169,7 +169,7 @@ workflow MIRPLAN {
                 tuple[1] =~ /.*\.valid\.tsv$/
             }.set{ ch_counts }
 
-        // Create the ch_pipeline_summary channel using the meta. OJO. COMO LAS TABLAS DE CONTEOS NO TIENEN LOS PASOS PREVIOS TIENEN NA EN ch_pipeline_summary. ESO HACE QUE LUEGO AL FINAL SE PONGA TODO NA. COMPROBAR
+        // Create the ch_pipeline_summary channel using the meta.
         VALIDATION.out.files
             // Get the sample names from the matrix header 
             .flatMap { meta, file ->
@@ -183,10 +183,20 @@ workflow MIRPLAN {
             }.set{ ch_pipeline_summary }
             
         // Create FASTA file for the annotation step
-        TSV_TO_FASTA(ch_counts, 0, 1, true)
-        
-        // Save the output into the ch_fastq channel
-        ch_fastq = TSV_TO_FASTA.out.fasta
+        TSV_TO_FASTA(ch_counts, 0, 1, true, true)
+
+        // Save the FASTA files from counts matrix columns in ch_fastq channel
+        TSV_TO_FASTA.out.fasta
+            .flatMap { meta, fasta_list ->
+                fasta_list.collect { file_path ->
+                    def file = file_path instanceof Path ? file_path : file(file_path)
+                    def id = file.getBaseName()  // nombre del archivo sin extensión
+                    def new_meta = meta.clone()
+                    new_meta.id = id
+                    [new_meta, file]
+                }
+            }
+            .set { ch_fastq }
     }
 
     /*
@@ -878,8 +888,18 @@ workflow MIRPLAN {
                     .groupTuple(by: 0)
                     .set{ ch_gff3_by_group}
             } else {
-                // If the input consists of count tables, each table is already a group.
-                ch_gff3_by_group = ANNOTATION.out.annotation
+
+                // Each counts matrix is a group
+                ANNOTATION.out.annotation
+                    .map { meta, file ->
+                        def new_meta = meta.clone()
+                        new_meta.id = "${meta.project}_${meta.group_id}"
+                        new_meta.remove('run')
+                        return [new_meta, file]
+                    }
+                    .groupTuple(by: 0)
+                    .set{ ch_gff3_by_group }
+                    ch_gff3_by_group.view()
             }
 
             // Concat gff3 files by group and remove duplicates
