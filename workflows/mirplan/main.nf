@@ -364,17 +364,12 @@ workflow MIRPLAN {
         VALIDATION.out.files
             .map{ meta, file -> [meta.id, meta, file]}
             .combine(ch_metadata, by:0)
-            .map{ id, meta, file, meta2 -> 
-                [ "${meta.project}_${meta2.Group}",
-                    [
-                    run: id,
-                    depth: meta.depth,
-                    depth_validity: meta.depth_validity,
-                    replicates_validity: meta.replicates_validity,
-                    group: "${meta.project}_${meta2.Group}",
-                    group_id: meta2.Group,
-                    ]
-                ]
+            .map{ id, meta, file, meta2 ->
+                def new_meta = meta.clone()
+                new_meta.group = "${meta.project}_${meta2.Group}"
+                new_meta.group_id = meta2.Group
+                new_meta.run = id
+                [ "${meta.project}_${meta2.Group}",new_meta, file ]
             }
             .set { ch_validation_sample_info }
 
@@ -383,31 +378,56 @@ workflow MIRPLAN {
             .map{ item -> [item.group, item] }
             .set{ ch_validation_projects }
         
+        // Prepare the validation info for the summary and ch_fastq channels
         ch_validation_sample_info
             .combine(ch_validation_projects, by:0)
-            .map { group, meta1, meta2 ->
+            .map { group, meta1, file, meta2 ->
                 def merged = meta1 + meta2
+                if (meta2.validity == 'not-valid' && meta1.replicates_validity == 'valid') {
+                    merged.replicates_validity = 'not-valid'
+                }
                 merged.validation_check = (meta2.validity == 'valid') ? 'OK' : 'FAIL'
                 merged.remove('validity')
-                merged.remove('project')
-                [meta1.run, merged]
+                // merged.remove('project')
+                [meta1.run, merged, file]
             }
             .set{ ch_validation_group_info }
+
+        // Validation info for the summary channel
+        ch_validation_group_info
+            .map{ run, meta, _file -> [run, meta]}
+            .set{ ch_val_to_summary }
             
-        // Add this informato to summary channel
+        // Add this info to summary channel
         ch_pipeline_summary
-            .combine(ch_validation_group_info, by:0)
+            .combine(ch_val_to_summary, by:0)
             .map{ id, meta1, meta2 -> 
                 def merged = meta1 + meta2
-                merged.remove('run')
+                ['id', 'run', 'metadata', 'genome', 'single_end',
+                'valid_groups', 'notvalid_groups'].each { merged.remove(it) }
                 return merged
             }
             .set{ ch_pipeline_summary }
 
-        // Select only the valid libraries
-        ch_fastq = VALIDATION.out.files
-            .filter { meta, _file -> meta.depth_validity == 'valid' && meta.replicates_validity == 'valid' }
-
+        // Validation info for the the quantification process
+        ch_validation_group_info
+            .filter { _id, meta, _file -> meta.validation_check == 'OK' }
+            .map{ id, meta, file -> 
+                def new_meta = meta.clone()
+                ['group', 'run', 'num_valid_samples',
+                'num_notvalid_samples',
+                'validation_check',
+                'group_id'].each { new_meta.remove(it) }
+                [new_meta, file, meta.group]
+            }
+            .groupTuple(by: [0, 1])
+            .map{ meta, file, groups ->
+                def new_meta = meta.clone()
+                new_meta.groups = groups
+                [new_meta, file]
+            }
+            .set{ ch_fastq }
+            
         /*
         ============================================================================
             5.6. SUBWORKFLOW: Remove sequences that are not of interest
@@ -518,8 +538,7 @@ workflow MIRPLAN {
                 [filteredMeta, file]
             }
             .set { ch_fastq }
-
-
+        
         /*
         ============================================================================
             6. SUBWORKFLOW: Quantification of small RNA sequences
@@ -530,7 +549,7 @@ workflow MIRPLAN {
         if (!params.only_preprocessing){
             
             // Create count matrix
-            QUANTIFICATION(ch_fastq, 'raw', params.counts_project_matrix)
+            QUANTIFICATION(ch_fastq, 'raw', params.counts_not_memory)
 
             // Save the software version
             ch_versions = ch_versions.mix(QUANTIFICATION.out.versions)
@@ -863,8 +882,8 @@ workflow MIRPLAN {
                 }
                 .map { record ->
                     def new_record = record.clone()
-                    def db = record.database
-                    new_record.annotation_check = (db != 'NA') ? 'OK' : 'FAIL'
+                    def num_pot_iso = record.num_pot_isomirs?.toString()
+                    new_record.annotation_check = (num_pot_iso != 'NA' && num_pot_iso != '0') ? 'OK' : 'FAIL'
                     return new_record
                 }
                 .set{ch_pipeline_summary}
@@ -899,7 +918,6 @@ workflow MIRPLAN {
                     }
                     .groupTuple(by: 0)
                     .set{ ch_gff3_by_group }
-                    ch_gff3_by_group.view()
             }
 
             // Concat gff3 files by group and remove duplicates

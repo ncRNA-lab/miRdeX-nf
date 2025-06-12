@@ -198,11 +198,6 @@ def validateInputParameters() {
             "only one of them.")
     }
 
-    // If counts_project_matrix is true, show the corresponding warning.
-    if (params.counts_project_matrix){
-        createProjectTableWarn()
-    }
-
     // from_counts parameter warning
     if (params.from_counts) {
 
@@ -263,7 +258,7 @@ def validateInputParameters() {
             'min_samples',
             'ea_p_value',
             'dea_alpha',
-            'counts_project_matrix',
+            'counts_not_memory',
             'global_matrix',
             'global_fields'
         ]
@@ -299,6 +294,7 @@ def validateInputParameters() {
             'bowtie_nti_ext_args',
             'counts',
             'rpm',
+            'counts_not_memory',
             'global_matrix'
         ]
         
@@ -314,18 +310,6 @@ def validateInputParameters() {
             skipAnnotationWarn(filteredParams)
         }
     }
-}
-
-
-//
-// Print a warning if using '--counts_project_matrix'
-//
-
-def createProjectTableWarn() {
-    log.warn """ '--counts_project_matrix' has been provided. Generating count tables
-        at the project level may significantly slow down the pipeline if
-        the number of samples in the project(s) is too high.
-    """.stripIndent(true)
 }
 
 

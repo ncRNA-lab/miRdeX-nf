@@ -168,12 +168,6 @@
       "description": "Parameters related to the quantification of sequencing reads and filtering based on count thresholds.",
       "default": "",
       "properties": {
-        "counts_project_matrix": {
-          "type": "boolean",
-          "description": "Indicates whether to generate a global count table for the entire project.",
-          "help_text": "Indicates whether to generate a global count table for the entire project.\nBy default, individual count tables are generated for each pairwise sample group comparison. When this option is set to true, an additional count table is produced that includes all samples in the project, regardless of group comparisons.",
-          "fa_icon": "fas fa-table"
-        },
         "min_counts": {
           "type": "integer",
           "default": 5,
@@ -185,6 +179,11 @@
           "default": 3,
           "description": "Minimum number of samples in which the sequence must meet the min_counts threshold to avoid being filtered out.",
           "fa_icon": "fas fa-angle-down"
+        },
+        "counts_not_memory": {
+          "type": "boolean",
+          "fa_icon": "fas fa-sd-card",
+          "description": "Indicates whether the SQLite database used to generate the count matrices should not be loaded into memory. This will result in higher memory usage but better performance"
         }
       },
       "fa_icon": "fas fa-table"
@@ -328,7 +327,7 @@
           "help_text": "This parameter specifies which columns from the input metadata file should be used to define the unique identifiers for each differential expression comparison. These identifiers are used as column names in global summary matrices and help organize results across multiple experimental conditions.",
           "fa_icon": "fas fa-table",
           "pattern": "^[A-Za-z0-9_]+(,[A-Za-z0-9_]+)*$",
-          "default": "Species,Treatment"
+          "default": "Species,Treatment,Tissue"
         }
       },
       "fa_icon": "fas fa-globe"
@@ -348,8 +347,7 @@
         "custom_config": {
           "type": "string",
           "fa_icon": "fas fa-wrench",
-          "description": "Path to an additional Nextflow configuration file to override or extend the default pipeline settings.",
-          "help_text": ""
+          "description": "Path to an additional Nextflow configuration file to override or extend the default pipeline settings."
         },
         "validate_params": {
           "type": "boolean",

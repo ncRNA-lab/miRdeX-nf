@@ -8,32 +8,30 @@ process COUNTS_MATRIX {
        'community.wave.seqera.io/library/python_pip_numpy_pandas:5731791ee246815e' }"
 
     input:
-    tuple val(meta), path(counts), path(metadata), val(valid_groups)
+    tuple val(meta), path(counts), path(metadata)
     val type
-    val counts_project_matrix
+    val not_in_memory
 
     output:
     tuple val(meta), path("${meta.id}*.{raw,rpm}.tsv"), emit: matrix
     path  "versions.yml"                              , emit: versions
 
     script:
-    def create_project_matrix = counts_project_matrix ? "--project-table" : ""
+    def not_in_memory = not_in_memory ? "--not-in-memory" : ""
     """
     if [ "${type}" == "raw" ]; then
     03-Create_counts_matrix.py \
-        --project ${meta.id} \
+        --id ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${metadata} \
-        --valid-groups ${valid_groups} \
-        ${create_project_matrix}
+        ${not_in_memory}
     else
     03-Create_counts_matrix.py \
-        --project ${meta.id} \
+        --id ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${metadata} \
-        --valid-groups ${valid_groups} \
         --rpm \
-        ${create_project_matrix}
+        ${not_in_memory}
     fi
 
     cat <<-END_VERSIONS > versions.yml
@@ -43,6 +41,7 @@ process COUNTS_MATRIX {
         pandas: \$(python3 -c "import pandas as pd; print(pd.__version__)")
     END_VERSIONS
     """
+
     stub:
     """
     # Extract the filenames without the extension

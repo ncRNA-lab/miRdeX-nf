@@ -2,47 +2,33 @@
 # -*- coding: utf-8 -*-
 
 #******************************************************************************
-#  
-#   sRNA_Counts.py
 #
-#   This program generates the absolute counts and Reads Per Million (RPM)
-#   tables for a specific project using the trimmed and filtered libraries,
-#   also calculating the averages of both types of counts in the different
-#   replicates of each condition for the sequences analysed. To do this,
-#   a series of procedures are carried out:
-#   
-#   1. Filter the libraries by RNAcentral (Optional)
+#   03-Create_counts_matrix.py
 #
-#   Align the sequences of each library with the rRNA, tRNA, snRNA and
-#   snoRNA sequences contained in the RNAcentral database for identification
-#   and elimination.
+#   This script generates a count matrix from a collection of TSV files, each
+#   representing the small RNA (sRNA) sequence counts of an individual sample.
+#   Each input file contains two columns: one for the sequence and another for
+#   the corresponding counts. The counts can either be raw counts or Reads Per
+#   Million (RPM), as specified by a boolean argument provided by the user.
 #
-#   2. Create the absolute counts and RPM tables for each library.
+#   In addition to the count files, the script requires a metadata file that
+#   provides information about each sample, such as group assignments or
+#   experimental conditions. This metadata is used to structure the output and,
+#   if requested, to calculate average expression profiles.
 #
-#   Read filtered libraries and create absolute counts and RPM tables
-#   in CSV format. These tables have two columns: seq and counts (absolute
-#   counts)/RPM (Reads per Million).
-#   
-#               RPM = absolute count * 1000000 / size library.
-#  
-#   3. Create count tables for each project and subproject.
+#   The user can specify whether to generate an average matrix, which computes
+#   the mean counts of sRNA sequences across samples that belong to the same
+#   group as defined in the metadata. This is useful for summarizing expression
+#   patterns by condition or treatment group.
 #
-#   Once the absolute counts and RPM have been calculated for the sequences
-#   of each library, a table is created for each type of count by joining
-#   the results of the libraries belonging to the same project. Additionally,
-#   count tables are also generated for each of the subprojects within the
-#   project in question. These tables consist of the libraries from one of
-#   the control groups and the libraries from the treatment groups associated
-#   with that control group. The subproject tables are filtered to remove
-#   sequences with a low count number. Sequences that do not have more
-#   than 5 counts in at least 5 libraries are discarded. If the project has
-#   fewer than 5 libraries, this condition is applied using the maximum
-#   number of libraries in the project.
+#   Another optional argument allows the user to decide whether the SQLite
+#   database used to build the count matrix should be loaded entirely into
+#   memory or accessed on disk, which may be necessary for working with large
+#   datasets or limited system memory.
 #
-#
-#   Authors: Antonio Gonzalez Sanchez, Pascual Villalba Bermell (pvbermell)
-#   Date: 02/12/2024
-#   Version: 3.0
+#   Authors: Antonio Gonzalez Sanchez
+#   Date: 12/06/2025
+#   Version: 4.0
 #
 #******************************************************************************
 
@@ -51,9 +37,7 @@
 
 import argparse
 import csv
-import itertools
 import numpy as np
-from numpy import genfromtxt
 import pandas as pd
 import re
 import sqlite3
@@ -96,14 +80,15 @@ def connect_to_database (database_name: str):
     else:
         return sqliteConnection, cursor
 
-def insert_to_database (database_name: str, table_name: str, data_path: str,
-                        type_data: str='raw', sep: str='\t', chunksize=1000000) -> None:
+
+def insert_to_database (database: str, table_name: str, data_path: str,
+                        type_data: str='raw', sep: str='\t', chunksize=1000000, sqliteConnection=None, cursor=None) -> None:
     '''
     This function inserts data into a specified SQLite database table.
 
     Parameters
     ----------
-    database_name : str
+    database : str
         SQLite database name (filename)
     table_name : str
         Name of the table in which the data will be inserted
@@ -115,8 +100,13 @@ def insert_to_database (database_name: str, table_name: str, data_path: str,
         absolute counts (type_data="raw") or a table of rpm
         ("type_data="rpm"). By default "sequences.
     '''
-    # Connect to database
-    sqliteConnection, cursor = connect_to_database(database_name)
+
+    if not cursor:
+        # Connect to database
+        sqliteConnection, cursor = connect_to_database(database)
+        in_memory = False
+    else:
+        in_memory = True
 
     # Select type of data
     if type_data == 'raw':
@@ -156,17 +146,24 @@ def insert_to_database (database_name: str, table_name: str, data_path: str,
         exit = True
     
     finally:
-        # Commit work and close connection
-        sqliteConnection.commit()
-        sqliteConnection.close()
-        
+
+        if not in_memory:
+            # Commit work and close connection
+            sqliteConnection.commit()
+            sqliteConnection.close()
+            
         # If it fails, exit the program
         if exit:
+            if in_memory:
+                # Commit work and close connection
+                sqliteConnection.commit()
+                sqliteConnection.close()
+            # Exit
             sys.exit()
+        
 
-
-def merge_counts_tables (database_name: str, data_in: list, type_data: str,
-                         type_tables: str, mode: str='outer', final_table = 'project_table') -> None:
+def merge_counts_tables (database: str, data_in: list, type_data: str,
+                         type_tables: str, mode: str='outer', final_table = 'project_table', cursor=None) -> None:
     '''
     This function generates and executes the necessary SQLite queries to join in
     the same table the different replicates of the same condition or multiple
@@ -177,7 +174,7 @@ def merge_counts_tables (database_name: str, data_in: list, type_data: str,
 
     Parameters
     ----------
-    database_name : str
+    database : str
         Absolute path to the database where the tables to be joined are
         located.
     data_in : list
@@ -200,7 +197,6 @@ def merge_counts_tables (database_name: str, data_in: list, type_data: str,
     -------
     None
     '''
-
 
     # Variables
     query_list = []
@@ -330,8 +326,12 @@ def merge_counts_tables (database_name: str, data_in: list, type_data: str,
     ### 3. EXECUTE SQLITE QUERIES
     ###########################################################################
 
-    # Connect to database
-    sqliteConnection, cursor = connect_to_database(database_name)
+    if not cursor:
+        # Connect to database
+        sqliteConnection, cursor = connect_to_database(database)
+        in_memory = False
+    else:
+        in_memory = True
     
     try:
         for query in query_list:
@@ -344,16 +344,23 @@ def merge_counts_tables (database_name: str, data_in: list, type_data: str,
         exit = True
     
     finally:
-        # Commit work and close connection
-        sqliteConnection.commit()
-        sqliteConnection.close()
+
+        if not in_memory:
+            # Commit work and close connection
+            sqliteConnection.commit()
+            sqliteConnection.close()
 
         # If it fails, exit the program
         if exit:
+            if in_memory:
+                # Commit work and close connection
+                sqliteConnection.commit()
+                sqliteConnection.close()
+            # Exit
             sys.exit()
 
 
-def rep_counts_avg(database_name: str, table: str, new_table: str) -> str:
+def rep_counts_avg(database: str, table: str, new_table: str, sqliteConnection=None, cursor=None) -> str:
     """
     This function calculates the average counts (avg) of each sequence 
     belonging to the same condition (e.g. Control or Treated), that is,
@@ -375,9 +382,13 @@ def rep_counts_avg(database_name: str, table: str, new_table: str) -> str:
         Name of the table containing the average of the counts of each sequence
         in the different conditions.
     """
-        
-    ## Connect to database
-    sqliteConnection, cursor = connect_to_database(database_name)
+    
+    if not cursor:
+        ## Connect to database
+        sqliteConnection, cursor = connect_to_database(database)
+        in_memory = False
+    else:
+        in_memory = True
 
     ## Get the counts table
     try:
@@ -456,9 +467,11 @@ def rep_counts_avg(database_name: str, table: str, new_table: str) -> str:
         exit = True
 
     finally:
-        # Commit work and close connection
-        sqliteConnection.commit()
-        sqliteConnection.close()
+
+        if not in_memory:
+            # Commit work and close connection
+            sqliteConnection.commit()
+            sqliteConnection.close()
         
         # If it fails, exit the program
         if exit:
@@ -471,7 +484,8 @@ def rep_counts_avg(database_name: str, table: str, new_table: str) -> str:
 
 def write_from_sql(database: str, table: str, path_out: str, columns: list,
                    shortened_sample_dic: dict, filter: bool=False,
-                   filter_num_counts: int= 5, filter_num_samples: int=5) -> None:
+                   filter_num_counts: int= 5, filter_num_samples: int=5,
+                   sqliteConnection=None, cursor=None) -> None:
     """
     This function writes counts tables from a specific Sqlite database in .csv
     file.
@@ -490,9 +504,12 @@ def write_from_sql(database: str, table: str, path_out: str, columns: list,
         Dictionary containing the original sample names and their associated
         shortened names.
     """
-
-    ## 1. Connect to database
-    sqliteConnection, cursor = connect_to_database(database)
+    if not cursor:
+        ## 1. Connect to database
+        sqliteConnection, cursor = connect_to_database(database)
+        in_memory = False
+    else:
+        in_memory = True
 
     ## 2. Create query
     # Create a string with the columns to write from the table
@@ -511,7 +528,7 @@ def write_from_sql(database: str, table: str, path_out: str, columns: list,
     except Error as error:
         print('ERROR. Something went wrong with the creation of the new .csv file')
         print(f'ERROR:\n{error}\n')
-        exit = True  
+        exit = True
 
     else:
         ## 4. Write table in .tsv file
@@ -551,15 +568,21 @@ def write_from_sql(database: str, table: str, path_out: str, columns: list,
                 # Write columns names and data
                 csv_writer.writerows(cursor)
     
-    finally:    
-        # Commit work and close connection
-        sqliteConnection.commit()
-        sqliteConnection.close()
+    finally:
+        if not in_memory:
+            # Commit work and close connection
+            sqliteConnection.commit()
+            sqliteConnection.close()
         
         # If it fails, exit the program
         if exit:
+            if in_memory:
+                # Commit work and close connection
+                sqliteConnection.commit()
+                sqliteConnection.close()
+            # Exit
             sys.exit()
-    
+
 
 ### 5. METADATA FUNCTIONS
                     
@@ -596,36 +619,6 @@ def get_project_metadata (path: str) -> pd.DataFrame:
     else:
         return df
 
-
-### 6. OTHER FUNCTIONS
-
-def parse_fasta_file(fasta_file: str):
-    '''
-    This function parse a fasta file returning a generator object containing
-    the headers and the sequences. If this object is iterated outside the
-    function, we can access a new sequence and its header at each iteration
-    of the loop.
-
-    Parameters
-    ----------
-    fasta_file : str
-        Absolute path of the fasta file
-    '''
-    try:
-        with open(fasta_file) as fasta:
-            iterator = (x[1] for x in itertools.groupby (fasta, lambda line: line[0] == '>'))
-            for header in iterator:
-                # Drop the ">"
-                headerStr = header.__next__()[1:].strip()
-                # join all sequence lines to one
-                seq = ''.join(s.strip() for s in iterator.__next__())
-                yield(headerStr,seq)
-
-    except StopIteration:
-        print('Error. Check that the files entered are fasta')
-        sys.exit()
-
-
 ## MAIN PROGRAM
 
 def main():
@@ -633,17 +626,17 @@ def main():
     Main program
     '''
     parser = argparse.ArgumentParser(prog='sRNA_counts', 
-                                     description='''This program filters sRNA \
-                                        sequences using RNAcentral to discard \
-                                        rRNA, tRNA, snRNA and snoRNA sequences \
-                                        present in the libraries of a specific \
-                                        project, generates tables of absolute \
-                                        counts and reads per million for each \
-                                        of them, and then joins these tables \
-                                        to form a single table for the project.''',  
+                                     description='''This script generates a count \
+                                        matrix from a collection of TSV files, each \
+                                        representing the small RNA (sRNA) sequence \
+                                        counts of an individual sample. Each input \
+                                        file contains two columns: one for the sequence \
+                                        and another for the corresponding counts. \
+                                        The counts can either be raw counts or Reads \
+                                        Per Million (RPM), as specified by a boolean \
+                                        argument provided by the user.''',  
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-p', '--project', type=str, nargs=1, 
-                        help='Project id.')
+    parser.add_argument('-i', '--id', type=str, nargs=1, help='Group id.')
     parser.add_argument('-c', '--counts-tsv', type=str, nargs='+',  
                         help='List of TSV files with absolute counts or  Reads per million (RPM) of \
                             a set of sequences. These tables should consist of \
@@ -651,41 +644,33 @@ def main():
                             seq and RPM for RPM.')
     parser.add_argument('-m', '--metadata', type=str, nargs=1,  
                         help='Absolute path of metadata samples table.')
-    parser.add_argument('-g', '--valid-groups', type=str, nargs='+',  
-                        help='List of valid groups of the project.')
     parser.add_argument('-r', '--rpm', action='store_true',
                         help='This option should be specified when the input tables used are RPM-based and not absolute counts')
-    parser.add_argument('-j', '--project-table', action='store_true',
-                        help='This option should be added if one wishes to \
-                            generate a table of counts or RPM for the entire \
-                            project. By default, this option is disabled.')
-    parser.add_argument('-a', '--avg-project', action='store_true',  
+    parser.add_argument('-a', '--avg-matrix', action='store_true',  
                         help='This option should be added if one wishes to \
                             generate tables with the averages of the replicates\
-                            for each conditionat at the project level. By default, this option is disabled.')
-    parser.add_argument('-v', '--avg-subproject', action='store_true',  
-                        help='This option should be added if one wishes to \
-                            generate tables with the averages of the replicates\
-                            for each condition at the subproject level. By default, this option is disabled.')
-
+                            for each condition at the group level. By default, this option is disabled.')
+    parser.add_argument('-n', '--not-in-memory', action='store_true',  
+                        help='This option should be disabled if one wishes to \
+                            avoid loading the SQLite database used to generate \
+                            the count matrices into memory. This will reduce \
+                            memory usage but may result in slower \
+                            performance.')
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
-    
     args = parser.parse_args()
     
-    
+
     ###########################################################################
     #                        1. CHECK ARGUMENTS                               #
     ###########################################################################
 
     try:
-        project = args.project[0]
+        id = args.id[0]
         counts_tsv_files = args.counts_tsv
         metadata = args.metadata[0]
-        valid_groups = args.valid_groups
         rpm = args.rpm
-        project_table = args.project_table
-        avg_table_project = args.avg_project
-        avg_table_subproject = args.avg_subproject
+        avg_table = args.avg_matrix
+        not_in_memory = args.not_in_memory
 
     except:
         print('ERROR: You have inserted a wrong parameter or you are missing a parameter.')
@@ -693,7 +678,7 @@ def main():
         sys.exit()    
 
     ############################################################################
-    #   1. BUILD SHORTENED NAMES AND LOAD COUNTS TABLE INTO SQLITE DATABASE    #
+    #               2. PREPARE REQUIRED DICIONARIES AND LISTS                  #
     ############################################################################
 
     # To verify the type of the input data.
@@ -702,65 +687,70 @@ def main():
     else:
         data_type = 'raw'
 
-    print(data_type)
-
     # Variables
     shortened_sample_dic = {}           # t_1_r_3 = SRRXXXXX1
-    shortened_sample_list = []          # [t_1_r_1, t_1_r_2, ...]
-    shortened_condition_dic = {}        # t_1_r = SRRXXXXX1/SRRXXXXX2/SRRXXXXX3
     samples_groups = {}                 # t_1_r = ["SRRXXXXX1", "SRRXXXXX2", "SRRXXXXX3"]
     mode = 'outer'                      # Join mode
 
-    # Create the name of the SQLite database
-    db_name = f'{project}_{mode}_{data_type}.db' # e.g. db_outer.db
-    
-    # 1.1 Find out which sample group each sample belongs to
-    #####################################################################
+    # Get the group id to extract group rows from the metadata table
+    group_num = id.split('_')[-1]
 
     # Get the metadata dataframe
     metadata_df = get_project_metadata(metadata)
 
-    # Group by the relevant columns (remembering that pandas starts at 0)
-    # The columns we're interested in are the ones with indices: 4 (Treatment), 6 (Level), 7 (Time),
-    # 8 (Cultivar), 9 (Tissue), 10 (Stage), 11 (genotype)
-
-    grouped = metadata_df.groupby(['Group','Treatment', 'Level', 'Time',
-                                   'Cultivar', 'Tissue', 'Stage', 'Genotype'])
-
+    # Get only the group rows from metadata df
+    group_metadata_df = metadata_df[metadata_df['Group'].astype(str) == group_num]
+    
+    # Group dataframe by group conditions
+    conditions_grouped = group_metadata_df.groupby(['Group','Treatment', 'Level', 'Time',
+            'Cultivar', 'Tissue', 'Stage', 'Genotype'])
+            
     # Iterate over the groups and add each group to the dictionary with its respective name and 'Run' list
-    for counter, (_, group_df) in enumerate(grouped, start=1):
+    for condition_id, (_, group_df_condition) in enumerate(conditions_grouped, start=1):
 
         # Create the name of the sample group
-        group_name = f"t_{counter}_r"
-        
+        condition_name = f"t_{condition_id}_r"
+
         # Get the runs that belong to the group
-        run_list = group_df['Run'].tolist()
-        replicate = group_df['Replicate'].tolist()
+        run_list_condition = group_df_condition['Run'].tolist()
+        replicates_condition = group_df_condition['Replicate'].tolist()
 
         # Get one of the samples of the group
-        run_sample = run_list[0]
+        run_sample = run_list_condition[0]
 
         # Check if the run was not previously saved
         if run_sample not in shortened_sample_dic.values():
-
+        
             # Add the RUNs (list) to the dictionary
-            samples_groups[group_name] = run_list
-
-            # Add the RUNs (string) to the dictionary (for AVG tables)
-            shortened_condition_dic[group_name] = "/".join(run_list)
-
+            samples_groups[condition_name] = run_list_condition
+            
             # Link the run name with a simplified name of the sample
-            for i in range(len(run_list)):
-                shortened_sample_dic[f'{group_name}_{replicate[i]}'] = run_list[i]
-    
-    ## 1.2 Insert the counts tables into the SQLite database
+            for i in range(len(run_list_condition)):
+                shortened_sample_dic[f'{condition_name}_{replicates_condition[i]}'] = run_list_condition[i]
+
+
+    ############################################################################
+    #                 3. CREATE THE GROUPS COUNTS MATRIX                       #
+    ############################################################################
+
+    ## 3.2 Insert the counts tables into the SQLite database
     #######################################################################
+
+    if not_in_memory:
+        database = f'{id}_{mode}_{data_type}.db'
+        sqliteConnection = None
+        cursor = None
+    else:
+        # Connect to database
+        database = ':memory:'
+        sqliteConnection, cursor = connect_to_database(database)
 
     # Sort the files list
     counts_tsv_files.sort()
 
-    # Input samples list
+    # Empty lists
     run_input_list = []
+    shortened_sample_list = []
 
     # Iterate a number of times equal to len(list_abs) and len(list_rpm)
     for counts_file in counts_tsv_files:
@@ -778,241 +768,95 @@ def main():
         shortened_sample_list.append(shortened_sample_name)
         
         # Insert absolute counts of each sample in db (1 sample = 1 table in db)
-        insert_to_database(db_name, shortened_sample_name, counts_file, data_type, sep='\t')
+        insert_to_database(database, shortened_sample_name, counts_file, data_type, sep='\t', sqliteConnection=sqliteConnection, cursor=cursor)
 
 
-    ############################################################################
-    #                      2. JOIN THE COUNTS TABLES                           # 
-    ############################################################################
-
-    ## 2.1. Join the different replicates of each condition in a single table 
+    ## 3.2. Join the different replicates of each condition in a single table 
     ###########################################################################
 
-    merge_counts_tables(db_name,                        # SQLite database
+    merge_counts_tables(database,                       # SQLite database
                         shortened_sample_list,          # Shortened names of all the project samples
                         data_type,                      # Two options: counts or RPM
                         'replicates',                   # Two options: replicates or conditions
-                        mode)                           # Two options: outer (default) or inner
+                        mode,                           # Two options: outer (default) or inner
+                        cursor=cursor)                  # Cursor to execute the queries        
 
-    ## 2.2. Create SUBPROJECTS groups (always)
-    ###########################################################################
+    ## 3.3 Create counts matrix
+    ####################################################################
 
-    # Remove undesired characters from valid groups list
-    valid_groups = [int(re.sub(r"[,\[\]]", "", elem)) for elem in valid_groups]
+    # Join all the group counts in a single table
+    print(f'Creating {id} table...')
+    merge_counts_tables(database,
+                        shortened_sample_list,
+                        data_type,
+                        'conditions',
+                        mode='outer',
+                        final_table=id,
+                        cursor=cursor)       
+    print('Done!\n')
+    
+    ## 3.4 Write table into a TSV file
+    ####################################################################
+    
+    # Sort sample list
+    shortened_sample_list.sort()
 
-    # This dictionary associates the list of samples with the corresponding group number
-    project_groups_run_dic = metadata_df.groupby('Group')['Run'].apply(list).to_dict()
+    # Write subproject table (Uses the SUBPROJECT table)
+    print(f'Writing {id} table to a TSV file...')
+    write_from_sql(database,                                                    # SQLite database
+                id,                                                             # Final table (Group)
+                f'{id}.{data_type}.tsv',                                        # Final table output file
+                shortened_sample_list,                                          # Group of shortened samples names
+                shortened_sample_dic,                                           # Dictionary t_1_r_3 = SRRXXXXXX (key = value)
+                sqliteConnection=sqliteConnection,                              # SQLite connection       
+                cursor=cursor)                                                  # Cursor to execute the queries        
+    print('Done!\n')
+    
+    ## 3.5 Calculate replicates average
+    ####################################################################
 
-    # Remove those groups that are not valid from project_groups_run_dic 
-    project_groups_run_dic = {k: v for k, v in project_groups_run_dic.items() if k in valid_groups}
+    # Check if the avg_table option has been enabled
+    if avg_table:
 
-    # This dictionary associates the list of samples (shortened names) with the
-    # corresponding group number
-    shortened_names_groups_dic = {}
+        # Out paths
+        subproject_table_mean_file = f'{id}.{data_type}_mean.tsv'
 
-    # Iterate through the groups information
-    for group_num, group_runs_list in project_groups_run_dic.items():
-
-        # Get a list with the valid Runs of the group
-        group_runs_list_valid = list(set(group_runs_list) & set(run_input_list))
-
-        # Get a list with the shortened names of the valid Runs
-        group_runs_list_valid_shortened = [key for key, value in shortened_sample_dic.items() if value in group_runs_list_valid]
-
-        # Match the group number with the list of abbreviated names of its samples
-        shortened_names_groups_dic[group_num] = group_runs_list_valid_shortened
-
-
-    # Check if it is desired to generate a count table for the entire project.
-    if project_table:
-
-        ## 2.3.A Create count table for the PROJECT
-        ########################################################################
-        
-        # Final table name
-        final_table = f'project_table_{data_type}'
-
-        # Join
-        print(f'Creating {project} table...')
-        merge_counts_tables(db_name,
-                            shortened_sample_list,
-                            data_type,
-                            'conditions',
-                            mode='outer',
-                            final_table=final_table)
+        # Calculate average
+        print(f'Creating AVG table from {id} table ...')
+        rep_counts_avg(database,
+                    id,
+                    id + '_avg',
+                    sqliteConnection=sqliteConnection,
+                    cursor=cursor)   
         print('Done!\n')
         
-        ## 2.4.A Write PROJECT table into a TSV file
-        ########################################################################
+        # Create shortened condition names using the shortened sample names
+        shortened_group_conditions_dup = ['_'.join(element.split('_')[:-1]) for element in shortened_sample_list]
 
-        # Output paths
-        table_file = f'{project}.{data_type}.tsv'
-
-        # Sort sample list
-        shortened_sample_list.sort()
+        # Get unique names
+        shortened_group_conditions_list = list(set(shortened_group_conditions_dup))
+        
+        # Change 't_141_r': ['SRR14182747', 'SRR14182749', 'SRR14182750']
+        # to 't_141_r': 'SRR14182747/SRR14182749/SRR14182750'
+        shortened_condition_dic = {k: '/'.join(v) for k, v in samples_groups.items()}
 
         # Write SQL table into a TSV file.
-        print(f'Writing {project} table to a TSV file...')
-        write_from_sql(db_name,                                 # SQLite database
-                       final_table,                             # Final table (Project)
-                       table_file,                              # Final table output file
-                       shortened_sample_list,                   # Shortened names of all the project samples
-                       shortened_sample_dic)                    # Dictionary t_1_r_3 = SRRXXXXXX (key = value)
+        print(f'Writing {id} AVG table to a TSV file...')
+        write_from_sql(database,
+                        id + '_avg',
+                        subproject_table_mean_file,
+                        shortened_group_conditions_list,
+                        shortened_condition_dic,
+                        cursor=cursor)     
         print('Done!\n')
-        
-        # Check if the avg_table option has been enabled
-        if avg_table_project:
-
-            ## 2.5.B Calculate replicates average
-            ################################################################
-
-            # Out paths
-            project_table_mean_file = f'{project}.{data_type}_mean.tsv'
-
-            # Calculate average
-            print(f'Creating AVG table from {project} table ...')
-            rep_counts_avg(db_name,
-                           final_table,
-                           project + '_avg')
-            print('Done!\n')
-            
-            # List shortened condition names
-            list_condition = list(shortened_condition_dic.keys())
-
-            # Write SQL table into a TSV file.
-            print(f'Writing {project} AVG table to a TSV file...')
-            write_from_sql(db_name,
-                            project + '_avg',
-                            project_table_mean_file,
-                            list_condition,
-                            shortened_condition_dic)
-            print('Done!\n')
-                
-        ## 2.5.A Write SUBPROJECT tables into different TSV files
-        ########################################################################
-
-        # Iterate through the groups with valid samples
-        for group_num, shortened_group in shortened_names_groups_dic.items():
-
-            # Create the subproject name
-            subproject_name = f'{project}_{group_num}'
-
-            # Write subproject table (Uses the PROJECT table to generate the SUBPROJECT tables).
-            print(f'Creating {subproject_name} table...')
-            write_from_sql(db_name,                                                     # SQLite database
-                        final_table,                                                    # Final table (Project)
-                        f'{subproject_name}.{data_type}.tsv',                           # Final table output file
-                        shortened_group,                                                # Group of shortened samples names
-                        shortened_sample_dic)                                           # Dictionary t_1_r_3 = SRRXXXXXX (key = value)
-            print('Done!\n')
-
-            # Check if the avg_table option has been enabled
-            if avg_table_subproject:
-
-                ## 2.5.B Calculate replicates average
-                ################################################################
-
-                # Out paths
-                subproject_table_mean_file = f'{subproject_name}.{data_type}_mean.tsv'
-
-                # It only executes if the table for the entire project has not
-                # been previously created and if it is the first iteration of
-                # the loop (since the table for the project is used to generate
-                # the tables for the subprojects)
-                if not avg_table_project and i == 0:
-
-                    # Calculate average
-                    print(f'Creating AVG table from {project} table (Necessary to create the AVG tables for the subprojects) ...')
-                    rep_counts_avg(db_name,
-                                   final_table,
-                                   project + '_avg')
-                    print('Done!\n')
-                
-                # Create shortened condition names using the shortened sample names
-                shortened_group_conditions_dup = [element[:-2] for element in shortened_group]
-
-                # Get unique names
-                shortened_group_conditions_list = list(set(shortened_group_conditions_dup))
-
-                # Write SQL table into a TSV file.
-                print(f'Writing {subproject_name} AVG table to a TSV file...')
-                write_from_sql(db_name,
-                               project + '_avg',
-                               subproject_table_mean_file,
-                               shortened_group_conditions_list,
-                               shortened_condition_dic)
-                print('Done!\n')
-
-    # Alternatively, generate count tables at the subproject level only.
-    else:
-
-        # Iterate through the groups with valid samples
-        for group_num, shortened_group in shortened_names_groups_dic.items():
-
-            ## 2.3.B Create count table for the SUBPROJECT
-            ####################################################################
-
-            # Create the subproject name
-            subproject_name = f'{project}_{group_num}'
-
-            # Join all the subproject count in a single table
-            print(f'Creating {subproject_name} table...')
-            merge_counts_tables(db_name,
-                                shortened_group,
-                                data_type,
-                                'conditions',
-                                mode='outer',
-                                final_table=subproject_name)
-            print('Done!\n')
-            
-            ## 2.4.B Write table into a TSV file
-            ####################################################################
-            
-            # Sort sample list
-            shortened_group.sort()
-
-            # Write subproject table (Uses the SUBPROJECT table)
-            print(f'Writing {subproject_name} table to a TSV file...')
-            write_from_sql(db_name,                                                     # SQLite database
-                        subproject_name,                                                # Final table (Subproject)
-                        f'{subproject_name}.{data_type}.tsv',                           # Final table output file
-                        shortened_group,                                                # Group of shortened samples names
-                        shortened_sample_dic)                                           # Dictionary t_1_r_3 = SRRXXXXXX (key = value)
-            print('Done!\n')
-
-            # Check if the avg_table option has been enabled
-            if avg_table_subproject:
-
-                ## 3.5.B Calculate replicates average
-                ################################################################
-
-                # Out paths
-                subproject_table_mean_file = f'{subproject_name}.{data_type}_mean.tsv'
-
-                # Calculate average
-                print(f'Creating AVG table from {subproject_name} table ...')
-                rep_counts_avg(db_name,
-                            subproject_name,
-                            subproject_name + '_avg')
-                print('Done!\n')
-                
-                # Create shortened condition names using the shortened sample names
-                shortened_group_conditions_dup = [element[:-2] for element in shortened_group]
-
-                # Get unique names
-                shortened_group_conditions_list = list(set(shortened_group_conditions_dup))
-
-                # Write SQL table into a TSV file.
-                print(f'Writing {subproject_name} AVG table to a TSV file...')
-                write_from_sql(db_name,
-                               subproject_name + '_avg',
-                               subproject_table_mean_file,
-                               shortened_group_conditions_list,
-                               shortened_condition_dic)
-                print('Done!\n')
+    
+    # Close db connection
+    if not not_in_memory:
+        # Commit work and close connection
+        sqliteConnection.commit()
+        sqliteConnection.close()
 
 ## CALL THE MAIN PROGRAM
-
 if __name__ == '__main__':
     '''
     Call to the main program

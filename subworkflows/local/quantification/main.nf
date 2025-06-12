@@ -23,7 +23,7 @@ workflow QUANTIFICATION {
     take:
         ch_input
         type                    // value: 'raw' or 'rpm'
-        counts_project_matrix   // value: true or false
+        not_in_memory           // value: true or false
 
     main:
 
@@ -41,46 +41,29 @@ workflow QUANTIFICATION {
            RPM(COUNTS.out.raw)
            ch_counts = RPM.out.rpm
         }
- 
-        // Change the meta.id from file to project.
-        ch_counts_by_project = ch_counts
-            .map { meta, file ->
-                def updatedMeta = meta.clone()
-                updatedMeta.id = updatedMeta.project
-                return [updatedMeta.id, updatedMeta, file]
+
+        // create a channel at the group level
+        ch_counts
+            .flatMap { meta, file ->
+                meta.groups.collect { group -> 
+                    def new_meta = meta.clone()
+                    new_meta.id = group
+                    new_meta.group_id = group.split('_')[-1]
+                    new_meta.remove('groups')
+                    [new_meta, file]
+                }
             }
-            .groupTuple(by:[0,1])
-            .map { it -> [it[1], it[2], it[1].metadata, it[1].valid_groups] }
+            .groupTuple(by:0)
+            .map{ meta, files -> [meta, files, meta.metadata]}
+            .set{ ch_counts_by_group }
             
         // Create the count matrix
-        COUNTS_MATRIX(ch_counts_by_project, type, counts_project_matrix)
+        COUNTS_MATRIX(ch_counts_by_group, type, not_in_memory)
 
         // Add the software version
         ch_versions = ch_versions.mix(COUNTS_MATRIX.out.versions)
 
-        // Create a new ID and set the group_id
-        COUNTS_MATRIX.out.matrix
-            .flatMap { meta, file ->
-                def files = (file instanceof List) ? file : [file]
-                def output = []
-
-                files.each { f ->
-                    def fileName = f.getName().replaceAll(/\.raw\.tsv|\.rpm\.tsv$/, '')
-                    def parts = fileName.split('_')
-                    def group_id = parts.size() > 1 ? parts[1] : 'unknown'
-
-                    def updatedMeta = meta.clone()
-                    updatedMeta.id = fileName
-                    updatedMeta.group_id = group_id
-
-                    output << [updatedMeta, f]
-                }
-
-                return output
-            }
-            .set { ch_counts_matrix }
-
     emit:
-        group_matrix    = ch_counts_matrix
+        group_matrix    = COUNTS_MATRIX.out.matrix
         versions        = ch_versions      // channel: [ path(versions.yml) ]
 }
