@@ -14,7 +14,7 @@ process ANNOTATE_DEA_RESULTS {
     output:
     tuple val(meta), path("*.all.tsv")      , emit: all
     tuple val(meta), path("*.unique.tsv")   , emit: unique
-    tuple val(meta), path("*.boxplot.png")  , emit: boxplot
+    tuple val(meta), path("*.boxplot*")     , emit: boxplot
     path "*.summary.tsv"                    , emit: fam_sum
     path  "versions.yml"                    , emit: versions
 
@@ -41,7 +41,8 @@ process ANNOTATE_DEA_RESULTS {
     # Create output files 
     touch ${prefix}.all.tsv
     touch ${prefix}.unique.tsv
-    touch ${prefix}.boxplot.png
+    touch ${prefix}.boxplot_fam.png
+    touch ${prefix}.boxplot_name.png
     touch ${prefix}.summary.tsv
 
     cat <<-END_VERSIONS > versions.yml

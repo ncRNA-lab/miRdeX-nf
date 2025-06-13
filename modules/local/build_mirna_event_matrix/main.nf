@@ -10,11 +10,11 @@ process BUILD_MIRNA_EVENT_MATRIX {
     val fields
 
     output:
-    path "presence_absence_table.tsv"   , emit: preabs
-    path "shrunken_log2fc_table.tsv"    , emit: log2fc
-    path "ids.tsv"                      , emit: ids
-    path "comparisons_ids.tsv"          , emit: compids
-    path  "versions.yml"                , emit: versions
+    path "*presence_absence_table.tsv"   , emit: preabs
+    path "*shrunken_log2fc_table.tsv"    , emit: log2fc
+    path "ids.tsv"                       , emit: ids
+    path "comparisons_ids.tsv"           , emit: compids
+    path "versions.yml"                 , emit: versions
 
     script:
     def files = annot_file_list.flatten().join(' ')

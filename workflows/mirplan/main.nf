@@ -987,76 +987,50 @@ workflow MIRPLAN {
                 }
                 .set{ch_pipeline_summary}
 
-            // Prepare the channel to create the absence-presence matrix            
-            ANNOTATE_DEA_RESULTS.out.unique
-                .map { meta, file -> 
-                    [meta.metadata, [meta, file]]
-                }
-                .groupTuple(by:0)
-                .map{ metadata_file, pairs ->
-                    def files = pairs.collect { it[1] }
-                    def samples = pairs.collect { it[0].samples.tokenize(',') }
-                    [files, metadata_file, samples]
-                }
-                .collect()
-                .map { item ->
-                    def listas_archivos = []
-                    def listas_metadata = []
-                    def listas_SRR = []
-
-                    // Recorremos con each de 3 en 3
-                    (0..<item.size()).step(3).each { i ->
-                        listas_archivos << item[i]
-                        listas_metadata << item[i+1]
-                        listas_SRR << item[i+2]
-                    }
-
-                    return [listas_archivos, listas_metadata, listas_SRR]
-                }
-                .set{ch_to_create_pa_matrix}
-
             /*
             ============================================================================
                 9. Create global matrices
             ============================================================================
             */
-            // Create a channel to rename metadata files
-            ANNOTATE_DEA_RESULTS.out.unique
-                .map{ meta, _file -> [meta, meta.metadata]}
-                .set{ ch_to_rename_metadata }
-
-            // Rename metadata files 
-            RENAME_FILE_BY_ID(ch_to_rename_metadata)
-
-            // Renamed metadata channel
-            RENAME_FILE_BY_ID.out.renamed
-                .map{ meta, file -> [meta.id, meta, file]}
-                .set{ ch_renamed_metadata }
-
-            // Add the new metadata to main channel
-            ANNOTATE_DEA_RESULTS.out.unique
-                .map{ meta, file -> [meta.id, meta, file]}
-                .combine(ch_renamed_metadata, by:0)
-                .map{ _id, meta1, file, _meta2, metadata_file ->
-                    [file, metadata_file, meta1.samples]
-                }
-                .collect()
-                .map { list_elements ->
-
-                    // Agrupar en sublistas de 3 elementos
-                    def groups = list_elements.collate(3)
-
-                    // Extraer listas separadas por posición
-                    def files = groups.collect { it[0] }
-                    def metas = groups.collect { it[1] }
-                    def samples = groups.collect { it[2] }
-
-                    return [files, metas, samples]
-                }
-                .set{ ch_to_create_pa_matrix }
 
             // Create global matrices
             if (params.global_matrix){
+                
+                // Create a channel to rename metadata files
+                ANNOTATE_DEA_RESULTS.out.unique
+                    .map{ meta, _file -> [meta, meta.metadata]}
+                    .set{ ch_to_rename_metadata }
+
+                // Rename metadata files 
+                RENAME_FILE_BY_ID(ch_to_rename_metadata)
+
+                // Renamed metadata channel
+                RENAME_FILE_BY_ID.out.renamed
+                    .map{ meta, file -> [meta.id, meta, file]}
+                    .set{ ch_renamed_metadata }
+
+                // Add the new metadata to main channel
+                ANNOTATE_DEA_RESULTS.out.unique
+                    .map{ meta, file -> [meta.id, meta, file]}
+                    .combine(ch_renamed_metadata, by:0)
+                    .map{ _id, meta1, file, _meta2, metadata_file ->
+                        [file, metadata_file, meta1.samples]
+                    }
+                    .collect()
+                    .map { list_elements ->
+
+                        // Agrupar en sublistas de 3 elementos
+                        def groups = list_elements.collate(3)
+
+                        // Extraer listas separadas por posición
+                        def files = groups.collect { it[0] }
+                        def metas = groups.collect { it[1] }
+                        def samples = groups.collect { it[2] }
+
+                        return [files, metas, samples]
+                    }
+                    .set{ ch_to_create_pa_matrix }
+
                 // Create the both presence-absence and log2fc matrices  
                 BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)
 

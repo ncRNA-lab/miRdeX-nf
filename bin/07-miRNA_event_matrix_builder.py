@@ -308,7 +308,7 @@ def normalize_miRNA_families(miRNA_list):
     return normalized_map
 
 
-def get_miRNA_families(annot_files_list: list):
+def get_miRNA_families(annot_files_list: list, miRNA_column:str):
     '''
     This function processes a list of annotation files containing differentially
     expressed miRNAs for various stress events or comparisons. Each file is
@@ -338,7 +338,7 @@ def get_miRNA_families(annot_files_list: list):
     for file in annot_files_list:
         df = pd.read_csv(file, sep='\t')
         df_dict[file] = df
-        all_families.update(df['miRNA_fam'].dropna().unique())
+        all_families.update(df[miRNA_column].dropna().unique())
 
     # Normalize all miRNA family names (across all files)
     norm_map = normalize_miRNA_families(all_families)
@@ -348,12 +348,12 @@ def get_miRNA_families(annot_files_list: list):
         file_id = file.split('.')[0]  # use filename prefix as experiment ID
 
         # Apply normalization to miRNA family column
-        df['miRNA_fam'] = df['miRNA_fam'].apply(
+        df[miRNA_column] = df[miRNA_column].apply(
             lambda x: norm_map['/'.join(sorted(x.split('/')))]
         )
 
         exp_miRNAs[file_id] = []
-        for fam, group in df.groupby('miRNA_fam'):
+        for fam, group in df.groupby(miRNA_column):
             up_count = (group['Shrunkenlog2FoldChange'] > 0).sum()
             down_count = (group['Shrunkenlog2FoldChange'] < 0).sum()
 
@@ -373,7 +373,7 @@ def get_miRNA_families(annot_files_list: list):
     return exp_miRNAs, final_families
 
 
-def create_miRNA_tables(dic_miRNAs_event: dict, miRNAs_list: list):
+def create_miRNA_tables(miRNA_type: str, dic_miRNAs_event: dict, miRNAs_list: list):
     '''
     This function generates two summary tables based on a dictionary that maps
     stress event identifiers to lists of differentially expressed miRNA families
@@ -456,15 +456,15 @@ def create_miRNA_tables(dic_miRNAs_event: dict, miRNAs_list: list):
     
     # Add miRNA families as row names (pre-abs table)
     pre_abs_table.index = miRNAs_list
-    pre_abs_table.index.name = 'miRNA_fam'
+    pre_abs_table.index.name = miRNA_type
 
     # Add miRNA families as row names (log2fc table)
     log2fc_table.index = miRNAs_list
-    log2fc_table.index.name = 'miRNA_fam'
+    log2fc_table.index.name = miRNA_type
 
     # Save table in csv file
-    pre_abs_table.to_csv('presence_absence_table.tsv', sep='\t') 
-    log2fc_table.to_csv('shrunken_log2fc_table.tsv', sep="\t")
+    pre_abs_table.to_csv(f'{miRNA_type}_presence_absence_table.tsv', sep='\t') 
+    log2fc_table.to_csv(f'{miRNA_type}_shrunken_log2fc_table.tsv', sep="\t")
 
 
 ## MAIN PROGRAM
@@ -554,18 +554,26 @@ def main():
 
     # Get the list of miRNAs differentially expressed in each stress event
     print('Relating stress event identifiers to miRNA families...')
-    files_miRNA_list, miRNA_list = get_miRNA_families(files_list)
+    files_miRNA_list_fam, miRNA_list_fam = get_miRNA_families(files_list, miRNA_column='miRNA_fam')
+    print('Done!')
+    print('Relating stress event identifiers to miRNA names...')
+    files_miRNA_list_name, miRNA_list_name = get_miRNA_families(files_list, miRNA_column='Name')
     print('Done!')
 
     # Create the event_id-miRNAs dictionary (e.g. {'1.1.1.1': [('miR156', 3.23), ('miR472', -1.43)]})
-    eventid_miRNAs_dic = {}
+    eventid_miRNAs_dic_fam = {}
+    eventid_miRNAs_dic_name = {}
     for key, new_key in ids_dic.items():
-        if key in files_miRNA_list:
-            eventid_miRNAs_dic[new_key[0]] = files_miRNA_list[key]
+        if key in eventid_miRNAs_dic_fam:
+            files_miRNA_list_fam[new_key[0]] = miRNA_list_fam[key]
+        if key in files_miRNA_list_name:
+            eventid_miRNAs_dic_name[new_key[0]] = miRNA_list_name[key]
 
     # Create the both presence-absence and Log2fc matrices
-    print('Creating miRNA-events matrices...')
-    create_miRNA_tables(eventid_miRNAs_dic, miRNA_list)
+    print('Creating miRNA-events matrices (Family)...')
+    create_miRNA_tables('miRNA_fam', eventid_miRNAs_dic_fam, miRNA_list_fam)
+    print('Creating miRNA-events matrices (Name)...')
+    create_miRNA_tables('miRNA_name', eventid_miRNAs_dic_name, miRNA_list_name)
     print('Done!')
 
 ## CALL THE MAIN PROGRAM

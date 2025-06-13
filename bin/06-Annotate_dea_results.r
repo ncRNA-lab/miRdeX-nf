@@ -337,44 +337,56 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
   file_name_table_all = paste0(id, '.all.tsv')
   write.table(dea_annotated_all_isomirs, file = file_name_table_all, sep = "\t", quote = FALSE, row.names = FALSE)
   
-  # Remove duplicated sequences 
-  gff3_uniq <- gff3_check_df %>%
-    select(Read, UID, miRNA_fam, Class_check) %>%
-    filter(Class_check != "variant_undefined" & Class_check != "miRNA_undefined") %>%
-    distinct()
+  ### 2.1. CREATE A TABLE OF UNIQUE SEQUENCES AT THE NAME LEVEL
+  ##############################################################################
   
-  # Merge DEA results dataframe with gff3 dataframe
-  dea_annotated_uniq <- merge(dea_df, gff3_uniq, by.x = 'seq', by.y = 'Read')
+  # Create dataframe of unique sequences (by name)
+  dea_annotated_uniq_name <- dea_annotated_all_isomirs %>%
+    mutate(Name_clean = str_replace(Name, "^[^\\-]+-", "")) %>%
+    group_by(seq) %>%
+    summarise(
+      Name = str_c(sort(Name_clean), collapse = "/"),
+      .groups = "drop"
+    ) %>%
+    left_join(
+      dea_annotated_all_isomirs %>% select(-Name) %>% distinct(seq, .keep_all = TRUE),
+      by = "seq"
+    ) %>%
+    filter(Class_check != "variant_undefined" & Class_check != "miRNA_undefined")
+  dea_annotated_uniq_name <- dea_annotated_uniq_name[, colnames(dea_annotated_all_isomirs)]
   
   # Save table
-  file_name_table_unique = paste0(id, '.unique.tsv')
-  write.table(dea_annotated_uniq, file = file_name_table_unique, sep = "\t", quote = FALSE, row.names = FALSE)
+  file_name_table_unique_name = paste0(id, '.unique.tsv')
+  write.table(dea_annotated_uniq_name, file = file_name_table_unique_name, sep = "\t", quote = FALSE, row.names = FALSE)
   
   ### 3. CREATE BOXPLOT
   ################################################################################
   
   # Create output file name
-  file_name_plot = paste0(id, '.boxplot.png')
+  file_name_fam_plot = paste0(id, '.boxplot_fam.png')
+  file_name_name_plot = paste0(id, '.boxplot_name.png')
   
   # Create the boxplot
-  p <- createBoxplot(dea_annotated_uniq, 'miRNA_fam', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
+  p_fam <- createBoxplot(dea_annotated_uniq_name, 'miRNA_fam', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
+  p_name <- createBoxplot(dea_annotated_uniq_name, 'Name', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
   
   # Save plot in output directory
-  ggsave(file_name_plot, p)
+  ggsave(file_name_plot, p_fam)
+  ggsave(file_name_plot, p_name)
   
   
   ### 4. TABLE WITH DIFFUSE-TREND MIRNAS FAMILY
   ################################################################################
   
   # Get miRNA family names
-  miRNAs_v <- unique(dea_annotated_uniq$miRNA_fam)
+  miRNAs_v <- unique(file_name_table_unique_name$miRNA_fam)
   
   # Select miRNAs families with diffuse trend
   miRNAs_var <- c()
   for (miRNA in miRNAs_v){
     
     # Get the miRNA Shrunkenlog2FoldChange vector
-    lfc_v <- na.omit(dea_annotated_uniq[dea_annotated_uniq$miRNA_fam == miRNA,]$Shrunkenlog2FoldChange)
+    lfc_v <- na.omit(dea_annotated_uniq_family[file_name_table_unique_name$miRNA_fam == miRNA,]$Shrunkenlog2FoldChange)
     
     # If there are positives and negatives
     if (any(lfc_v > 0) && any(lfc_v < 0)) {
@@ -401,7 +413,8 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
   # Create empty files
   file.create(paste0(id,'_EMPTY.all.tsv'))
   file.create(paste0(id,'_EMPTY.unique.tsv'))
-  file.create(paste0(id,'_EMPTY.boxplot.png'))
+  file.create(paste0(id,'_EMPTY.boxplot_fam.png'))
+  file.create(paste0(id,'_EMPTY.boxplot_name.png'))
   text <- paste(id, '0', '0', 'NULL', sep='\t')
   cat(text, file=paste0(id,'.summary.tsv'), append=TRUE, sep='\n')
 }
