@@ -371,22 +371,22 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
   p_name <- createBoxplot(dea_annotated_uniq_name, 'Name', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
   
   # Save plot in output directory
-  ggsave(file_name_plot, p_fam)
-  ggsave(file_name_plot, p_name)
+  ggsave(file_name_fam_plot, p_fam)
+  ggsave(file_name_name_plot, p_name)
   
   
   ### 4. TABLE WITH DIFFUSE-TREND MIRNAS FAMILY
   ################################################################################
   
   # Get miRNA family names
-  miRNAs_v <- unique(file_name_table_unique_name$miRNA_fam)
+  miRNAs_v <- unique(dea_annotated_uniq_name$miRNA_fam)
   
   # Select miRNAs families with diffuse trend
   miRNAs_var <- c()
   for (miRNA in miRNAs_v){
     
     # Get the miRNA Shrunkenlog2FoldChange vector
-    lfc_v <- na.omit(dea_annotated_uniq_family[file_name_table_unique_name$miRNA_fam == miRNA,]$Shrunkenlog2FoldChange)
+    lfc_v <- na.omit(dea_annotated_uniq_name[dea_annotated_uniq_name$miRNA_fam == miRNA,]$Shrunkenlog2FoldChange)
     
     # If there are positives and negatives
     if (any(lfc_v > 0) && any(lfc_v < 0)) {

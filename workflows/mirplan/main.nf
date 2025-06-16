@@ -995,9 +995,12 @@ workflow MIRPLAN {
 
             // Create global matrices
             if (params.global_matrix){
-                
+
                 // Create a channel to rename metadata files
                 ANNOTATE_DEA_RESULTS.out.unique
+                    .filter { _meta, file ->
+                        !file.getName().endsWith('_EMPTY.unique.tsv')
+                    }
                     .map{ meta, _file -> [meta, meta.metadata]}
                     .set{ ch_to_rename_metadata }
 
@@ -1011,6 +1014,9 @@ workflow MIRPLAN {
 
                 // Add the new metadata to main channel
                 ANNOTATE_DEA_RESULTS.out.unique
+                    .filter { _meta, file ->
+                        !file.getName().endsWith('_EMPTY.unique.tsv')
+                    }
                     .map{ meta, file -> [meta.id, meta, file]}
                     .combine(ch_renamed_metadata, by:0)
                     .map{ _id, meta1, file, _meta2, metadata_file ->

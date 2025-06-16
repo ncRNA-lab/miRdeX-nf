@@ -118,7 +118,7 @@ workflow ISOMIRS_IDENTIFICATION {
         //
         // 1. Classificate the sequences
         //
-
+        
         ISOMIRS_PRECURSOR_CLASSIFICATION(MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST.out.mpblast)
 
         // Execute only if all miRNA variants are to be considered.

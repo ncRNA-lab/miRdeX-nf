@@ -38,6 +38,35 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
         }' OFS='\t' "\$input_file" > "\$ouput_file"
 
     }
+    
+    expand_and_clean_tsv () {
+        # Arguments
+        local input_file="\${1}"
+        local output_file="\${2}"
+
+        # Expand and clean TSV table
+        awk -F '\t' '{
+            split(\$2, ids, "|");
+            for (i in ids) {
+                original_id = ids[i];
+                id_with_arm = original_id;
+                id_clean = original_id;
+
+                # Remove undesired strings
+                gsub(/-?(Known|mature|star)-?/, "-", id_with_arm);
+                gsub(/^-+|-+\$/, "", id_with_arm);
+                gsub(/--+/, "-", id_with_arm);
+
+                # Remove undesired strings (5p/3p too)
+                gsub(/-?(5p|3p)-?/, "-", id_clean);
+                gsub(/-?(Known|mature|star)-?/, "-", id_clean);
+                gsub(/^-+|-+\$/, "", id_clean);
+                gsub(/--+/, "-", id_clean);
+
+                print \$1, id_clean, id_with_arm, \$0;
+            }
+        }' OFS='\t' "\$input_file" > "\$output_file"
+    }
 
     create_key_column (){
             
@@ -126,7 +155,7 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
         join -t  \$'\t' -1 1 -2 1 \$workdir/tmp/mature_sorted.tsv \$workdir/tmp/precursor_sorted.tsv > \$workdir/tmp/joined_table.tsv
 
         # Remove undesired columns
-        cut --complement -f1,4,18,20,32 \$workdir/tmp/joined_table.tsv > \$workdir/tmp/isomirs_all.tsv
+        cut --complement -f1,3,5,19,21,22,34 \$workdir/tmp/joined_table.tsv > \$workdir/tmp/isomirs_all.tsv
         
         # Select most likely references for each sequence
         select_most_likely_references \$workdir/tmp/isomirs_all.tsv \$workdir/tmp/isomirs_best_alig_within_same_pre.tsv 
