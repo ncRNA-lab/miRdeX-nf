@@ -21,6 +21,11 @@ input:
         Channel containing a query FASTA file, mature miRNA FASTA, precursor
         miRNA FASTA, and genome FASTA file.
         Structure: [ val(meta), path(query_fasta), path(mature_fasta), path(precursor_fasta), path(genome) ]
+  - only_ref_miRNAs:
+      description: |
+        Indicates that only sequences corresponding to reference
+        miRNAs should be identified.
+        Type: boolean
 output:
   - iso:
       description: |

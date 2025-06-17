@@ -18,12 +18,17 @@ input:
       description: |
         List of species names.
         Structure: [ val([species_name_1, species_name_2, ..., species_name_n]) ]
+  - databases:
+      description: |
+        String with the databases to be used and their order of preference.
+        The database names are separated by commas.
+        Type: string
 output:
-- dbs:
-    description: |
-      Mature and precursor miRNA FASTA files associated with each species.
-      Metadata specifies the source database for the files.
-      Structure: [ val(meta), path(mature), path(precursor) ]
+  - dbs:
+      description: |
+        Mature and precursor miRNA FASTA files associated with each species.
+        Metadata specifies the source database for the files.
+        Structure: [ val(meta), path(mature), path(precursor) ]
 authors:
   - "@antoglz"
 maintainers:

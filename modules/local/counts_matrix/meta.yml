@@ -29,7 +29,7 @@ input:
         type: map
         description: |
           Groovy Map containing id information
-          e.g. [ id:'PROJECT1', species: 'Arabidpsis thaliana', project 'PROJECT1']
+          e.g. [ id:'PROJECT1_1', species: 'Arabidpsis thaliana', project 'PROJECT1']
     - counts:
         type: file[]
         description: |
@@ -39,11 +39,16 @@ input:
         type: file
         description: |
           TSV metadata file of the project in question.
-    - valid_groups:
-        type: val[]
+  - - type:
+        type: string
         description: |
-          List of valid groups within the project. The project groups are
-          specified in the Group column of the metadata file.
+          Specify the type of values used to construct the matrix: raw counts
+          or RPM. The value must be either raw or rpm.
+  - - not_in_memory:
+        type: bool
+        description: |
+          Specifies that SQLite should use a file on disk rather than
+          loading the database into memory when generating the count matrix.
 output:
   - gff3:
       - meta:

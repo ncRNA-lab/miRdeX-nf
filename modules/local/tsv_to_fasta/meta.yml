@@ -21,6 +21,11 @@ input:
   - - header:
         type: bool
         description: Specify true if the input TSV file has a header.
+  - - split_by_column:
+        type: bool
+        description: |
+          Indicates whether to generate one FASTA file per column
+          (excluding the sequence column) instead of a single file.
 output:
   - fasta:
       - meta:

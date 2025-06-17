@@ -5,27 +5,33 @@
 #  
 #   08-miRNA_event_matrix_builder.py
 #
-#   This script generates two summary matrices (presence/absence and Shrunken
-#   log2FoldChange) that describe the differential expression of miRNA families
-#   across multiple stress conditions or experimental events, based on annotated
-#   DESeq2 outputs and sample metadata files.
+#   This script generates summary matrices (presence/absence and Shrunken
+#   log2FoldChange) that describe the differential expression of miRNAs across
+#   multiple stress conditions or experimental events, based on annotated DESeq2
+#   outputs and sample metadata files.
 #
 #   The process is structured as follows:
 #   
 #   1. Assign a unique identifier to each stress event.
 #
-#   For each annotation file provided (corresponding to a stress event), the script
-#   reads its associated metadata and the list of samples used for differential
-#   expression analysis. It then creates a unique hierarchical identifier based on
-#   metadata fields such as species, treatment, and user-defined descriptors. These
-#   identifiers are saved in a correspondence file (`id_correspondence.tsv`).
+#   For each annotation file provided (corresponding to a stress event), the
+#   script reads its associated metadata and the list of samples used for
+#   differential expression analysis. It then creates a unique hierarchical
+#   identifier based on metadata fields such as species, treatment, and user-
+#   defined descriptors. These identifiers are saved in a correspondence file
+#   (`id_correspondence.tsv`).
 #
-#   2. Extract the most representative miRNA family per stress event.
+#   2. Extract the most representative miRNA per stress event.
 #
-#   From each annotation file, the script selects the most representative member of
-#   each miRNA family (based on maximum baseMean value) and retrieves its Shrunken
-#   log2FoldChange. This results in a dictionary linking each original file/event to
-#   a list of differentially expressed miRNA families and their log2fc values.
+#   For each miRNA family, the script selects the most representative member
+#   (based on maximum baseMean value) and retrieves its Shrunken log2FoldChange.
+#   This generates a dictionary linking each event to a set of differentially
+#   expressed miRNA families and their log2fc values.
+#
+#   Additionally, the script now performs this analysis not only at the family
+#   level, but also at the individual miRNA level (e.g., miR398a-5p), allowing
+#   for finer resolution of expression changes. Separate matrices are created
+#   for both levels.
 #
 #   3. Rename the stress events using the unique identifiers.
 #
@@ -33,19 +39,20 @@
 #   replaced with its corresponding hierarchical ID to ensure consistency across
 #   the final matrices.
 #
-#   4. Generate two summary matrices.
+#   4. Generate summary matrices.
 #
-#   Two final tables are constructed:
-#   - `presence_absence_table.tsv`: Binary matrix indicating the presence (1) or
-#     absence (0) of each miRNA family across events.
+#   Two sets of output tables are constructed:
+#   - `presence_absence_table.tsv`: Binary matrix indicating the presence (1)
+#     or absence (0) of each miRNA across events.
 #   - `shrunken_log2fc_table.tsv`: Matrix containing the Shrunken log2FoldChange
-#     of each miRNA family in each event. If a family is not present, the value
-#     is marked as 'NA'.
+#     of each miRNA in each event. If a miRNA is not present, the value is 'NA'.
 #
+#   These matrices are generated separately for both miRNA families and
+#   individual miRNAs.
 #
 #   Authors: Antonio Gonzalez Sanchez
 #   Date: 16/05/2025
-#   Version: 1.0
+#   Version: 1.1
 #
 #******************************************************************************
 

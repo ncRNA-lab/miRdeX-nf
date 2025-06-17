@@ -41,6 +41,11 @@ input:
       description: |
         Maximum total allowed modifications (substitutions) across both ends (5' + 3').
         Type: integer
+  - only_ref_miRNAs:
+      description: |
+        Indicates that only sequences corresponding to reference
+        miRNAs should be identified.
+        Type: boolean
 output:
   - annotation:
       description: |

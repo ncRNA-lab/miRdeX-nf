@@ -18,10 +18,12 @@ input:
       description: |
         Specifies the type of data input.
         Possible values: 'raw' or 'rpm'
-  - counts_project_matrix:
+        Type: string
+  - not_in_memory:
       description: |
-        Boolean flag indicating whether to generate a project-level counts matrix.
-        Values: true or false
+        Boolean flag indicating that SQLite should use a file on disk rather
+        than loading the database into memory when generating the count matrix.
+        Type: boolean
 output:
   - group_matrix:
       description: |

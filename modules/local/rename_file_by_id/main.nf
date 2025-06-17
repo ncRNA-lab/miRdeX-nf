@@ -25,6 +25,4 @@ process RENAME_FILE_BY_ID {
     extension=\${filename##*.}
     cp "${file}" "${meta.id}.\${extension}"
     """
-
-
 }

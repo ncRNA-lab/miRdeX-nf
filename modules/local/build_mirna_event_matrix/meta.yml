@@ -44,19 +44,19 @@ input:
           identifiers. e.g. "Species,Treatment"
 output:
   - preabs:
-      - presence_absence_table.tsv:
+      - "*presence_absence_table.tsv":
           type: file
           description: |
             Binary matrix indicating in which comparisons each miRNA family
             appears as differentially expressed.
-          pattern: "presence_absence_table.tsv"
+          pattern: "*presence_absence_table.tsv"
   - log2fc:
-      - shrunken_log2fc_table.tsv:
+      - "*shrunken_log2fc_table.tsv":
           type: file
           description: |
             Matrix indicating the log2FC value of the most representative
             member of each miRNA family in each comparison.
-          pattern: "shrunken_log2fc_table.tsv"
+          pattern: "*shrunken_log2fc_table.tsv"
   - ids:
       - ids.tsv:
           type: file

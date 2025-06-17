@@ -27,6 +27,13 @@ input:
           Minimum count threshold that a sequence must meet to be considered
           valid. In the resulting file, an additional column indicates 'PASS'
           if the sequence exceeds this threshold or 'REJECT' if it does not.
+  - - ignore_threshold_for_canonical:
+        type: bool
+        description: |
+          Indicates whether canonical miRNA sequences should bypass the
+          abundance threshold filter (e.g., RPM or read count). If set,
+          canonical sequences will pass the filter regardless of their
+          abundance.
 output:
   - isocounts:
       - meta:

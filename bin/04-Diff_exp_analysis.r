@@ -21,11 +21,6 @@ suppressMessages(library(DEGreport))
 suppressMessages(library(paletteer))
 suppressMessages(library(gtools))
 
-# Instlacion DEGreport para la imagen
-#install.packages("https://cran.r-project.org/src/contrib/Archive/lasso2/lasso2_1.2-22.tar.gz", type = "source", repos = NULL)
-#BiocManager::install("DEGreport")
-
-
 ################################################################################
 ################################# FUNCTIONS ####################################
 ################################################################################
