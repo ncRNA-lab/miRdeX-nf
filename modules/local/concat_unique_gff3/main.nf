@@ -23,8 +23,22 @@ process CONCAT_UNIQUE_GFF3 {
     # Append COLDATA line with meta.id
     header="\$header\n## COLDATA: ${meta.id}"
 
-    # Concatenate all files skipping first 4 lines, remove duplicates
-    awk 'FNR > 4' ${filesStr} | awk '!seen[\$0]++' > "${prefix}.concat.nodup.gff3"
+    # Concatenate all files skipping first 4 lines, normalize fields, and remove duplicates
+    awk -F"\t" '
+    FNR > 4 {
+        # Reemplazar valores por NA
+        gsub(/Expression=[^;]+/, "Expression=NA", \$9)
+        gsub(/Norm=[^;]+/, "Norm=NA", \$9)
+        gsub(/Filter=[^;]+/, "Filter=NA", \$9)
+
+        # Asegurar que los atributos estén separados por "; "
+        gsub(/; */, "; ", \$9)
+        sub(/; \$/, "", \$9)
+
+        # Reconstruir línea con tabuladores reales
+        line = \$1 FS \$2 FS \$3 FS \$4 FS \$5 FS \$6 FS \$7 FS \$8 FS \$9
+        if (!seen[line]++) print \$1, \$2, \$3, \$4, \$5,\$6, \$7, \$8, \$9
+    }' OFS="\t" ${filesStr} > "${prefix}.concat.nodup.gff3"
 
     # Remove rejected sequences
     grep -v 'Filter=REJECT' "${prefix}.concat.nodup.gff3" > "${prefix}.valid.gff3"

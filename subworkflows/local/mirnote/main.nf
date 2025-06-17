@@ -255,7 +255,7 @@ workflow MIRNOTE {
             .set { ch_isomirs_add_raw_counts }
         
         // Add raw counts to isomiRs dataframe
-        ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts, params.counts)
+        ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts, params.counts, params.ignore_threshold_for_canonical)
 
         // Add RPM to isomiRs dataframe
         if (params.rpm  > 0){
@@ -279,7 +279,7 @@ workflow MIRNOTE {
                 .set { ch_isomirs_add_rpm }
     
             // Add RPM to isomiRs dataframe
-            ADD_RPM_TO_ISOMIRS_DF(ch_isomirs_add_rpm, params.rpm)
+            ADD_RPM_TO_ISOMIRS_DF(ch_isomirs_add_rpm, params.rpm, params.ignore_threshold_for_canonical)
             
             // Set the original id and prepare the channel for merging
             ADD_RPM_TO_ISOMIRS_DF.out.isocounts

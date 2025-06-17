@@ -277,6 +277,12 @@
           "fa_icon": "fas fa-table",
           "description": "Minimum Reads per million (RPM) required for a sequence to be retained for the annotation step.",
           "help_text": "Minimum number of RPM required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--counts'."
+        },
+        "ignore_threshold_for_canonical": {
+          "type": "boolean",
+          "default": false,
+          "fa_icon": "fas fa-table",
+          "description": "Indicates whether canonical miRNA sequences should bypass the abundance threshold filter (e.g., RPM or read count). If set, canonical sequences will pass the filter regardless of their abundance."
         }
       }
     },

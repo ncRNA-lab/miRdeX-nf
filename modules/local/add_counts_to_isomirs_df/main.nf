@@ -10,6 +10,7 @@ process ADD_COUNTS_TO_ISOMIRS_DF {
     input:
     tuple val(meta), path(blast_tsv), path(counts_tsv)
     val threshold
+    val ignore_threshold_for_canonical
 
     output:
     tuple val(meta), path('*.tsv'), emit: isocounts
@@ -17,14 +18,17 @@ process ADD_COUNTS_TO_ISOMIRS_DF {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    awk -v threshold=0 'FNR==NR { map[\$1]=\$2; next } {
-        # Search for the sequence in column 14 of df1
+    awk -v threshold=${threshold} -v ignore_for_canonical=${ignore_threshold_for_canonical} 'FNR==NR { map[\$1]=\$2; next } 
+    {
         seq_value = map[\$14]
+        same_sequence = (\$14 == \$15)
         
-        # If the value from column 2 of df2 is found, compare it with the threshold
-        status = (seq_value > ${threshold}) ? "PASS" : "REJECT"
-        
-        # Print the line from df1, the value from column 2 of df2, and the status
+        if (ignore_for_canonical == "true") {
+            status = (seq_value > threshold || same_sequence) ? "PASS" : "REJECT"
+        } else {
+            status = (seq_value > threshold) ? "PASS" : "REJECT"
+        }
+
         print \$0 "\t" seq_value "\t" status
     }' ${counts_tsv} ${blast_tsv} > "${prefix}.tsv"
     """

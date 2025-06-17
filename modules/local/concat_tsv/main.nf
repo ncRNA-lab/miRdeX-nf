@@ -17,18 +17,25 @@ process CONCAT_TSV {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    # Create a Bash array from the list of input files
-    files=( ${tsv_files} )
+    # Create an array with non-empty files.
+    non_empty_files=()
+    for f in ${tsv_files}; do
+        [[ -s "\$f" ]] && non_empty_files+=("\$f")
+    done
 
-    if [[ "${header}" == "true" ]]; then
-        {
-            head -n 1 "\${files[0]}"
-            for f in "\${files[@]:1}"; do
-                tail -n +2 "\$f"
-            done
-        } > "${prefix}.tsv"
+    if [[ \${#non_empty_files[@]} -eq 0 ]]; then
+        touch "${prefix}_EMPTY.tsv"
     else
-        cat "\${files[@]}" > "${prefix}.tsv"
+        if [[ "${header}" == "true" ]]; then
+            {
+                head -n 1 "\${non_empty_files[0]}"
+                for f in "\${non_empty_files[@]:1}"; do
+                    tail -n +2 "\$f"
+                done
+            } > "${prefix}.tsv"
+        else
+            cat "\${non_empty_files[@]}" > "${prefix}.tsv"
+        fi
     fi
     """
 
