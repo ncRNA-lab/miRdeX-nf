@@ -1,6 +1,6 @@
 
 
-miRPlan-nf                 
+miRdeX-nf                 
 ────────────────────────────────────────────────────────────────
 Run Name     : ${runName}                                  
 Completed At : ${dateComplete}                             
@@ -38,4 +38,4 @@ PIPELINE CONFIGURATION
 <% out << summary.collect{ k,v -> " - $k: $v" }.join("\n") %>
 ────────────────────────────────────────────────────────────────
 
-mirplan-nf – https://github.com/antoglz/miRPlan-nf
+miRdeX-nf – https://github.com/antoglz/miRdeX-nf

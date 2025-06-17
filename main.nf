@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    antoglz/mirplan
+    antoglz/miRdeX-nf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/antoglz/miRPlan-nf
+    Github : https://github.com/antoglz/miRdeX-nf
 ----------------------------------------------------------------------------------------
 */
 
@@ -13,9 +13,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { MIRPLAN                   } from './workflows/mirplan'
-include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_mirplan_pipeline'
-include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_mirplan_pipeline'
+include { MIRDEX                    } from './workflows/mirdex'
+include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_mirdex_pipeline'
+include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_mirdex_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,7 +23,7 @@ include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_mirplan_p
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow MAIN_MIRPLAN {
+workflow MAIN_MIRDEX {
 
     main:
     
@@ -31,14 +31,14 @@ workflow MAIN_MIRPLAN {
     ch_versions = Channel.empty()
     
     // Run the workflow
-    MIRPLAN (params.input, ch_versions)
+    MIRDEX (params.input, ch_versions)
 
     // Get the versions channel from the main workflow
-    ch_versions = ch_versions.mix(MIRPLAN.out.versions)
+    ch_versions = ch_versions.mix(MIRDEX.out.versions)
 
     emit:
-    summary  = MIRPLAN.out.summary
-    versions = MIRPLAN.out.versions
+    summary  = MIRDEX.out.summary
+    versions = MIRDEX.out.versions
 }
 
 /*
@@ -63,14 +63,14 @@ workflow {
         //
         // SUBWORKFLOW: Run the main workflow
         //
-        MAIN_MIRPLAN ()
+        MAIN_MIRDEX ()
     
         //
         // SUBWORKFLOW: Run completion tasks
         //
         PIPELINE_COMPLETION(
-            MAIN_MIRPLAN.out.summary,
-            MAIN_MIRPLAN.out.versions,
+            MAIN_MIRDEX.out.summary,
+            MAIN_MIRDEX.out.versions,
             params.email,
             params.email_on_fail,
             params.plaintext_email,

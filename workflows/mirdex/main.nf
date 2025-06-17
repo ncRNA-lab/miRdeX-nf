@@ -52,12 +52,12 @@ include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS } from "../../subworkflow
 */
 
 include { samplesheetToList          } from 'plugin/nf-schema'
-include { validateAndAssignGenome    } from "../../subworkflows/local/utils_mirplan_pipeline"
-include { notTsvFilesError           } from "../../subworkflows/local/utils_mirplan_pipeline"
-include { validateGroupInputUsage    } from "../../subworkflows/local/utils_mirplan_pipeline"
-include { validateAccessionList      } from "../../subworkflows/local/utils_mirplan_pipeline"
-include { filterByMwwPvalue          } from "../../subworkflows/local/utils_mirplan_pipeline"
-include { writeSampleSheet           } from "../../subworkflows/local/utils_mirplan_pipeline"
+include { validateAndAssignGenome    } from "../../subworkflows/local/utils_mirdex_pipeline"
+include { notTsvFilesError           } from "../../subworkflows/local/utils_mirdex_pipeline"
+include { validateGroupInputUsage    } from "../../subworkflows/local/utils_mirdex_pipeline"
+include { validateAccessionList      } from "../../subworkflows/local/utils_mirdex_pipeline"
+include { filterByMwwPvalue          } from "../../subworkflows/local/utils_mirdex_pipeline"
+include { writeSampleSheet           } from "../../subworkflows/local/utils_mirdex_pipeline"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +65,7 @@ include { writeSampleSheet           } from "../../subworkflows/local/utils_mirp
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow MIRPLAN {
+workflow MIRDEX {
 
     take:
     samplesheet             // string: "path/to/sample_sheet.csv"

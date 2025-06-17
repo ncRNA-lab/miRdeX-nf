@@ -18,7 +18,7 @@ include { ISOMIRS_MIRNA_CLASSIFICATION                              } from '../.
 // SUBWORKFLOW: Loaded from subworkflows/local/
 //
 
-include { summaryToTsv } from '../utils_mirplan_pipeline'
+include { summaryToTsv } from '../utils_mirdex_pipeline'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules

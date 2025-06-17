@@ -9,8 +9,8 @@ nextflow_workflow {
         when {
             params {
                 // Input
-                input  = "${projectDir}/testdata/subworkflows/utils_mirplan_pipeline/samplesheet.csv"
-                outdir = "${projectDir}/testdata/subworkflows/utils_mirplan_pipeline"
+                input  = "${projectDir}/testdata/subworkflows/utils_mirdex_pipeline/samplesheet.csv"
+                outdir = "${projectDir}/testdata/subworkflows/utils_mirdex_pipeline"
 
                 email                       = null
                 email_on_fail               = null

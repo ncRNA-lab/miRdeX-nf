@@ -10,7 +10,7 @@ nextflow_workflow {
             workflow {
                 """
                 input[0] = Channel.of([sample: 'sample1', comparison_id: 'comp1', group: 1, species: 'Arabidopsis thaliana'])
-                input[1] = Channel.of([file(params.modules_testdata_base_path + 'subworkflows/utils_mirplan_pipeline/versions_file.yml', checkIfExists: true)])
+                input[1] = Channel.of([file(params.modules_testdata_base_path + 'subworkflows/utils_mirdex_pipeline/versions_file.yml', checkIfExists: true)])
                 input[2] = null
                 input[3] = null
                 input[4] = true

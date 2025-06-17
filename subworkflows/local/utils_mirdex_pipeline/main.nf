@@ -1,8 +1,8 @@
 //
-// Subworkflow with functionality specific to the mirplan-nf pipeline. This
+// Subworkflow with functionality specific to the miRdeX-nf pipeline. This
 // subworkflow is based on the utils_nfcore_rnaseq_pipeline subworkflow from
 // the nf-core/rnaseq pipeline (https://github.com/nf-core/rnaseq), with minor
-// modifications to adapt it for the miRPlan-nf pipeline.
+// modifications to adapt it for the miRdeX-nf pipeline.
 //
 
 
@@ -100,7 +100,7 @@ workflow PIPELINE_COMPLETION {
     
     // Save a file with the software versions
     softwareVersionsToYAML(versions)
-        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirplan_versions_${workflow.nextflow.timestamp}.yml", sort: true, newLine: true)
+        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirdex_versions_${workflow.nextflow.timestamp.replaceAll(/[\\s:]/, '_')}.yml", sort: true, newLine: true)
     
     // Sort the summary chanel
     summary
@@ -112,7 +112,7 @@ workflow PIPELINE_COMPLETION {
 
     // Save a file with the summary information
     summaryToTsv(ch_sorted_summary)
-        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirplan_summary_${workflow.nextflow.timestamp}.tsv", newLine: true, sort: false)
+        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirdex_summary_${workflow.nextflow.timestamp.replaceAll(/[\\s:]/, '_')}.tsv", newLine: true, sort: false)
 }
 
 /*
@@ -731,79 +731,3 @@ def writeSampleSheet(ch_to_write, publishDir, output_path) {
             }
         }
 }
-
-// def writeSampleSheet(ch_to_write, publishDir, output_path) {
-
-//     ch_to_write
-//         .map { meta, file ->
-//             def filename = file.getName()
-//             def published_path = "${publishDir}/${meta.species.replaceAll(' ', '_')}/${meta.project}/${filename}"
-//             [
-//                 meta.species.toString(),
-//                 meta.project.toString(),
-//                 published_path.toString(),
-//                 meta.metadata.toString(),
-//                 meta.genome.toString(),
-//                 meta.group_id.toString()
-//             ]
-//         }
-//         .groupTuple(by: [0,1])
-//         .subscribe { item ->
-//             def species = item[0]
-//             def project = item[1]
-//             def records = item.drop(2)
-            
-//             def filePath = new File(output_path).parent
-//             new File(filePath).mkdirs()
-
-//             def header = "Species,Project,File,Metadata,Genome,Group\n"
-//             def fileContent = []
-
-//             for (i in 0..<records[0].size()) {
-//                 def row = [species, project] + records.collect { it[i] }
-//                 fileContent << row.join(',')
-//             }
-
-//             if (new File(output_path).exists()) {
-//                 def existingContent = new File(output_path).text.readLines().drop(1)
-//                 fileContent = existingContent + fileContent
-//             }
-
-//             fileContent = new LinkedHashSet(fileContent).toList()
-//             def fileContentString = fileContent.join('\n')
-
-//             new File(output_path).withWriter('UTF-8') { writer ->
-//                 writer << header
-//                 writer << fileContentString + '\n'
-//             }
-//         }
-// }
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    SUBWORKFLOW FOR PIPELINE COMPLETION
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-// SEGUIR AQUI CON EL WORKFLOW PIPELINE_COMPLETION. CON EL QUE HAREMOS COSAS
-// TRAS HABERSE EJECUTADO EL PIPELINE PRINCIPAL
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE & PRINT PARAMETER SUMMARY
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-// include { validateParameters; paramsHelp; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
-
-// // Print help message, supply typical command line usage for the pipeline
-// if (params.help) {
-//    log.info paramsHelp("nextflow run mirplan.nf --input samplesheet.csv")
-//    exit 0
-// }
-
-// // Validate input parameters
-// validateParameters()
-
-// // Print summary of supplied parameters
-// log.info paramsSummaryLog(workflow)

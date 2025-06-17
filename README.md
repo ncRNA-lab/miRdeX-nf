@@ -1,1 +1,1 @@
-# miRPlan-nf
+# miRdeX-nf

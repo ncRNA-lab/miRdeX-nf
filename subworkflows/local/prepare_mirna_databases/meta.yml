@@ -12,7 +12,7 @@ components:
   - split_db_by_species
   - dna_rna_converter
   - collapse_db
-  - utils_mirplan_pipeline
+  - utils_mirdex_pipeline
 input:
   - species:
       description: |

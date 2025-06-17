@@ -265,7 +265,7 @@ nextflow_function {
             }
             function {
                 """
-                input[0] = file(params.modules_testdata_base_path + 'subworkflows/utils_mirplan_pipeline/accession_valid.txt', checkIfExists: true)
+                input[0] = file(params.modules_testdata_base_path + 'subworkflows/utils_mirdex_pipeline/accession_valid.txt', checkIfExists: true)
                 """
             }
         }
@@ -284,7 +284,7 @@ nextflow_function {
         when {
             function {
                 """
-                input[0] = file(params.modules_testdata_base_path + 'subworkflows/utils_mirplan_pipeline/accesion_notvalid.txt', checkIfExists: true)
+                input[0] = file(params.modules_testdata_base_path + 'subworkflows/utils_mirdex_pipeline/accesion_notvalid.txt', checkIfExists: true)
                 """
             }
         }
