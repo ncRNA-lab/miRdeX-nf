@@ -84,29 +84,24 @@ workflow MIRNOTE {
     // Add info to summary channel
     ch_input
         .map{ meta, file -> [meta.species, meta, file]}
-        .combine(ch_species_db)
-        .map { item ->
-            // Create required variables
-            def meta = item[1]
-            def updatedMeta = meta.clone()
-            def species_db_info = item[4]
+        .groupTuple(by:0)
+        .join(ch_species_db, by:0, remainder:true)
+        .filter { it[1] != null }
+        .flatMap { species, meta_list, _fastq_list, db_info_map -> 
 
-            // Remove undesired fields for summary channel
-            updatedMeta.remove('genome')
-            updatedMeta.remove('single_end') 
+            // Check if the species is in at least one database
+            def species_db = db_info_map != null ? 'PASS' : 'REJECT'
+            def db = db_info_map != null ? db_info_map.database : 'NA'
 
-            // Add fields based on species_db_info
-            def additionalFields = [:]
-            if (species_db_info) {
-                additionalFields['species_db'] = 'PASS'
-                additionalFields['database'] = species_db_info.database
-            } else {
-                additionalFields['species_db'] = 'REJECT'
-                additionalFields['database'] = 'NA'
+            return meta_list.indices.collect { i ->
+                def meta = meta_list[i]
+                meta['species_db'] = species_db
+                meta['database'] = db
+                // Remove undesired fields for summary channel
+                meta.remove('genome')
+                meta.remove('single_end') 
+                return [meta.id, meta]
             }
-
-            // Combine fields
-            [updatedMeta.id, updatedMeta + additionalFields]
         }
         .set{ ch_pipeline_summary }
 
