@@ -1035,7 +1035,7 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
     if (!is.null(contrast_dres)) {
       
       # Execute the custom contrast
-      custom_contrast_res <- custom_contrast_DEA(dds, contrast, alpha, "Wald")
+      custom_contrast_res <- custom_contrast_DEA(dds, contrast_dres, alpha, "Wald")
       
       # Get the DESeq results
       deseq_results <- custom_contrast_res$DESeq_results

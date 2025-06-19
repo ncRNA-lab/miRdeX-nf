@@ -790,7 +790,8 @@ workflow MIRDEX {
                 .map{it[0].species}
                 .unique()
                 .collect()
-                .set{ch_species_names}  
+                .set{ch_species_names}
+            
 
             // Only reference (canonical) miRNAs will be considered
             if (params.mirna_classes == 'ref_miRNA') {

@@ -94,13 +94,8 @@ workflow MIRNOTE {
             def db = db_info_map != null ? db_info_map.database : 'NA'
 
             return meta_list.indices.collect { i ->
-                def meta = meta_list[i]
-                meta['species_db'] = species_db
-                meta['database'] = db
-                // Remove undesired fields for summary channel
-                meta.remove('genome')
-                meta.remove('single_end') 
-                return [meta.id, meta]
+                def new_meta = meta_list[i].clone()
+                return [new_meta.id, new_meta + [species_db:species_db, database:db]]
             }
         }
         .set{ ch_pipeline_summary }
@@ -109,8 +104,12 @@ workflow MIRNOTE {
     ch_input
         .map{ meta, file -> [meta.species, meta, file]}
         .combine(ch_species_db, by:0)
-        .map{_species, meta1, file, meta2 -> [meta1 + meta2, file]}
-        .set{ ch_input }
+        .map{_species, meta1, file, meta2 ->
+            def meta_new1 = meta1.clone()
+            def meta_new2 = meta2.clone()
+            [meta_new1 + meta_new2, file]}
+        .set{ ch_input_sp }
+    ch_input_sp.view()
 
 
     /*
@@ -123,7 +122,7 @@ workflow MIRNOTE {
     if (params.counts > 0 || params.rpm > 0){
         
         // Calculate the raw counts
-        COUNTS(ch_input)
+        COUNTS(ch_input_sp)
 
         // Save the raw counts inot a channel
         COUNTS.out.raw.set{ ch_raw_counts }
@@ -146,8 +145,8 @@ workflow MIRNOTE {
     */
 
     // Identify FASTA and FASTQ files in the input channel
-    sub_fastq_ch = ch_input.filter{ _meta, file -> file.name ==~ /.*\.(fastq|fq)(\.gz)?$/ }
-    sub_fasta_ch = ch_input.filter{ _meta, file -> file.name ==~ /.*\.(fasta|fa)(\.gz)?$/ }
+    sub_fastq_ch = ch_input_sp.filter{ _meta, file -> file.name ==~ /.*\.(fastq|fq)(\.gz)?$/ }
+    sub_fasta_ch = ch_input_sp.filter{ _meta, file -> file.name ==~ /.*\.(fasta|fa)(\.gz)?$/ }
 
     // Convert FASTQ files to FASTA
     SEQKIT_FQ2FA(sub_fastq_ch)
@@ -159,10 +158,10 @@ workflow MIRNOTE {
     sub_fasta_ch
         .mix(SEQKIT_FQ2FA.out.fasta)
         .map{ meta, file -> [ meta + [id: "${meta.id}.rmdup", run: meta.id], file]}
-        .set{ch_input}
+        .set{ch_input_sp}
 
     // Remove duplicates in the input files
-    SEQKIT_RMDUP(ch_input)
+    SEQKIT_RMDUP(ch_input_sp)
 
     // Save the software version
     ch_versions = ch_versions.mix(SEQKIT_RMDUP.out.versions)
@@ -170,7 +169,7 @@ workflow MIRNOTE {
     // Save the results in the input channel
     SEQKIT_RMDUP.out.fastx
         .map{ meta, file -> [meta + [id: meta.run], file]}
-        .set{ch_input}
+        .set{ch_input_sp}
 
     /*
     ========================================================================================
@@ -179,7 +178,7 @@ workflow MIRNOTE {
     */
 
     // Preapare the input channel for ISOMIRS_IDENTIFICATION worflow
-    ch_input
+    ch_input_sp
         .map{ meta, file -> [meta, file, meta.mature, meta.precursor, meta.genome]}
         .set{ ch_to_identify_isomirs }
     
