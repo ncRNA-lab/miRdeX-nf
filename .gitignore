@@ -35,5 +35,5 @@ Singularity/
 
 # Ignore file to submit pipeline in garnatxa
 main.sh
-miRPlan-nf.log
+miRdeX-nf.log
 

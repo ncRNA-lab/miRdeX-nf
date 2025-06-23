@@ -52,6 +52,7 @@ include { FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS } from "../../subworkflow
 */
 
 include { samplesheetToList          } from 'plugin/nf-schema'
+include { organiseInputChannel       } from "../../subworkflows/local/utils_mirdex_pipeline"
 include { validateAndAssignGenome    } from "../../subworkflows/local/utils_mirdex_pipeline"
 include { notTsvFilesError           } from "../../subworkflows/local/utils_mirdex_pipeline"
 include { validateGroupInputUsage    } from "../../subworkflows/local/utils_mirdex_pipeline"
@@ -79,77 +80,89 @@ workflow MIRDEX {
     ch_counts           = Channel.empty()
     ch_versions         = Channel.empty()
 
+    /*
+    ============================================================================
+       1. Organise Input channel
+    ============================================================================
+    */
+
     // Create a channel from input file using params.input
     Channel
         .fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_input.json"))
         .set{ch_input}
     
-    /*
-    ============================================================================
-       1. Assign a default genome to the input files if necessary.
-    ============================================================================
-    */
-    
-    ch_input
-        // Assign a genome to each library depending on the species.
-        .map { item -> validateAndAssignGenome(item) }
-        .set {ch_input}
+    // Split the input channel into samples and project channels
+    ch_input_samples = ch_input.filter { id, file, _meta, _genome, _group -> file.name.endsWith('.fastq.gz') }
+    ch_input_project = ch_input.filter { id, file, _meta, _genome, _group -> file.name.endsWith('.tsv') || file.name.endsWith('.txt') }
+
+    // Organise both channels and get the species and project names
+    ch_samples_organised = organiseInputChannel(ch_input_samples, 'Run')
+    ch_project_organised = organiseInputChannel(ch_input_project, 'Project')
+
+    // Concat both channels
+    ch_input_organised = ch_samples_organised.concat(ch_project_organised)
 
     /*
     ============================================================================
-        2. Check the inputs related to counts matrices
+       2. Assign a default genome to the input files if necessary.
+    ============================================================================
+    */
+    
+    ch_input_organised
+        // Assign a genome to each library depending on the species.
+        .map { meta, file->
+            def new_meta = meta.clone()
+            new_meta.genome = validateAndAssignGenome(meta.species, meta.genome)
+            return[new_meta, file]
+        }
+        .set{ ch_input_organised }
+    
+    /*
+    ============================================================================
+        3. Check the inputs related to counts matrices
     ============================================================================
     */
 
     // Check the correct usage of the --from_counts parameter.
-    ch_input
-        .map{item -> item[4]}
+    ch_input_organised
+        .map{ _meta, file -> file }
         .filter{ it =~ /.*\.tsv$/ }
         .toList()
         .map { files -> notTsvFilesError(files) }
 
     // Check the correct usage of Group input
-    ch_input
-        .map { it[5] }
+    ch_input_organised
+        .map { meta, _file -> meta.group_id }
         .toList()
         .map{ item -> validateGroupInputUsage(item) }
+
     
     /*
     ============================================================================
-        3. Separate the fastq files from the accession list files
+        4. Separate the fastq files from the accession list files
     ============================================================================
     */
-
-    ch_input
-        .map { item ->
-                [[species: item[0], project: item[1], metadata: item[2], genome: item[3], single_end: true, group_id:item[5]], item[4]]
-        }
-        .set{ ch_input }
     
-    ch_input
+    ch_input_organised
         .branch { meta, file ->
                 
                 // Accession lists. It ends with '.txt'
                 acclist: file.toString().endsWith('.txt')
-                    def meta_acclist_with_id = [id: meta.project] + meta
-                    return [meta_acclist_with_id, file]
+                    return [meta, file]
 
                 // Sequencing libraries. They end with '.fastq', '.fastq.gz', '.fq', o '.fq.gz'
                 fastq: file.toString() =~ /\.(fastq(\.gz)?|fq(\.gz)?)$/
-                    def file_wo_extension = file.getName().replaceFirst(/\.(fastq(\.gz)?|fq(\.gz)?)$/, '')
-                    def meta_fastq_with_id = [id: file_wo_extension] + meta
-                    return [meta_fastq_with_id, file]
+                    return [meta, file]
 
                 // Counts matrices. They end with '.tsv'
                 counts: file.toString().endsWith('.tsv')
-                    def meta_counts_with_id = [id: meta.project] + meta
-                    return[meta_counts_with_id, file]   
+                    return[meta, file]   
         }
         .set { ch_input_files }
     
     /*
     ============================================================================
-        4. Validate input counts matrices
+        5. Validate input counts matrices
     ============================================================================
     */
 
@@ -201,7 +214,7 @@ workflow MIRDEX {
 
     /*
     ============================================================================
-        5. Pre-processing of the sequencing libraries
+        6. Pre-processing of the sequencing libraries
     ============================================================================
     */
 
@@ -210,7 +223,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            5.1. SUBWORKFLOW: Download the study libraries
+            6.1. SUBWORKFLOW: Download the study libraries
         ============================================================================
         */
 
@@ -268,7 +281,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            5.2. SUBWORKFLOW: Perform quality control of RAW data
+            6.2. SUBWORKFLOW: Perform quality control of RAW data
         ============================================================================
         */
 
@@ -282,7 +295,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            5.3. SUBWORKFLOW: Perform trimming of the libraries using fastp.
+            6.3. SUBWORKFLOW: Perform trimming of the libraries using fastp.
         ============================================================================
         */
 
@@ -328,7 +341,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            5.4. SUBWORKFLOW: Perform quality control of RAW data
+            6.4. SUBWORKFLOW: Perform quality control of RAW data
         ============================================================================
         */
 
@@ -342,7 +355,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            5.5. SUBWORKFLOW: Validate the libraries (depth and replicates)
+            6.5. SUBWORKFLOW: Validate the libraries (depth and replicates)
         ============================================================================
         */
 
@@ -430,7 +443,7 @@ workflow MIRDEX {
             
         /*
         ============================================================================
-            5.6. SUBWORKFLOW: Remove sequences that are not of interest
+            6.6. SUBWORKFLOW: Remove sequences that are not of interest
         ============================================================================
         */
 
@@ -480,7 +493,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            5.7. SUBWORKFLOW: Remove sequences that do not align with the genome
+            6.7. SUBWORKFLOW: Remove sequences that do not align with the genome
         ============================================================================
         */
 
@@ -541,7 +554,7 @@ workflow MIRDEX {
         
         /*
         ============================================================================
-            6. SUBWORKFLOW: Quantification of small RNA sequences
+            7. SUBWORKFLOW: Quantification of small RNA sequences
         ============================================================================
         */
 
@@ -606,7 +619,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            7. SUBWORKFLOW: Differential Expression Analysis
+            8. SUBWORKFLOW: Differential Expression Analysis
         ============================================================================
         */
 
@@ -748,7 +761,7 @@ workflow MIRDEX {
 
         /*
         ============================================================================
-            8. SUBWORKFLOW: miRNA Annotation
+            9. SUBWORKFLOW: miRNA Annotation
         ============================================================================
         */
 
@@ -786,7 +799,7 @@ workflow MIRDEX {
             }
 
             // Get the input species names
-            ch_input
+            ch_input_organised
                 .map{it[0].species}
                 .unique()
                 .collect()
@@ -990,7 +1003,7 @@ workflow MIRDEX {
 
             /*
             ============================================================================
-                9. Create global matrices
+                10. Create global matrices
             ============================================================================
             */
 

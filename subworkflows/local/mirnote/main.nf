@@ -109,8 +109,6 @@ workflow MIRNOTE {
             def meta_new2 = meta2.clone()
             [meta_new1 + meta_new2, file]}
         .set{ ch_input_sp }
-    ch_input_sp.view()
-
 
     /*
     ========================================================================================
@@ -355,6 +353,11 @@ workflow MIRNOTE {
                 mixed_shift: 'NA',
                 undefined: 'NA'
             ]
+            // Remove undesired fields for summary channel
+            pip_summary.remove('genome')
+            pip_summary.remove('single_end')
+            
+            // Add the additional fields
             pip_summary + additionalFields
         }
         .set{ ch_pipeline_summary }

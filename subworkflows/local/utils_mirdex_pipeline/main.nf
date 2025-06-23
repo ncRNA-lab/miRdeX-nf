@@ -140,7 +140,7 @@ def validateInputParameters() {
 
             // Comprobar espacios
             if (params.databases.contains(' ')) {
-                log.error("The 'databases' parameter must not contain spaces. Use comma-separated names without spaces.")
+                error("The 'databases' parameter must not contain spaces. Use comma-separated names without spaces.")
             }
 
             def dbList = params.databases
@@ -150,13 +150,13 @@ def validateInputParameters() {
 
             // Comprobar que no hay duplicados
             if (dbList.size() != dbList.toSet().size()) {
-                log.error("Duplicate entries found in 'databases' parameter: ${params.databases}")
+                error("Duplicate entries found in 'databases' parameter: ${params.databases}")
             }
 
             // Comprobar que todos los nombres sean válidos
             def unknown = dbList.findAll { !validNames.contains(it) }
             if (!unknown.isEmpty()) {
-                log.error("Invalid database names found in 'databases' parameter: ${unknown.join(', ')}. Allowed values are: miRBase, PmiREN, sRNAanno.")
+                error("Invalid database names found in 'databases' parameter: ${unknown.join(', ')}. Allowed values are: miRBase, PmiREN, sRNAanno.")
             }
         }
         
@@ -173,14 +173,14 @@ def validateInputParameters() {
         // Check if the params provided are positive numbers
         numericParams.each { name, value ->
             if (value != null && value < 0) {
-                log.error("The parameter '${name}' must be a non-negative number. Current value: ${value}")
+                error("The parameter '${name}' must be a non-negative number. Current value: ${value}")
             }
         }
 
         // Check if both counts and rpm params have been used (not  allowed)
         if (params.counts > 0 && params.rpm > 0) {
             // Show the error
-            log.error("The parameters 'counts' and 'rpm' are " +
+            error("The parameters 'counts' and 'rpm' are " +
                 "mutually exclusive and cannot be used together. Please select " +
                 "only one of them.")
         }
@@ -193,7 +193,7 @@ def validateInputParameters() {
         ignoreParams.addAll(['from_counts', 'only_preprocessing'])
         
         // Show the error
-        log.error("The parameters 'from_counts' and 'only_preprocessing' are " +
+        error("The parameters 'from_counts' and 'only_preprocessing' are " +
             "mutually exclusive and cannot be used together. Please select " +
             "only one of them.")
     }
@@ -312,6 +312,26 @@ def validateInputParameters() {
     }
 }
 
+//
+// It organises the input channel to the workflow.
+//
+
+def organiseInputChannel(input_channel, key) {
+
+    // Get the species and project from metadata
+    ch_sp_pj = input_channel
+        .map { item -> item[2] } // metadata file
+        .splitCsv(header: true, sep: '\t')
+        .map { meta -> [meta[key], meta['Species'], meta['Project']] }
+        .unique()
+
+    // Add this information to the original channel
+    return input_channel
+        .combine(ch_sp_pj, by:0)
+        .map{ id, file, meta, genome, group, sp, project ->
+            [[id: id, species: sp, project: project, metadata: meta, genome: genome, single_end: true, group_id:group], file]
+        }
+}
 
 //
 // Print a warning if using '--from_counts'
@@ -357,28 +377,26 @@ def skipAnnotationWarn(providedParams) {
 // the same, but with the genome properly linked.
 //
 
-def validateAndAssignGenome (item) {
+def validateAndAssignGenome (species, genome) {
     
     // Get some fields from the input map
-    def genome_path = item[4]
-    def species_name = item[0]
     def predetermined_genome
 
     // If no genome is provided, look it up in the configuration file
-    if (genome_path == []) {
-        predetermined_genome = params.genomes.get(species_name, null)?.fasta
+    if (genome == []) {
+        predetermined_genome = params.genomes.get(species, null)?.fasta
     } else {
         // Use the provided genome path
-        predetermined_genome = genome_path
+        predetermined_genome = genome
     }
 
     // If no valid genome found, throw an error
-    if (predetermined_genome == null && params.filt_genome) {
-        log.error("There is no genome associated with the following file:\n${item[2]}")
+    if (predetermined_genome == null && (params.filt_genome || params.mirna_classes != 'ref_miRNA')) {
+        error("There is no genome associated with the following species:\n${species}")
     }
 
     // Return (species, project, metadata_path, genome, file, groups)
-    return [item[0], item[1], item[3], predetermined_genome, item[2], item[5]]
+    return predetermined_genome
 }
 
 
@@ -392,11 +410,11 @@ def notTsvFilesError(files) {
 
     if (files.isEmpty() && params.from_counts) {
         // Throw an exception with the list of invalid files
-        log.error("The --from_counts parameter must " +
+        error("The --from_counts parameter must " +
             "be used only when counts matrix files in TSV " +
             "format are provided in the samplesheet.\n")
     } else if (!files.isEmpty() && !params.from_counts) {
-        log.error("Counts matrices in TSV format " +
+        error("Counts matrices in TSV format " +
             "have been provided in the samplesheet, but the " +
             "--from_counts parameter has not been specified. Please " +
             "include this parameter to ensure correct processing.\n")
@@ -419,7 +437,7 @@ def validateGroupInputUsage (item) {
     // Check if all elements have valid groups
     if(groupsProvided.size() != item.size()) {
         if (params.from_counts) {
-            log.error("Not all input files have an  " +
+            error("Not all input files have an  " +
                 "associated group, even though the --from_counts " +
                 "parameter has been specified. Make sure to use the " +
                 "--from_counts parameter and provide a group only when " +

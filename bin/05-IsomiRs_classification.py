@@ -1179,6 +1179,68 @@ def filter_isomirs(classification, substitutions_inside=1, nt_5add=0, nt_3add=3,
     return isomir_valid
 
 
+def extract_mirna_family_and_variant(miRNA: str):
+    """
+    Extracts the miRNA family identifier and variant from a canonical miRNA name.
+
+    This function parses a miRNA name (e.g., 'ath-miR156a-5p') and identifies the 
+    base family ID (such as 'miR156') and any variant letters that follow (e.g., 'a').
+    It supports a variety of naming conventions found in miRBase, PmiREN, or sRNAanno,
+    and handles cases with or without strand or precursor IDs.
+
+    Parameters
+    ----------
+    miRNA : str
+        A canonical miRNA name, typically in the format 'species-miRNA-variant-strand',
+        such as 'hsa-let-7a-1', 'ath-miR156d-5p', or 'cbn-lin-4'.
+
+    Returns
+    -------
+    tuple
+        A tuple (family_id, variant) where:
+        - family_id : str
+            The base family identifier (e.g., 'miR156', 'let-7').
+        - variant : str
+            A string representing the variant letter(s) (e.g., 'a', 'bc', or '').
+            If no variant is found, an empty string is returned.
+    """
+
+    # Remove species ID and split by "-"
+    parts = miRNA.split("-")
+    
+    # If there are more than 3 parts (e.g., hsa-miR156a-5p), assume: [species, mirna, variant, strand]
+    if len(parts) > 3:
+        # Remove species and strand (e.g., keep ['miR156a'])
+        core = ''.join([parts[1], parts[2]])
+    else:
+        # Search for the first numeric position
+        check = re.search(r'\d', parts[1])
+        if not check:
+            # The identifier number is in element 3
+            core = ''.join([parts[1], parts[2]])
+        else:
+            # The identifier number is in element 2
+            core = parts[1]
+
+    # Find the position of the first number within the core
+    num_pos_match = re.search(r'\d', core)
+    num_pos = num_pos_match.start()
+
+    # Cut from the first digit
+    numbers = core[num_pos:]
+
+    # Search how far the numbers go (to separate the variant)
+    m = re.match(r'(\d+)([a-zA-Z]*)', numbers)
+    if not m:
+        variant = ''
+    else:
+        # Get the variant
+        family_id = core[:num_pos + len(m.group(1))]  # e.g. 'miR156'
+        variant = m.group(2)  # e.g. 'a'
+        
+    return family_id, variant
+
+
 def isomir_group_name(name):
     """
     Generates a unique isomiR name based on the canonical miRNA variants it is
@@ -1207,43 +1269,29 @@ def isomir_group_name(name):
     # Split the string by the delimiter "|"
     miRNA_vars = name.split('|')
     miRNAs_vars_dic = {}
-    # Preprocess to extract the relevant information
-    for miRNA in miRNA_vars:
 
-        # Get the miRNA parts (ath-miR398a-5p -> ['ath', 'miR398a', '5p'])
-        parts = miRNA.split('-')
+    for mirna in miRNA_vars:
 
-        # Get the simple miRNA name (['ath', 'miR398a', '5p'] -> miR398a)
-        miRNA_simple = next((item for item in parts if 'mir' in item.lower()), None)
+        # Get the faimily identifier and variant
+        fam_id, var = extract_mirna_family_and_variant(mirna)
         
-        # If no valid miRNA name is found, skip to the next one
-        if not miRNA_simple:
-            continue
-        
-        # Get the miRNA name (miR398a -> miR398)
-        miRNA_name = re.search(r'(miR\d+(\.\d+)?)', miRNA_simple, re.IGNORECASE).group(1)
-        
-        # Extract the variant (letter) (miR398a -> a)
-        var_match = re.search(r'\d([a-zA-Z])', miRNA_simple)
-        var = var_match.group(1) if var_match else ''
-        
-        # Extract the strand (5p or 3p)
-        #strand = next((part for part in parts if part.endswith("p")), '')
-        strand = next((part for part in parts if re.search(r"(5p|3p)$", part)), '')
+        # Extraer strand si está presente
+        strand_part = next((p for p in mirna.split('-') if re.match(r'[53]p$', p)), '')
 
         # Store in the dictionary
-        if miRNA_name not in miRNAs_vars_dic:
-            miRNAs_vars_dic[miRNA_name] = {'vars': [], 'strands': []}
+        if fam_id not in miRNAs_vars_dic:
+            miRNAs_vars_dic[fam_id] = {'vars': [], 'strands': []}
         
-        miRNAs_vars_dic[miRNA_name]['vars'].append(var)
-        miRNAs_vars_dic[miRNA_name]['strands'].append(strand)
+        # Save the information into the dictionary
+        miRNAs_vars_dic[fam_id]['vars'].append(var)
+        miRNAs_vars_dic[fam_id]['strands'].append(strand_part)
 
     # Create miRNA names for isomiR classification
     miRNA_class_names_list = []
 
     for miRNA, elements in miRNAs_vars_dic.items():
         # Concatenate all variants
-        vars = "".join(elements['vars'])
+        vars = "".join(list(set(elements['vars'])))
 
         # Get the strand, if exists
         strand = next((item for item in elements['strands'] if item), None)

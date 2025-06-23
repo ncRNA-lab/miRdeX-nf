@@ -563,32 +563,16 @@ def main():
     print('Relating stress event identifiers to miRNA families...')
     files_miRNA_list_fam, miRNA_list_fam = get_miRNA_families(files_list, miRNA_column='miRNA_fam')
     print('Done!')
-    print('Relating stress event identifiers to miRNA names...')
-    files_miRNA_list_name, miRNA_list_name = get_miRNA_families(files_list, miRNA_column='Name')
-    print('Done!')
-
-    print(ids_dic)
-    print(files_miRNA_list_fam)
-    print(files_miRNA_list_name)
 
     # Create the event_id-miRNAs dictionary (e.g. {'1.1.1.1': [('miR156', 3.23), ('miR472', -1.43)]})
     eventid_miRNAs_dic_fam = {}
-    eventid_miRNAs_dic_name = {}
     for key, new_key in ids_dic.items():
-        print('Hola')
-        print(key)
-        print(new_key)
         if key in files_miRNA_list_fam:
             eventid_miRNAs_dic_fam[new_key[0]] = files_miRNA_list_fam[key]
-        if key in files_miRNA_list_name:
-            eventid_miRNAs_dic_name[new_key[0]] = files_miRNA_list_name[key]
 
     # Create the both presence-absence and Log2fc matrices
     print('Creating miRNA-events matrices (Family)...')
     create_miRNA_tables('miRNA_fam', eventid_miRNAs_dic_fam, miRNA_list_fam)
-    print('Creating miRNA-events matrices (Name)...')
-    create_miRNA_tables('miRNA_name', eventid_miRNAs_dic_name, miRNA_list_name)
-    print('Done!')
 
 ## CALL THE MAIN PROGRAM
 

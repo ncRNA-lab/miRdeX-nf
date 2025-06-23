@@ -56,7 +56,6 @@ workflow QUANTIFICATION {
             .groupTuple(by:0)
             .map{ meta, files -> [meta, files, meta.metadata]}
             .set{ ch_counts_by_group }
-        ch_counts_by_group.view()
 
         // Create the count matrix
         COUNTS_MATRIX(ch_counts_by_group, type, not_in_memory)

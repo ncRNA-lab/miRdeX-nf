@@ -51,7 +51,18 @@ process BOWTIE_ALIGN {
         fi
     fi
 
-    INDEX=\$(find -L ./ -name "*.3.ebwt" | sed 's/\\.3.ebwt\$//')
+    INDEX=\$(find -L ./ \\( -name "*.3.ebwt" -o -name "*.3.ebwtl" \\) | sed -E 's/\\.3\\.ebwtl?\$//')
+
+    for ext in 1 2 3 4 rev.1 rev.2; do
+        file="\${INDEX}.\${ext}.ebwtl"
+        if [[ ! -s "\$file" ]]; then
+            echo "ERROR: Missing or empty index file: \$file"
+            ls -lh "\$file"
+            exit 1
+        fi
+        done
+        
+    echo \$INDEX
     bowtie \\
         --threads $task.cpus \\
         --sam \\

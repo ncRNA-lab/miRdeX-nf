@@ -22,7 +22,7 @@ process BOWTIE_BUILD {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     mkdir -p bowtie
-    bowtie-build --threads $task.cpus $fasta bowtie/${prefix}
+    bowtie-build --threads $task.cpus ${args} $fasta bowtie/${prefix}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

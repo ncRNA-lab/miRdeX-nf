@@ -106,7 +106,7 @@ get_arguments <- function() {
   #  Check for missing arguments
   expected_arguments <- c('id', 'group_id', 'counts', 'metadata', 'alpha', 'min_counts', 'min_samples')
   if (any(sapply(args, is.null))) {
-    empty_args <- names(args[sapply(args, is.null)])
+    empty_args <- expected_arguments[sapply(args[expected_arguments], is.null)]
     error_message <- paste('\n\tError. Unspecified argument:', empty_args, sep = ' ')
     stop(error_message)
   }
