@@ -38,18 +38,8 @@ process DIFFEXPANALYSIS {
 
     # Check if the output files are empty
     for file in *.dea_*.tsv; do
-        # Get the number of lines
-        num_lines=\$(wc -l < "\$file")
-        
-        # Check if the file is empty (empty or it only has the header)
-        if [ "\$num_lines" -le 1 ]; then
-
-            # Create file new name
-            new_name="\${file%.tsv}_EMPTY.tsv"
-            
-            # Change the name of the file
-            mv "\$file" "\$new_name"
-        fi
+        [[ "\$file" == *EMPTY* ]] && continue
+        (( \$(wc -l < "\$file") <= 1 )) && mv "\$file" "\${file%.tsv}_EMPTY.tsv"
     done
     
     # Create versions file

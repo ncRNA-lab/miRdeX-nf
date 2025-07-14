@@ -321,6 +321,7 @@ def organiseInputChannel(input_channel, key) {
     // Get the species and project from metadata
     ch_sp_pj = input_channel
         .map { item -> item[2] } // metadata file
+        .unique()
         .splitCsv(header: true, sep: '\t')
         .map { meta -> [meta[key], meta['Species'], meta['Project']] }
         .unique()

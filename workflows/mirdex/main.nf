@@ -638,6 +638,9 @@ workflow MIRDEX {
         
         // Add the EA data to the ch_pipeline_summary channel
         DIFFEXPANALYSIS.out.easum
+            .filter { _meta, file ->
+                !file.getName().endsWith('_EMPTY.ea_summary.tsv')
+            }
             .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .map{ item -> [item.Group, item]}
@@ -681,6 +684,9 @@ workflow MIRDEX {
 
         // Add the DEA data to the ch_pipeline_summary channel
         DIFFEXPANALYSIS.out.deasum
+            .filter { _meta, file ->
+                !file.getName().endsWith('_EMPTY.dea_summary.tsv')
+            }
             .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .flatMap { item ->
@@ -738,6 +744,9 @@ workflow MIRDEX {
                     
         // Prepare the channel for the next steps of the workflow.
         DIFFEXPANALYSIS.out.deasum
+            .filter { _meta, file ->
+                !file.getName().endsWith('_EMPTY.dea_summary.tsv')
+            }
             .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .map{ item -> [item.Group, item]}
@@ -774,6 +783,9 @@ workflow MIRDEX {
 
                 // Prepare ea summary channel
                 DIFFEXPANALYSIS.out.easum
+                    .filter { _meta, file ->
+                        !file.getName().endsWith('_EMPTY.ea_summary.tsv')
+                    }
                     .map{ meta, file -> [meta.id, meta, file] }
                     .set{ ch_easum }
                 

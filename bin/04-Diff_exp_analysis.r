@@ -230,22 +230,26 @@ create_DeseqDataSet <- function(group_id, file, metadata, min_counts=5, min_samp
     }
     
     ######################### Create the DESeqDataSet ############################
-  
-    print(colnames(as.matrix(counts_df_filt)))
-    print(coldata)
+
+    # Check if the matrix is not empty
+    if (nrow(counts_df_filt) > 0) {
     
-    # Create DESeqDataSet
-    dds <- suppressMessages(DESeqDataSetFromMatrix(countData = as.matrix(counts_df_filt),
-                                                   colData = coldata,
-                                                   design = as.formula(design_formula)))
+      # Create DESeqDataSet
+      dds <- suppressMessages(DESeqDataSetFromMatrix(countData = as.matrix(counts_df_filt),
+                                                    colData = coldata,
+                                                    design = as.formula(design_formula)))
+      
+      
+      ################## Set the reference level for each factor ###################
     
-    
-    ################## Set the reference level for each factor ###################
-  
-    # Iterate through factors
-    for (factor_name in names(factors_reference_list)) {
-      # Set the reference values as reference for the rest of the factors
-      dds[[factor_name]] <- relevel(dds[[factor_name]], ref = factors_reference_list[[factor_name]])
+      # Iterate through factors
+      for (factor_name in names(factors_reference_list)) {
+        # Set the reference values as reference for the rest of the factors
+        dds[[factor_name]] <- relevel(dds[[factor_name]], ref = factors_reference_list[[factor_name]])
+      }
+    } else {
+      print("No sRNAs remain after low-count filtering. DESeqDataSet was not created.")
+      dds <- -1
     }
   
   # The counts matrix is
@@ -471,10 +475,20 @@ exploratory_analysis <- function(dds, file_name) {
 
   # Absolute counts normalization for mean vs variance plot (blind = FALSE)
   deseqds <- suppressMessages(DESeq2::estimateSizeFactors(dds))
-  print(counts(deseqds))
-  assay(deseqds, 'counts.norm.VST.false') <- as.data.frame(assay(varianceStabilizingTransformation(deseqds, blind = FALSE)))
-  print("Adios")
+  vst_result <- tryCatch({
+    assay(varianceStabilizingTransformation(deseqds, blind = FALSE))
+  }, error = function(e) {
+    message("Error during VST (blind = FALSE): ", e$message)
+    message("Skipping exploratory analysis. Returning NULL.")
+    return(NULL)
+  })
+
+  # Exit the function early if VST failed
+  if (is.null(vst_result)) return(NULL)
   
+  # Only assign the result if it succeeded
+  assay(deseqds, 'counts.norm.VST.false') <- as.data.frame(vst_result)
+
   ### 1.2 MEAN VS VARIANCE PLOT
   png(file = paste(path_dir_mvv_out, '/', file_name, '_meanvsvar.ea.png', sep = ''),
       width     = 3.25,
@@ -1302,137 +1316,167 @@ min_samples <- args$min_samples
 # Filter the counts matrix by low counts and create the DeseqDataSet
 dds <- create_DeseqDataSet(group_id, file, metadata, min_counts, min_samples)
 
-########################## Exploratory analysis ################################
+fail <- FALSE
+if (!identical(dds, -1)) {
 
-# Perform an exploratory analysis.
-ea_results <- exploratory_analysis(dds, group)
+  ########################## Exploratory analysis ################################
 
-# Get the test
-test <- unique(colData(dds)$Test)
+  # Perform an exploratory analysis.
+  ea_results <- exploratory_analysis(dds, group)
 
-cat("\n######################## ", group, " ########################\n\n")
-cat("- Test: ", test, "\n")
+  # Check if the result is NULL
+  if (!is.null(ea_results)) {
 
-###################### Differential expression analysis ########################
-sum <- data.frame()
+    # Get the test
+    test <- unique(colData(dds)$Test)
 
-# If the selected test is LRT...
-if (toupper(test) == "LRT"){
-  
-  # Get the reduced formula from the colData
-  reduced_formula <- unique(colData(dds)$DesignRed)
-  
-  # Execute the DEA (LRT)
-  dds <- suppressMessages(DESeq(dds, test = "LRT", reduced = as.formula(reduced_formula)))
-  
-  # Get the DESeq results
-  sum <- get_DESeq_results(dds, alpha, test, sum, paste0(group,"_0"))
-  
-  # Print some information
-  cat("- Full model: ", unique(colData(dds)$Design), "\n")
-  cat("- Reduced model: ", reduced_formula,  "\n")
-  
-# If it is other type of analysis. Use the Wald test.
-} else {
-  
-  # Execute the DEA (Wald test)
-  dds <- suppressMessages(DESeq(dds))
-  
-  # Print some information
-  cat("- Design: ", unique(colData(dds)$Design), "\n")
-}
+    cat("\n######################## ", group, " ########################\n\n")
+    cat("- Test: ", test, "\n")
 
-# Only for designs with more than one comparison
-subfile_num <- 1
+    ###################### Differential expression analysis ########################
+    sum <- data.frame()
 
-# If there are custom numerical contrasts...
-if ("Contrast" %in% colnames(colData(dds))){
-  
-  # Print some information
-  cat("- Contrasts:\n")
-  
-  # Obtain the set of custom contrasts
-  group_of_contrast_str <- unique(colData(dds)$Contrast)
-  
-  # Get a vector with the contrasts
-  group_of_contrast_v <- str_split(group_of_contrast_str, ":")[[1]]
-  
-  # Iterate through the contrasts
-  for (contrast in group_of_contrast_v) {
-    
-    # If there is more than one comparison
-    if (length(group_of_contrast_v) > 1) {
-      output_file_id <- paste0(group,"_", subfile_num)
+    # If the selected test is LRT...
+    if (toupper(test) == "LRT"){
       
-      # If the formula uses only one factor ...
-    } else {
-      output_file_id <- paste0(group,"_0")
-    }
-    
-    # Print some information
-    cat("\t ", output_file_id, " -> ", contrast, "\n")
-    
-    # Get the DESeq results
-    sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, contrast_dres=contrast)
-    
-    # Increment the subfile_num variable
-    subfile_num <- subfile_num + 1
-    
-  }
-
-# If no contrast is specified, use the coefficients returned by resultsNames()...
-} else {
-  
-  # Print some information
-  cat("- Coefficients:\n")
-  
-  # Iterate through comparisons
-  results_names <- resultsNames(dds)
-  for (comp in results_names){
-    if (comp != 'Intercept') {
+      # Get the reduced formula from the colData
+      reduced_formula <- unique(colData(dds)$DesignRed)
       
-      # If there is more than one comparison
-      if (length(results_names) > 2) {
-        output_file_id <- paste0(group,"_", subfile_num)
-        
-        # If the formula uses only one factor ...
-      } else {
-        output_file_id <- paste0(group,"_0")
-      }
-      
-      # Print some information
-      cat("\t ", output_file_id, " -> ", comp, "\n")
+      # Execute the DEA (LRT)
+      dds <- suppressMessages(DESeq(dds, test = "LRT", reduced = as.formula(reduced_formula)))
       
       # Get the DESeq results
-      sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, coefficient_dres=comp)
+      sum <- get_DESeq_results(dds, alpha, test, sum, paste0(group,"_0"))
       
-      # Increment the subfile_num variable
-      subfile_num <- subfile_num + 1
+      # Print some information
+      cat("- Full model: ", unique(colData(dds)$Design), "\n")
+      cat("- Reduced model: ", reduced_formula,  "\n")
       
+    # If it is other type of analysis. Use the Wald test.
+    } else {
+      
+      # Execute the DEA (Wald test)
+      dds <- suppressMessages(DESeq(dds))
+      
+      # Print some information
+      cat("- Design: ", unique(colData(dds)$Design), "\n")
     }
+
+    # Only for designs with more than one comparison
+    subfile_num <- 1
+
+    # If there are custom numerical contrasts...
+    if ("Contrast" %in% colnames(colData(dds))){
+      
+      # Print some information
+      cat("- Contrasts:\n")
+      
+      # Obtain the set of custom contrasts
+      group_of_contrast_str <- unique(colData(dds)$Contrast)
+      
+      # Get a vector with the contrasts
+      group_of_contrast_v <- str_split(group_of_contrast_str, ":")[[1]]
+      
+      # Iterate through the contrasts
+      for (contrast in group_of_contrast_v) {
+        
+        # If there is more than one comparison
+        if (length(group_of_contrast_v) > 1) {
+          output_file_id <- paste0(group,"_", subfile_num)
+          
+          # If the formula uses only one factor ...
+        } else {
+          output_file_id <- paste0(group,"_0")
+        }
+        
+        # Print some information
+        cat("\t ", output_file_id, " -> ", contrast, "\n")
+        
+        # Get the DESeq results
+        sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, contrast_dres=contrast)
+        
+        # Increment the subfile_num variable
+        subfile_num <- subfile_num + 1
+        
+      }
+
+    # If no contrast is specified, use the coefficients returned by resultsNames()...
+    } else {
+      
+      # Print some information
+      cat("- Coefficients:\n")
+      
+      # Iterate through comparisons
+      results_names <- resultsNames(dds)
+      for (comp in results_names){
+        if (comp != 'Intercept') {
+          
+          # If there is more than one comparison
+          if (length(results_names) > 2) {
+            output_file_id <- paste0(group,"_", subfile_num)
+            
+            # If the formula uses only one factor ...
+          } else {
+            output_file_id <- paste0(group,"_0")
+          }
+          
+          # Print some information
+          cat("\t ", output_file_id, " -> ", comp, "\n")
+          
+          # Get the DESeq results
+          sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, coefficient_dres=comp)
+          
+          # Increment the subfile_num variable
+          subfile_num <- subfile_num + 1
+          
+        }
+      }
+    }
+
+    # end files loop
+    cat('\n')
+
+    # Save Differential expression analysis summary file
+    colnames(sum) <- c('Group', 'Test', 'Padj<alpha', 'Total', 'Coefficient', 'Contrast', 'Contrast_coefficient', 'Samples')
+    write.table(sum,
+                file=paste0(group, '.dea_summary.tsv', sep=""),
+                quote=FALSE,
+                sep='\t',
+                row.names = FALSE)
+
+
+    # Save the proportion of variance explained by each component and the p-value obtained in the MWW test in a .csv file
+    # Save the exploratory analysis results
+    ea_df <- t(as.data.frame(ea_results[2:10]))
+    colnames(ea_df) <- c('Group_id', 'Group', 'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'P-value(MWW)')
+    write.table(ea_df,
+                file = paste0(group, '.ea_summary.tsv', sep=""),
+                quote=FALSE,
+                sep='\t',
+                row.names = FALSE)
+  } else {
+    fail <- TRUE
   }
+} else {
+  fail <- TRUE
 }
 
-# end files loop
-cat('\n')
+# If the analysis fails, return empty files.
+if (fail) {
+    # Create empty TSVs
+    write.table(data.frame(), file = paste0(group, '.dea_raw_EMPTY.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0(group, '.dea_sig_EMPTY.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0(group, '_EMPTY.ea_summary.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0(group, '_EMPTY.dea_summary.tsv'), sep = '\t', row.names = FALSE)
+    
+    # Create empty placeholder image
+    png(paste0(group, '_EMPTY.volcano.png'))
+    plot.new()
+    text(0.5, 0.5, "EMPTY")
+    dev.off()
 
-# Save Differential expression analysis summary file
-colnames(sum) <- c('Group', 'Test', 'Padj<alpha', 'Total', 'Coefficient', 'Contrast', 'Contrast_coefficient', 'Samples')
-write.table(sum,
-            file=paste0(group, '.dea_summary.tsv', sep=""),
-            quote=FALSE,
-            sep='\t',
-            row.names = FALSE)
-
-
-# Save the proportion of variance explained by each component and the p-value obtained in the MWW test in a .csv file
-# Save the exploratory analysis results
-ea_df <- t(as.data.frame(ea_results[2:10]))
-colnames(ea_df) <- c('Group_id', 'Group', 'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'P-value(MWW)')
-write.table(ea_df,
-            file = paste0(group, '.ea_summary.tsv', sep=""),
-            quote=FALSE,
-            sep='\t',
-            row.names = FALSE)
-
-
+    # Create required empty directories
+    dir.create("01-PCA", showWarnings = FALSE, recursive = TRUE)
+    dir.create("02-SERE_dendrogram", showWarnings = FALSE, recursive = TRUE)
+    dir.create("03-Mean_vs_variance", showWarnings = FALSE, recursive = TRUE)
+}

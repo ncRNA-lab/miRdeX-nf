@@ -163,7 +163,8 @@ def insert_to_database (database: str, table_name: str, data_path: str,
         
 
 def merge_counts_tables (database: str, data_in: list, type_data: str,
-                         type_tables: str, mode: str='outer', final_table = 'project_table', cursor=None) -> None:
+                         type_tables: str, mode: str='outer', final_table = 'project_table',
+                         sqliteConnection=None, cursor=None) -> None:
     '''
     This function generates and executes the necessary SQLite queries to join in
     the same table the different replicates of the same condition or multiple
@@ -737,7 +738,7 @@ def main():
     #######################################################################
 
     if not_in_memory:
-        database = f'{id}_{mode}_{data_type}.db'
+        database = f'{id.replace("-", "_")}_{mode}_{data_type}.db'
         sqliteConnection = None
         cursor = None
     else:
@@ -774,12 +775,13 @@ def main():
     ## 3.2. Join the different replicates of each condition in a single table 
     ###########################################################################
 
-    merge_counts_tables(database,                       # SQLite database
-                        shortened_sample_list,          # Shortened names of all the project samples
-                        data_type,                      # Two options: counts or RPM
-                        'replicates',                   # Two options: replicates or conditions
-                        mode,                           # Two options: outer (default) or inner
-                        cursor=cursor)                  # Cursor to execute the queries        
+    merge_counts_tables(database,                           # SQLite database
+                        shortened_sample_list,              # Shortened names of all the project samples
+                        data_type,                          # Two options: counts or RPM
+                        'replicates',                       # Two options: replicates or conditions
+                        mode,                               # Two options: outer (default) or inner
+                        sqliteConnection=sqliteConnection,  # Sqlite connection
+                        cursor=cursor)                      # Cursor to execute the queries        
 
     ## 3.3 Create counts matrix
     ####################################################################
@@ -791,7 +793,8 @@ def main():
                         data_type,
                         'conditions',
                         mode='outer',
-                        final_table=id,
+                        final_table=id.replace("-", "_"),
+                        sqliteConnection=sqliteConnection,
                         cursor=cursor)       
     print('Done!\n')
     
@@ -804,7 +807,7 @@ def main():
     # Write subproject table (Uses the SUBPROJECT table)
     print(f'Writing {id} table to a TSV file...')
     write_from_sql(database,                                                    # SQLite database
-                id,                                                             # Final table (Group)
+                id.replace("-", "_"),                                           # Final table (Group)
                 f'{id}.{data_type}.tsv',                                        # Final table output file
                 shortened_sample_list,                                          # Group of shortened samples names
                 shortened_sample_dic,                                           # Dictionary t_1_r_3 = SRRXXXXXX (key = value)
@@ -824,8 +827,8 @@ def main():
         # Calculate average
         print(f'Creating AVG table from {id} table ...')
         rep_counts_avg(database,
-                    id,
-                    id + '_avg',
+                    id.replace("-", "_"),
+                    id.replace("-", "_") + '_avg',
                     sqliteConnection=sqliteConnection,
                     cursor=cursor)   
         print('Done!\n')
@@ -843,7 +846,7 @@ def main():
         # Write SQL table into a TSV file.
         print(f'Writing {id} AVG table to a TSV file...')
         write_from_sql(database,
-                        id + '_avg',
+                        id.replace("-", "_") + '_avg',
                         subproject_table_mean_file,
                         shortened_group_conditions_list,
                         shortened_condition_dic,
