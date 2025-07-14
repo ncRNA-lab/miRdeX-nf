@@ -35,19 +35,42 @@ workflow PREPARE_MIRNA_DATABASES {
 
     main:
 
-    // Find out which databases will be used.
+    // Get the list of databases to be used
     def db_list = databases.split(',').collect { it.trim() }
+    
+    // Find out which databases will be used.
     def download_mirbase = db_list.contains('mirbase')
     def download_srnaanno = db_list.contains('srnaanno')
     def download_pmiren = db_list.contains('pmiren')
 
-    // Donwload databases
-    DOWNLOAD_DB(species, download_mirbase, download_srnaanno, download_pmiren)
+    // Use databases previously downloaded and processed
+    if (params.reuse_dbs) {
+
+        // Create a channel for each database using the provided directories
+        ch_mirbase = Channel.fromFilePairs("${params.mirbase}/*_{mature,hairpin}.fa", flat: true)
+            .map { _id, hairpin, mature -> tuple(mature, hairpin) }
+        ch_srnaanno = Channel.fromFilePairs("${params.srnaanno}/*_{mature,hairpin}.fa", flat: true)
+            .map { _id, hairpin, mature -> tuple(mature, hairpin) }
+        ch_pmiren = Channel.fromFilePairs("${params.pmiren}/*_{mature,hairpin}.fa", flat: true)
+            .map { _id, hairpin, mature -> tuple(mature, hairpin) }
+
+        // Create a channel with the species ids file
+        ch_species_ids = Channel.fromPath("${params.species_ids}", checkIfExists: true)
+    
+    } else {
+
+        // Download the required databases
+        DOWNLOAD_DB(species, download_mirbase, download_srnaanno, download_pmiren)
+        ch_mirbase = DOWNLOAD_DB.out.mirbase
+        ch_srnaanno = DOWNLOAD_DB.out.srnaanno
+        ch_pmiren = DOWNLOAD_DB.out.pmiren
+        ch_species_ids = DOWNLOAD_DB.out.species_ids
+    }
 
     // Change the format of the db channels
-    mirbase_formatted = formatDbChannel(DOWNLOAD_DB.out.mirbase, 'mirbase')
-    srnaanno_formatted = formatDbChannel(DOWNLOAD_DB.out.srnaanno, 'srnaanno')
-    pmiren_formatted = formatDbChannel(DOWNLOAD_DB.out.pmiren, 'pmiren')
+    mirbase_formatted = formatDbChannel(ch_mirbase, 'mirbase')
+    srnaanno_formatted = formatDbChannel(ch_srnaanno, 'srnaanno')
+    pmiren_formatted = formatDbChannel(ch_pmiren, 'pmiren')
 
     // Combine the database channels in
     all_databases_ch = mirbase_formatted
@@ -55,7 +78,7 @@ workflow PREPARE_MIRNA_DATABASES {
             .concat(srnaanno_formatted)
 
     // Get a list with the species ids
-    DOWNLOAD_DB.out.species_ids
+    ch_species_ids
         .splitCsv( header: true, sep: ',' )
         .map{ sps_row -> [sps_row.final_id,sps_row.species]}
         .set{ch_species_ids}

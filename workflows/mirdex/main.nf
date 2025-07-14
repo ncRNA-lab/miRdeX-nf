@@ -260,13 +260,14 @@ workflow MIRDEX {
         // Download the libraries
         FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS(ch_samples_sra_id, [])
 
-        // Add the Input information to the summary channel
+        // Initialize the summary channel
         ch_input_files.fastq
             .map { meta, _file ->
                 [meta.id, [sample: meta.id, species: meta.species, project: meta.project, input: 'Local']]
             }
             .set{ch_pipeline_summary}
 
+        // Add the Input information to the summary channel
         FASTQ_DOWNLOAD_PREFETCH_FASTERQDUMP_SRATOOLS.out.reads
             .map { meta, _file ->
                 [meta.id, [sample: meta.id, species: meta.species, project: meta.project, input: 'Downloaded']]
@@ -293,59 +294,57 @@ workflow MIRDEX {
             )
         }
 
-        /*
-        ============================================================================
-            6.3. SUBWORKFLOW: Perform trimming of the libraries using fastp.
-        ============================================================================
-        */
+        // Perform the trimming
+        if (!params.skip_trimming){
 
-        // Execute FASTP
-        FASTP(
-            ch_fastq,
-            params.trimming_adapters,
-            false,
-            false,
-            false
-        )
+            /*
+            ============================================================================
+                6.3. SUBWORKFLOW: Perform trimming of the libraries using fastp.
+            ============================================================================
+            */
 
-        // Save the software version
-        ch_versions = ch_versions.mix(FASTP.out.versions)
+            // Execute FASTP
+            FASTP(
+                ch_fastq,
+                params.trimming_adapters,
+                false,
+                false,
+                false
+            )
 
-        // Add the trimming data to the ch_pipeline_summary channel
-        FASTP.out.reads
-            .map{meta, file ->
-                [meta.id, meta, file]
-            }
-            .join(ch_pipeline_summary, remainder: true)
-            .map { item ->
-                // Define new_meta variable
-                def new_meta = item.last()
-                // Update meta var
-                if (item[1] == null){
-                    new_meta = new_meta + [Trimming: 'Discarded']
-                } else {
-                    new_meta = new_meta + [Trimming: 'Trimmed']
+            // Save the software version
+            ch_versions = ch_versions.mix(FASTP.out.versions)
+
+            // Add the trimming data to the ch_pipeline_summary channel
+            FASTP.out.reads
+                .map{meta, file ->
+                    [meta.id, meta, file]
                 }
-                return [item[0], new_meta]
-            }
-            .set{ch_pipeline_summary}
+                .join(ch_pipeline_summary, remainder: true)
+                .map { item ->
+                    // Define new_meta variable
+                    def new_meta = item.last()
+                    // Update meta var
+                    if (item[1] == null){
+                        new_meta = new_meta + [Trimming: 'Discarded']
+                    } else {
+                        new_meta = new_meta + [Trimming: 'Trimmed']
+                    }
+                    return [item[0], new_meta]
+                }
+                .set{ch_pipeline_summary}
+            
+            // Update ch_fastq channel with the trimmed reads
+            ch_fastq = FASTP.out.reads
+        }
         
-        // Change the meta.id from file to project.
-        ch_fastq = FASTP.out.reads
-            .map { meta, file ->
-                def updatedMeta = meta.clone()
-                updatedMeta.id = meta.project
-                return [updatedMeta, file]
-            }
-            .groupTuple(by: 0, sort:true)
-
         /*
         ============================================================================
             6.4. SUBWORKFLOW: Perform quality control of RAW data
         ============================================================================
         */
 
-        if (!(params.skip_fastqc || params.skip_qc_trim)) {
+        if (!(params.skip_fastqc || params.skip_qc_trim || params.skip_trimming)) {
             QUALITY_CONTROL_TRIM(
                 FASTP.out.reads,
                 params.skip_multiqc,
@@ -358,6 +357,16 @@ workflow MIRDEX {
             6.5. SUBWORKFLOW: Validate the libraries (depth and replicates)
         ============================================================================
         */
+
+        // Change the meta.id from file to project.
+        ch_fastq
+            .map { meta, file ->
+                def updatedMeta = meta.clone()
+                updatedMeta.id = meta.project
+                return [updatedMeta, file]
+            }
+            .groupTuple(by: 0, sort:true)
+            .set { ch_fastq }
 
         // Validate the project
         VALIDATION(ch_fastq, 'libraries', params.validation_rep, params.validation_depth)

@@ -280,9 +280,43 @@
         },
         "ignore_threshold_for_canonical": {
           "type": "boolean",
-          "default": false,
           "fa_icon": "fas fa-table",
           "description": "Indicates whether canonical miRNA sequences should bypass the abundance threshold filter (e.g., RPM or read count). If set, canonical sequences will pass the filter regardless of their abundance."
+        },
+        "reuse_dbs": {
+          "type": "boolean",
+          "default": true,
+          "fa_icon": "fas fa-redo-alt",
+          "help_text": "If enabled, the pipeline will reuse previously downloaded and published database files from a prior execution, avoiding repeated downloads. This option assumes that the required database files already exist in the outdir directory structure. Use this to speed up re-runs or when re-analyzing data without changes to the reference databases.",
+          "description": "If enabled, the pipeline will reuse previously downloaded and published database files from a prior execution, avoiding repeated downloads."
+        },
+        "mirbase": {
+          "type": "string",
+          "default": "${params.outdir}/00-Additional_data/01-Databases/01-Mod_databases/miRBase",
+          "fa_icon": "fas fa-database",
+          "description": "Path to the directory containing mature and hairpin FASTA files from miRBase.",
+          "hidden": true
+        },
+        "srnaanno": {
+          "type": "string",
+          "default": "${params.outdir}/00-Additional_data/01-Databases/01-Mod_databases/sRNAanno",
+          "fa_icon": "fas fa-database",
+          "description": "Path to the directory containing mature and hairpin FASTA files from sRNAanno.",
+          "hidden": true
+        },
+        "pmiren": {
+          "type": "string",
+          "default": "${params.outdir}/00-Additional_data/01-Databases/01-Mod_databases/PmiREN",
+          "fa_icon": "fas fa-database",
+          "description": "Path to the directory containing mature and hairpin FASTA files from PmiREN.",
+          "hidden": true
+        },
+        "species_ids": {
+          "type": "string",
+          "default": "${params.outdir}/00-Additional_data/01-Databases/species_ids.csv",
+          "fa_icon": "fas fa-leaf",
+          "description": "Path to the CSV file with species identifiers from miRBase, sRNAanno and PmiREN.",
+          "hidden": true
         }
       }
     },
@@ -293,6 +327,11 @@
       "default": "",
       "fa_icon": "fas fa-fast-forward",
       "properties": {
+        "skip_trimming": {
+          "type": "boolean",
+          "fa_icon": "fas fa-forward",
+          "description": "Skip trimming. \u26a0 Use this option only if the input libraries have already been trimmed and contain only clean reads composed exclusively of A, C, G, and T bases."
+        },
         "skip_fastqc": {
           "type": "boolean",
           "fa_icon": "fas fa-forward",
@@ -333,7 +372,7 @@
           "help_text": "This parameter specifies which columns from the input metadata file should be used to define the unique identifiers for each differential expression comparison. These identifiers are used as column names in global summary matrices and help organize results across multiple experimental conditions.",
           "fa_icon": "fas fa-table",
           "pattern": "^[A-Za-z0-9_]+(,[A-Za-z0-9_]+)*$",
-          "default": "Species,Treatment,Tissue"
+          "default": "Species,Treatment,Level,Time,Cultivar,Tissue,Stage,Genotype"
         }
       },
       "fa_icon": "fas fa-globe"
