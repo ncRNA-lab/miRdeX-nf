@@ -1,6 +1,6 @@
-name: concat_unique_gff3
+name: concat_filter_unique_gff3
 description: |
-  Concatenate GFF3 files.
+  Concatenate GFF3 files, remove rejected sequences and duplicates.
 keywords:
   - duplicates
   - unique

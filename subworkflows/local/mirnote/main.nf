@@ -117,7 +117,7 @@ workflow MIRNOTE {
     */
 
     // Check whether a raw counts or RPM threshold is to be used.
-    if (params.counts > 0 || params.rpm > 0){
+    if (params.counts > 0 || params.rpm > 0 || params.relative_abundance  > 0){
         
         // Calculate the raw counts
         COUNTS(ch_input_sp)
@@ -126,7 +126,7 @@ workflow MIRNOTE {
         COUNTS.out.raw.set{ ch_raw_counts }
 
         // Check whether a RPM threshold is to be used.
-        if (params.rpm  > 0){
+        if (params.rpm  > 0 || params.relative_abundance  > 0){
 
             // Calculate RPM
             RPM(ch_raw_counts)
@@ -230,7 +230,7 @@ workflow MIRNOTE {
         .set{ch_isomirs}
 
     // Add counts to isomiRs dataframe
-    if (params.counts  > 0 || params.rpm  > 0) {
+    if (params.counts  > 0 || params.rpm  > 0 || params.relative_abundance  > 0) {
 
         // Prepare the channel for merging
         ch_isomirs
@@ -250,7 +250,7 @@ workflow MIRNOTE {
         ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts, params.counts, params.ignore_threshold_for_canonical)
 
         // Add RPM to isomiRs dataframe
-        if (params.rpm  > 0){
+        if (params.rpm  > 0 || params.relative_abundance  > 0){
 
             // Set the original id and prepare the channel for merging
             ADD_RAW_COUNTS_TO_ISOMIRS_DF.out.isocounts
@@ -307,7 +307,8 @@ workflow MIRNOTE {
         substitutions,
         five_add,
         three_add,
-        ends_modification
+        ends_modification,
+        params.relative_abundance
     )
 
     // Save the software version

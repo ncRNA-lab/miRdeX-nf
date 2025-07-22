@@ -1485,7 +1485,7 @@ def assign_sequence_class(df:pd.DataFrame) -> pd.DataFrame:
     return df
 
     
-def build_attributes(row, hit_counts):
+def build_attributes(row, hit_counts, rel_abundance_threshold=0):
     """
     Constructs the 'attributes' field for a GFF3 entry specific to isomiR
     annotations.
@@ -1511,8 +1511,9 @@ def build_attributes(row, hit_counts):
     """
 
     # Default variables
-    rpm='None'
     counts='None'
+    rpm='None'
+    rel_abun = 'None'
     filt='None'
 
     # Check if Raw_counts column exists in df
@@ -1530,6 +1531,14 @@ def build_attributes(row, hit_counts):
             filt = f"{row['RPM_filt']}:lowRPM"
         else:
             filt = row['RPM_filt']
+
+    # Check if RelAbundance column exists in df
+    if 'RelAbundance' in row:
+        rel_abun=row['RelAbundance']
+        if rel_abun < rel_abundance_threshold:
+            filt = f"REJECT:lowRelAbundance"
+        else:
+            filt = f"PASS"
         
     # Create the attributes section
     parts = [
@@ -1543,6 +1552,7 @@ def build_attributes(row, hit_counts):
         f"Hits={hit_counts.get(row['id'], 0)}",
         f"Expression={counts}",
         f"Norm={rpm}",
+        f"RelAbundance={rel_abun}",
         f"Filter={filt}",
         f"miRNA_fam={row['miRNA_family']}",
         f"Class={row['Class']}",
@@ -1552,7 +1562,7 @@ def build_attributes(row, hit_counts):
     return "; ".join(parts)
 
 
-def create_isomirs_gff3(df, sample, database, path_out):
+def create_isomirs_gff3(df, sample, database, path_out, rel_abundance_threshold=0):
     """
     Generates a GFF3 file containing isomiR annotations based on a classification
     DataFrame.
@@ -1591,6 +1601,23 @@ def create_isomirs_gff3(df, sample, database, path_out):
     None
     """
 
+    # Use the relative abundance threshold to filter isomiRs
+    if rel_abundance_threshold > 0:
+
+        # Check if RPM column exists in df
+        if 'RPM' in df.columns:
+
+            # Construir diccionario {ref_sequence: RPM}
+            ref_rpm_dict = df.set_index('sequence')['RPM'].to_dict()
+
+            # Obtener RPM del miRNA canónico (ref_miRNA) mediante mapeo
+            df['ref_RPM'] = df['ref_miRNA'].map(ref_rpm_dict).fillna(0)
+
+            # Calcular abundancia relativa: isomiR_RPM / ref_RPM
+            # Donde ref_RPM == 0 (huérfano), se asignará 0 automáticamente
+            df['RelAbundance'] = df['RPM'] / df['ref_RPM']
+            df['RelAbundance'] = df['RelAbundance'].fillna(0)
+
     # Calculate the number of unique miRNA_group_id per id
     hit_counts = df.groupby('id')['miRNA_group_id'].nunique()
 
@@ -1604,7 +1631,7 @@ def create_isomirs_gff3(df, sample, database, path_out):
         'score': df['Bit_Score_p'],
         'strand': '+',
         'phase': '.',
-        'attributes': df.apply(lambda row: build_attributes(row, hit_counts), axis=1)
+        'attributes': df.apply(lambda row: build_attributes(row, hit_counts, rel_abundance_threshold), axis=1)
     })
 
     # Write gff3 file
@@ -1732,6 +1759,11 @@ def main():
     parser.add_argument('-x', '--ends_modification', type=int, required=True, 
                         help='Maximum number of total modifications (substitutions)' \
                         'allowed across both ends (5 + 3).')
+    parser.add_argument('-r', '--rel-abundance-threshold', type=float, default=0.0, required=False,
+                        help='Minimum relative abundance (RPM_isomiR / RPM_reference_miRNA)' \
+                            'required for isomiRs to be retained. IsomiRs with values below'\
+                            'this threshold will be filtered out. Default is 0 (no filtering).')
+
     # Parse the arguments
     args = parser.parse_args()
 
@@ -1746,6 +1778,7 @@ def main():
         nt_5add = args.five_add
         nt_3add = args.three_add
         diff_ends = args.ends_modification
+        relative_abundance_thld = args.rel_abundance_threshold
 
     except:
         print('ERROR: You have inserted a wrong parameter or you are missing a parameter.')
@@ -1832,7 +1865,7 @@ def main():
     isomir_complete_df = assign_sequence_class(isomir_class_with_blast_df)
     
     # Create a gff3 file
-    create_isomirs_gff3(isomir_complete_df, id, database, f'{id}.gff3')
+    create_isomirs_gff3(isomir_complete_df, id, database, f'{id}.gff3', rel_abundance_threshold=relative_abundance_thld)
 
     ## 6. Create a summary file
     ########################################################################

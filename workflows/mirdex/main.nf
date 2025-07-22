@@ -12,7 +12,7 @@ include { TSV_TO_FASTA              } from "../../modules/local/tsv_to_fasta"
 include { DIFFEXPANALYSIS           } from "../../modules/local/diffexpanalysis"
 include { ANNOTATE_DEA_RESULTS      } from "../../modules/local/annotate_dea_results"
 include { BUILD_MIRNA_EVENT_MATRIX  } from "../../modules/local/build_mirna_event_matrix"
-include { CONCAT_UNIQUE_GFF3        } from "../../modules/local/concat_unique_gff3"
+include { CONCAT_FILTER_UNIQUE_GFF3 } from "../../modules/local/concat_filter_unique_gff3"
 include { RENAME_FILE_BY_ID         } from "../../modules/local/rename_file_by_id"
 
 //
@@ -956,10 +956,10 @@ workflow MIRDEX {
             }
 
             // Concat gff3 files by group and remove duplicates
-            CONCAT_UNIQUE_GFF3(ch_gff3_by_group)
+            CONCAT_FILTER_UNIQUE_GFF3(ch_gff3_by_group)
 
             // Prepare annotation channel
-            CONCAT_UNIQUE_GFF3.out.gff3
+            CONCAT_FILTER_UNIQUE_GFF3.out.gff3
                 .map{meta, file -> return[meta.id, meta, file]}
                 .set{ch_mirna_annot}
 

@@ -272,11 +272,18 @@
           "help_text": "Minimum number of raw counts required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--rpm'."
         },
         "rpm": {
-          "type": "integer",
+          "type": "number",
           "default": 0,
           "fa_icon": "fas fa-table",
           "description": "Minimum Reads per million (RPM) required for a sequence to be retained for the annotation step.",
           "help_text": "Minimum number of RPM required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--counts'."
+        },
+        "relative_abundance": {
+          "type": "number",
+          "default": 0,
+          "fa_icon": "fas fa-percent",
+          "description": "Minimum relative abundance required for an isomiR to be retained.",
+          "help_text": "Minimum relative abundance (isomiR RPM / canonical miRNA RPM) required for an isomiR to pass filtering. IsomiRs below this threshold are considered potential sequencing artifacts and will be removed. A value of 0 disables this filter."
         },
         "ignore_threshold_for_canonical": {
           "type": "boolean",
