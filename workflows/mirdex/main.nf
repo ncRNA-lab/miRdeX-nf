@@ -699,16 +699,23 @@ workflow MIRDEX {
             .map{it -> it[1]}
             .splitCsv( header: true, sep: '\t' )
             .flatMap { item ->
+                // Modify the Group field to keep only the first two parts
+                def group_parts = item.Group.tokenize('_')
+                def group = group_parts[0..1].join('_')
+
+                // Expand the Samples field to create a new record for each sample
                 def samples = item.Samples.split(',')
                 samples.collect { sample ->
-                    [sample, item + [sample: sample]]
+                    ["${sample}_${group}", item + [sample: sample]]
                 }
             }
             .set{ dea_summary_ch }
 
+        // Add the DEA data to the ch_pipeline_summary channel
         ch_pipeline_summary
-            .map{ item -> [item.sample, item]}
+            .map{ item -> ["${item.sample}_${item.group}", item]}
             .join(dea_summary_ch, remainder:true)
+            .view()
             .map { item ->
                 def pip_summary = item[1]
                 def dea_summary = item[2]
