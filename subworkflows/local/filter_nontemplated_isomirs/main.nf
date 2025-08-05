@@ -72,9 +72,10 @@ workflow FILTER_NONTEMPLATED_ISOMIRS {
         ch_input
             .map { _meta, _file, genome ->
                 def id = genome.toString().tokenize('/')[-1].replaceAll(/\.(fa|fasta|fna)(\.gz)?$/, '')
-                return [[id: id], genome]
+                return [id, genome]
             }
-            .unique()
+            .unique{it[0]}
+            .map { id, genome -> [[id: id], genome]}
             .set{ ch_genomes }
 
         // Index the genomes

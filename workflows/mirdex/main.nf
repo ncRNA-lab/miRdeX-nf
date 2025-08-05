@@ -76,6 +76,7 @@ workflow MIRDEX {
 
     // Empty channels
     ch_fastq            = Channel.empty()
+    ch_meta_project     = Channel.empty() 
     ch_pipeline_summary = Channel.empty()
     ch_counts           = Channel.empty()
     ch_versions         = Channel.empty()
@@ -90,7 +91,7 @@ workflow MIRDEX {
     Channel
         .fromList(samplesheetToList(samplesheet, "${projectDir}/assets/schema_input.json"))
         .set{ch_input}
-    
+        
     // Split the input channel into samples and project channels
     ch_input_samples = ch_input.filter { id, file, _meta, _genome, _group -> file.name.endsWith('.fastq.gz') }
     ch_input_project = ch_input.filter { id, file, _meta, _genome, _group -> file.name.endsWith('.tsv') || file.name.endsWith('.txt') }
@@ -136,6 +137,16 @@ workflow MIRDEX {
         .toList()
         .map{ item -> validateGroupInputUsage(item) }
 
+    /*
+    ============================================================================
+        4. Create metadata channel
+    ============================================================================
+    */
+    // IMPORTANTE. REVISAR COMO SER COMPORTA CUANDO ENTRAN MUESTRAS SUELTAS FASTQ.
+    ch_input_organised
+        .map{ meta, _file -> [meta.project, meta] }
+        .unique{ it[0] }
+        .set{ ch_meta_project }
     
     /*
     ============================================================================
@@ -156,7 +167,7 @@ workflow MIRDEX {
 
                 // Counts matrices. They end with '.tsv'
                 counts: file.toString().endsWith('.tsv')
-                    return[meta, file]   
+                    return [meta, file]  
         }
         .set { ch_input_files }
     
@@ -360,12 +371,14 @@ workflow MIRDEX {
 
         // Change the meta.id from file to project.
         ch_fastq
-            .map { meta, file ->
-                def updatedMeta = meta.clone()
-                updatedMeta.id = meta.project
-                return [updatedMeta, file]
-            }
+            .map { meta, file -> [meta.project, file]}
             .groupTuple(by: 0, sort:true)
+            .combine(ch_meta_project, by: 0)
+            .map { project_id, files, meta ->
+                def updated_meta = meta.clone()
+                updated_meta.id = project_id
+                return [updated_meta, files]
+            }
             .set { ch_fastq }
 
         // Validate the project
@@ -403,7 +416,7 @@ workflow MIRDEX {
         // Prepare the validation info for the summary and ch_fastq channels
         ch_validation_sample_info
             .combine(ch_validation_projects, by:0)
-            .map { group, meta1, file, meta2 ->
+            .map { _group, meta1, file, meta2 ->
                 def merged = meta1 + meta2
                 if (meta2.validity == 'not-valid' && meta1.replicates_validity == 'valid') {
                     merged.replicates_validity = 'not-valid'
@@ -423,7 +436,7 @@ workflow MIRDEX {
         // Add this info to summary channel
         ch_pipeline_summary
             .combine(ch_val_to_summary, by:0)
-            .map{ id, meta1, meta2 -> 
+            .map{ _id, meta1, meta2 -> 
                 def merged = meta1 + meta2
                 ['id', 'run', 'metadata', 'genome', 'single_end',
                 'valid_groups', 'notvalid_groups'].each { merged.remove(it) }
@@ -434,7 +447,7 @@ workflow MIRDEX {
         // Validation info for the the quantification process
         ch_validation_group_info
             .filter { _id, meta, _file -> meta.validation_check == 'OK' }
-            .map{ id, meta, file -> 
+            .map{ _id, meta, file -> 
                 def new_meta = meta.clone()
                 ['group', 'run', 'num_valid_samples',
                 'num_notvalid_samples',
@@ -570,6 +583,7 @@ workflow MIRDEX {
         // Do not run this step when only pre-processing is to be done.
         if (!params.only_preprocessing){
             
+            ch_fastq.view()
             // Create count matrix
             QUANTIFICATION(ch_fastq, 'raw', params.counts_not_memory)
 
@@ -715,7 +729,6 @@ workflow MIRDEX {
         ch_pipeline_summary
             .map{ item -> ["${item.sample}_${item.group}", item]}
             .join(dea_summary_ch, remainder:true)
-            .view()
             .map { item ->
                 def pip_summary = item[1]
                 def dea_summary = item[2]
@@ -933,6 +946,18 @@ workflow MIRDEX {
             // Prepare the input chennel for CONCAT_UNIQUE_GFF3 process
             if (!params.from_counts){
 
+                        // Change the meta.id from file to project.
+                ch_fastq
+                    .map { meta, file -> [meta.project, file]}
+                    .groupTuple(by: 0, sort:true)
+                    .combine(ch_meta_project, by: 0)
+                    .map { project_id, files, meta ->
+                        def updated_meta = meta.clone()
+                        updated_meta.id = project_id
+                        return [updated_meta, files]
+                    }
+                    .set { ch_fastq }
+
                 // Create a single GFF3 file for each group with the annotated sequences
                 ANNOTATION.out.annotation
                     .flatMap { tuple -> 
@@ -941,22 +966,18 @@ workflow MIRDEX {
 
                         // For each valid group, we generate a new map.
                         meta.valid_groups.collect { group_num ->
-                            def new_meta = meta.clone()
-                            new_meta.id = "${meta.project}_${group_num}"
-                            return [[id:new_meta.id, genome:new_meta.genome], file]
+                            return [[id:"${meta.project}_${group_num}"], file]
                         }
                     }
                     .groupTuple(by: 0)
                     .set{ ch_gff3_by_group}
-            } else {
 
+            } else {
+                
                 // Each counts matrix is a group
                 ANNOTATION.out.annotation
                     .map { meta, file ->
-                        def new_meta = meta.clone()
-                        new_meta.id = "${meta.project}_${meta.group_id}"
-                        new_meta.remove('run')
-                        return [new_meta, file]
+                        return [[id:"${meta.project}_${meta.group_id}"], file]
                     }
                     .groupTuple(by: 0)
                     .set{ ch_gff3_by_group }
@@ -1054,30 +1075,25 @@ workflow MIRDEX {
                     .map{ meta, file -> [meta.id, meta, file]}
                     .set{ ch_renamed_metadata }
 
-                // Add the new metadata to main channel
+                // Combine original + renamed metadata
                 ANNOTATE_DEA_RESULTS.out.unique
                     .filter { _meta, file ->
                         !file.getName().endsWith('_EMPTY.unique.tsv')
                     }
-                    .map{ meta, file -> [meta.id, meta, file]}
-                    .combine(ch_renamed_metadata, by:0)
-                    .map{ _id, meta1, file, _meta2, metadata_file ->
-                        [file, metadata_file, meta1.samples]
+                    .map{ meta, file -> [meta.id, meta, file] }
+                    .combine(ch_renamed_metadata, by: 0)
+                    .map { id, meta1, file, _meta2, metadata_file ->
+                        tuple(id, file, metadata_file, meta1.samples)
                     }
-                    .collect()
-                    .map { list_elements ->
+                    .toSortedList { a, b -> a[0] <=> b[0] }  // ← ¡Aquí está la clave!
+                    .map { sorted_list ->
+                        def files   = sorted_list.collect { it[1] }
+                        def metas   = sorted_list.collect { it[2] }
+                        def samples = sorted_list.collect { it[3] }
 
-                        // Agrupar en sublistas de 3 elementos
-                        def groups = list_elements.collate(3)
-
-                        // Extraer listas separadas por posición
-                        def files = groups.collect { it[0] }
-                        def metas = groups.collect { it[1] }
-                        def samples = groups.collect { it[2] }
-
-                        return [files, metas, samples]
+                        tuple(files, metas, samples)
                     }
-                    .set{ ch_to_create_pa_matrix }
+                    .set { ch_to_create_pa_matrix }
 
                 // Create the both presence-absence and log2fc matrices  
                 BUILD_MIRNA_EVENT_MATRIX(ch_to_create_pa_matrix, params.global_fields)

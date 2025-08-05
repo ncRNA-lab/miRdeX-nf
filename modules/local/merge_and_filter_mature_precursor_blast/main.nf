@@ -19,26 +19,6 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
     #!/bin/bash
     
     ### FUNCTIONS
-    expand_and_clean_tsv (){
-        
-        # Arguments
-        local input_file="\${1}"
-        local ouput_file="\${2}"
-
-        # Expand and clean tsv table
-        awk -F '\t' '{
-            split(\$2, ids, "|");
-            for (i in ids) {
-                id = ids[i];
-                gsub(/-?(Known|5p|3p|mature|star)-?/, "-", id);
-                gsub(/^-+|-+\$/, "", id);
-                gsub(/--+/, "-", id);
-                print \$1, id, \$0;
-            }
-        }' OFS='\t' "\$input_file" > "\$ouput_file"
-
-    }
-    
     expand_and_clean_tsv () {
         # Arguments
         local input_file="\${1}"
@@ -56,6 +36,17 @@ process MERGE_AND_FILTER_MATURE_PRECURSOR_BLAST {
                 gsub(/-?(Known|mature|star)-?/, "-", id_with_arm);
                 gsub(/^-+|-+\$/, "", id_with_arm);
                 gsub(/--+/, "-", id_with_arm);
+                
+                # Remove duplicated 5p/3p arms
+                n = split(id_with_arm, parts, "-")
+                delete seen
+                id_with_arm = ""
+                for (i = 1; i <= n; i++) {
+                    if ((parts[i] == "5p" || parts[i] == "3p") && parts[i] in seen)
+                        continue
+                    seen[parts[i]] = 1
+                    id_with_arm = (id_with_arm == "" ? parts[i] : id_with_arm "-" parts[i])
+                }
 
                 # Remove undesired strings (5p/3p too)
                 gsub(/-?(5p|3p)-?/, "-", id_clean);

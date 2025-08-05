@@ -27,8 +27,9 @@ workflow QUANTIFICATION {
 
     main:
 
-        // Create empty channel for versions
+        // Create required empty channels
         ch_versions             = Channel.empty()
+        ch_metadata             = Channel.empty()
 
         // Calculate the raw counts
         COUNTS(ch_input)
@@ -42,19 +43,25 @@ workflow QUANTIFICATION {
            ch_counts = RPM.out.rpm
         }
 
-        // create a channel at the group level
+        // Upddate ch_metadata channel
         ch_counts
             .flatMap { meta, file ->
-                meta.groups.collect { group -> 
-                    def new_meta = meta.clone()
-                    new_meta.id = group
-                    new_meta.group_id = group.split('_')[-1]
-                    new_meta.remove('groups')
-                    [new_meta, file]
+                meta.groups.collect { group ->
+                    def group_id = group.split('_')[-1]
+                    [group, [id:group, project:meta.project, species:meta.species, metadata: meta.metadata, group_id: group_id]]
                 }
             }
+            .unique()
+            .set{ ch_metadata }
+
+        // Create a channel at the group level
+        ch_counts
+            .flatMap { meta, file ->
+                meta.groups.collect { group -> [group, file] }
+            }
             .groupTuple(by:0)
-            .map{ meta, files -> [meta, files, meta.metadata]}
+            .combine(ch_metadata, by:0)
+            .map{ id, files, meta -> [meta, files, meta.metadata] }
             .set{ ch_counts_by_group }
 
         // Create the count matrix
