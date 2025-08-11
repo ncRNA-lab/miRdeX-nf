@@ -431,11 +431,11 @@ sere_dendrogram <- function(dds, path_dir_out){
 exploratory_analysis <- function(dds, file_name) {
   
   # Create output directories
-  path_dir_pca_out <- "01-PCA"
-  path_dir_sere_out <-"02-SERE_dendrogram"
-  path_dir_mvv_out <- "03-Mean_vs_variance"
+  path_dir_pca_out <- "Exploratory_analysis/01-PCA"
+  #path_dir_sere_out <-"Exploratory_analysis/02-SERE_dendrogram"
+  path_dir_mvv_out <- "Exploratory_analysis/02-Mean_vs_variance"
   dir.create(path_dir_pca_out, recursive = TRUE, showWarnings = FALSE)
-  dir.create(path_dir_sere_out, recursive = TRUE, showWarnings = FALSE)
+  #dir.create(path_dir_sere_out, recursive = TRUE, showWarnings = FALSE)
   dir.create(path_dir_mvv_out, recursive = TRUE, showWarnings = FALSE)
   
   # Extract the colData of the DESeqDataSet object
@@ -512,7 +512,7 @@ exploratory_analysis <- function(dds, file_name) {
   ############################# SERE DENDROGRAM ################################
   
   # Create a SERE dendrogram
-  sere_dendrogram(dds, path_dir_sere_out)
+  #sere_dendrogram(dds, path_dir_sere_out)
   
   ###################### PRINCIPAL COMPONENT ANALYSIS (PCA) ####################
 
@@ -1476,7 +1476,7 @@ if (fail) {
     dev.off()
 
     # Create required empty directories
-    dir.create("01-PCA", showWarnings = FALSE, recursive = TRUE)
-    dir.create("02-SERE_dendrogram", showWarnings = FALSE, recursive = TRUE)
-    dir.create("03-Mean_vs_variance", showWarnings = FALSE, recursive = TRUE)
+    dir.create("Exploratory_analysis/01-PCA", showWarnings = FALSE, recursive = TRUE)
+    #dir.create("02-SERE_dendrogram", showWarnings = FALSE, recursive = TRUE)
+    dir.create("Exploratory_analysis/02-Mean_vs_variance", showWarnings = FALSE, recursive = TRUE)
 }
