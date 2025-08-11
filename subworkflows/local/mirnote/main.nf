@@ -13,6 +13,7 @@ include { RPM    } from '../../../modules/local/rpm'
 include { ADD_COUNTS_TO_ISOMIRS_DF as ADD_RAW_COUNTS_TO_ISOMIRS_DF  } from '../../../modules/local/add_counts_to_isomirs_df'
 include { ADD_COUNTS_TO_ISOMIRS_DF as ADD_RPM_TO_ISOMIRS_DF         } from '../../../modules/local/add_counts_to_isomirs_df'
 include { ISOMIRS_MIRNA_CLASSIFICATION                              } from '../../../modules/local/isomirs_mirna_classification'
+include { FILTER_ISOMIRS_BY_ABUNDANCE                               } from '../../../modules/local/filter_isomirs_by_abundance'    
 
 //
 // SUBWORKFLOW: Loaded from subworkflows/local/
@@ -63,10 +64,16 @@ workflow MIRNOTE {
 
     main:
     
-    // Create an empty channel for summary info
+    // Create an empty channels
     ch_pipeline_summary  = Channel.empty()
-    ch_versions  = Channel.empty()
-    
+    ch_gff3_files_meta   = Channel.empty()
+    ch_versions          = Channel.empty()
+    ch_output_gff3       = Channel.empty()
+
+    // Sepecify the filter type based on the parameters
+    def filter_type  = params.counts > 0 ? "Raw" : (params.rpm > 0 ? "RPM" : (params.relative_abundance > 0 ? "Relative_abundance" : null))
+    def filter_value = params.counts > 0 ? params.counts : (params.rpm > 0 ? params.rpm : (params.relative_abundance > 0 ? params.relative_abundance : null))
+   
     /*
     ========================================================================================
         1. Prepare miRNA databases
@@ -87,7 +94,7 @@ workflow MIRNOTE {
         .groupTuple(by:0)
         .join(ch_species_db, by:0, remainder:true)
         .filter { it[1] != null }
-        .flatMap { species, meta_list, _fastq_list, db_info_map -> 
+        .flatMap { _species, meta_list, _fastq_list, db_info_map -> 
 
             // Check if the species is in at least one database
             def species_db = db_info_map != null ? 'PASS' : 'REJECT'
@@ -117,7 +124,7 @@ workflow MIRNOTE {
     */
 
     // Check whether a raw counts or RPM threshold is to be used.
-    if (params.counts > 0 || params.rpm > 0 || params.relative_abundance  > 0){
+    if (filter_type != null) {
         
         // Calculate the raw counts
         COUNTS(ch_input_sp)
@@ -230,7 +237,7 @@ workflow MIRNOTE {
         .set{ch_isomirs}
 
     // Add counts to isomiRs dataframe
-    if (params.counts  > 0 || params.rpm  > 0 || params.relative_abundance  > 0) {
+    if (filter_type != null) {
 
         // Prepare the channel for merging
         ch_isomirs
@@ -247,7 +254,7 @@ workflow MIRNOTE {
             .set { ch_isomirs_add_raw_counts }
         
         // Add raw counts to isomiRs dataframe
-        ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts, params.counts, params.ignore_threshold_for_canonical)
+        ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts)
 
         // Add RPM to isomiRs dataframe
         if (params.rpm  > 0 || params.relative_abundance  > 0){
@@ -271,7 +278,7 @@ workflow MIRNOTE {
                 .set { ch_isomirs_add_rpm }
     
             // Add RPM to isomiRs dataframe
-            ADD_RPM_TO_ISOMIRS_DF(ch_isomirs_add_rpm, params.rpm, params.ignore_threshold_for_canonical)
+            ADD_RPM_TO_ISOMIRS_DF(ch_isomirs_add_rpm)
             
             // Set the original id and prepare the channel for merging
             ADD_RPM_TO_ISOMIRS_DF.out.isocounts
@@ -314,6 +321,10 @@ workflow MIRNOTE {
     // Save the software version
     ch_versions = ch_versions.mix(ISOMIRS_MIRNA_CLASSIFICATION.out.versions)
 
+    // Save the results in the output channel
+    ch_output_gff3 = ISOMIRS_MIRNA_CLASSIFICATION.out.gff3
+
+    // Add summary info to the summary channel
     ISOMIRS_MIRNA_CLASSIFICATION.out.sum
         .splitCsv( header: true, sep: '\t' )
         .map{ meta, info -> [meta.id, info]}
@@ -328,8 +339,8 @@ workflow MIRNOTE {
                 ref_miRNA: iso_info.ref_miRNA,
                 iso_5p: iso_info.iso_5p,
                 iso_3p: iso_info.iso_3p,
-                iso_add3p: iso_info.iso_add3p,
                 iso_add5p: iso_info.iso_add5p,
+                iso_add3p: iso_info.iso_add3p,
                 iso_snv_seed: iso_info.iso_snv_seed,
                 iso_snv_central_offset: iso_info.iso_snv_central_offset,
                 iso_snv_central: iso_info.iso_snv_central,
@@ -337,7 +348,21 @@ workflow MIRNOTE {
                 iso_snv: iso_info.iso_snv,
                 mixed: iso_info.mixed,
                 mixed_shift: iso_info.mixed_shift,
-                undefined: iso_info.undefined
+                undefined: iso_info.undefined,
+                num_isomirs_filt: 'NA',
+                ref_miRNA_filt: 'NA',
+                iso_5p_filt: 'NA',
+                iso_3p_filt: 'NA',
+                iso_add5p_filt: 'NA',
+                iso_add3p_filt: 'NA',
+                iso_snv_seed_filt: 'NA',
+                iso_snv_central_offset_filt: 'NA',
+                iso_snv_central_filt: 'NA',
+                iso_snv_central_supp_filt: 'NA',
+                iso_snv_filt: 'NA',
+                mixed_filt: 'NA',
+                mixed_shift_filt: 'NA',
+                undefined_filt: 'NA'
             ] : [
                 num_isomirs: 'NA',
                 ref_miRNA: 'NA',
@@ -352,19 +377,130 @@ workflow MIRNOTE {
                 iso_snv: 'NA',
                 mixed: 'NA',
                 mixed_shift: 'NA',
-                undefined: 'NA'
+                undefined: 'NA',
+                num_isomirs_filt: 'NA',
+                ref_miRNA_filt: 'NA',
+                iso_5p_filt: 'NA',
+                iso_3p_filt: 'NA',
+                iso_add5p_filt: 'NA',
+                iso_add3p_filt: 'NA',
+                iso_snv_seed_filt: 'NA',
+                iso_snv_central_offset_filt: 'NA',
+                iso_snv_central_filt: 'NA',
+                iso_snv_central_supp_filt: 'NA',
+                iso_snv_filt: 'NA',
+                mixed_filt: 'NA',
+                mixed_shift_filt: 'NA',
+                undefined_filt: 'NA'
             ]
             // Remove undesired fields for summary channel
             pip_summary.remove('genome')
             pip_summary.remove('single_end')
             
             // Add the additional fields
-            pip_summary + additionalFields
+            [pip_summary.id, pip_summary + additionalFields]
         }
         .set{ ch_pipeline_summary }
+
+
+    /*
+    ========================================================================================
+        7. Filter isomiRs by abundance
+    ========================================================================================
+    */
+
+    if (filter_type != null) {
+
+        // Create a channel with the metadata of the GFF3 files
+        ISOMIRS_MIRNA_CLASSIFICATION.out.gff3
+            .map{ meta,_file -> [meta.id, meta]}
+            .set{ ch_gff3_files_meta }
+
+        // Group gff3 files by species
+        ISOMIRS_MIRNA_CLASSIFICATION.out.gff3
+            .map { meta, file -> [meta.species, file]}
+            .groupTuple(by:0)
+            .map{ species, files -> [[id: species], files]}
+            .set { ch_gff3_files_by_species }
+
+        // Filter isomiRs by abundance
+        FILTER_ISOMIRS_BY_ABUNDANCE(
+            ch_gff3_files_by_species,
+            filter_type,
+            filter_value,
+            params.min_samples_filt
+        )
+
+        // Prepare the output channel
+        FILTER_ISOMIRS_BY_ABUNDANCE.out.filt_gff3
+            .flatMap { _meta, files ->
+                files.collect { f ->
+                    def id = f.getBaseName().replaceFirst(/\.filtered$/, '')
+                    [id, f]
+                }
+            }
+            .combine(ch_gff3_files_meta, by:0)
+            .map{ _id, file, meta -> [meta, file]}
+            .set{ ch_gff3_out }
         
+        // Save the results in the output channel
+        ch_output_gff3 = ch_gff3_out
+        
+        // Add summary info to the summary channel
+        FILTER_ISOMIRS_BY_ABUNDANCE.out.sum
+            .splitCsv( header: true, sep: '\t' )
+            .map{ info -> [info.sample, info]}
+            .join(ch_pipeline_summary, remainder:true)
+            .map { item ->
+                def iso_info = item[1]
+                def pip_summary = item[2]
+
+                // Fields to add
+                def additionalFields = iso_info ? [
+                    num_isomirs_filt: iso_info.num_isomirs,
+                    ref_miRNA_filt: iso_info.ref_miRNA,
+                    iso_5p_filt: iso_info.iso_5p,
+                    iso_3p_filt: iso_info.iso_3p,
+                    iso_add5p_filt: iso_info.iso_add5p,
+                    iso_add3p_filt: iso_info.iso_add3p,
+                    iso_snv_seed_filt: iso_info.iso_snv_seed,
+                    iso_snv_central_offset_filt: iso_info.iso_snv_central_offset,
+                    iso_snv_central_filt: iso_info.iso_snv_central,
+                    iso_snv_central_supp_filt: iso_info.iso_snv_central_supp,
+                    iso_snv_filt: iso_info.iso_snv,
+                    mixed_filt: iso_info.mixed,
+                    mixed_shift_filt: iso_info.mixed_shift,
+                    undefined_filt: iso_info.undefined
+                ] : [
+                    num_isomirs_filt: 'NA',
+                    ref_miRNA_filt: 'NA',
+                    iso_5p_filt: 'NA',
+                    iso_3p_filt: 'NA',
+                    iso_add5p_filt: 'NA',
+                    iso_add3p_filt: 'NA',
+                    iso_snv_seed_filt: 'NA',
+                    iso_snv_central_offset_filt: 'NA',
+                    iso_snv_central_filt: 'NA',
+                    iso_snv_central_supp_filt: 'NA',
+                    iso_snv_filt: 'NA',
+                    mixed_filt: 'NA',
+                    mixed_shift_filt: 'NA',
+                    undefined_filt: 'NA'
+                ]
+                
+                // Add the additional fields
+                [pip_summary.id, pip_summary + additionalFields]
+            }
+            .set{ ch_pipeline_summary }
+    }
+
+    // Remove id from the summary channel
+    ch_pipeline_summary
+        .map{ _id, info -> info }
+        .set{ ch_pipeline_summary }
+
     emit:
-    annotation     = ISOMIRS_MIRNA_CLASSIFICATION.out.gff3   // channel: [meta, file.gff3]
+    annotation     = ch_output_gff3                          // channel: [meta, file.gff3]
     summary        = ch_pipeline_summary                     // channel: [id:, num_isomirs:, etc]
     versions       = ch_versions                             // channel: [ path(versions.yml) ]
 

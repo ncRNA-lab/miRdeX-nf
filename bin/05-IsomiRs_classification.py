@@ -1018,11 +1018,11 @@ def read_blastn_df(file: str) -> pd.DataFrame:
                 'Bit_Score_p', 'Precursor_seq']
     
     # The df has raw counts columns
-    if num_col == 30:
-        colnames.extend(['Raw_counts', 'Raw_counts_filt'])
+    if num_col == 29:
+        colnames.extend(['Raw_counts'])
     # The df has RPM columns
-    if num_col == 32:
-        colnames.extend(['Raw_counts', 'Raw_counts_filt', 'RPM', 'RPM_filt'])
+    if num_col == 30:
+        colnames.extend(['Raw_counts', 'RPM'])
     # Add colnames
     df.columns = colnames
 
@@ -1429,20 +1429,12 @@ def assign_sequence_class(df:pd.DataFrame) -> pd.DataFrame:
         A copy of the input DataFrame with an added column 'Class',
         representing the classification for each sequence.
     """
-    # Check if the dataframe must be filtered before the class asignment
-    if 'RPM_filt' in df.columns:
-        if 'Raw_counts_filt' in df.columns:
-            df_pass = df[df['Raw_counts_filt'] == 'PASS']
-        else:
-            df_pass = df[df['RPM_filt'] == 'PASS']
-    else:
-        df_pass = df
-
+    
     # Prepare a dict to store results
     assignment = {}
 
     # Group by sequence
-    for seq, group in df_pass.groupby('sequence'):
+    for seq, group in df.groupby('sequence'):
         
         # Get the sequence type
         types = set(group['type'])
@@ -1485,7 +1477,7 @@ def assign_sequence_class(df:pd.DataFrame) -> pd.DataFrame:
     return df
 
     
-def build_attributes(row, hit_counts, rel_abundance_threshold=0):
+def build_attributes(row, hit_counts):
     """
     Constructs the 'attributes' field for a GFF3 entry specific to isomiR
     annotations.
@@ -1513,32 +1505,14 @@ def build_attributes(row, hit_counts, rel_abundance_threshold=0):
     # Default variables
     counts='None'
     rpm='None'
-    rel_abun = 'None'
-    filt='None'
 
     # Check if Raw_counts column exists in df
     if 'Raw_counts' in row:
         counts=row['Raw_counts']
-        if row['Raw_counts_filt'] == 'REJECT':
-            filt=f"{row['Raw_counts_filt']}:lowRawCounts"
-        else:
-            filt = row['Raw_counts_filt']
 
     # Check if RPM column exists in df
     if 'RPM' in row:
         rpm=row['RPM']
-        if row['RPM_filt'] == 'REJECT':
-            filt = f"{row['RPM_filt']}:lowRPM"
-        else:
-            filt = row['RPM_filt']
-
-    # Check if RelAbundance column exists in df
-    if 'RelAbundance' in row:
-        rel_abun=row['RelAbundance']
-        if rel_abun < rel_abundance_threshold:
-            filt = f"REJECT:lowRelAbundance"
-        else:
-            filt = f"PASS"
         
     # Create the attributes section
     parts = [
@@ -1552,8 +1526,8 @@ def build_attributes(row, hit_counts, rel_abundance_threshold=0):
         f"Hits={hit_counts.get(row['id'], 0)}",
         f"Expression={counts}",
         f"Norm={rpm}",
-        f"RelAbundance={rel_abun}",
-        f"Filter={filt}",
+        f"RelAbundance=None",
+        f"Filter=None",
         f"miRNA_fam={row['miRNA_family']}",
         f"Class={row['Class']}",
         f"miRNA_seq={row['ref_miRNA']}",
@@ -1562,7 +1536,7 @@ def build_attributes(row, hit_counts, rel_abundance_threshold=0):
     return "; ".join(parts)
 
 
-def create_isomirs_gff3(df, sample, database, path_out, rel_abundance_threshold=0):
+def create_isomirs_gff3(df, sample, database, path_out):
     """
     Generates a GFF3 file containing isomiR annotations based on a classification
     DataFrame.
@@ -1601,23 +1575,6 @@ def create_isomirs_gff3(df, sample, database, path_out, rel_abundance_threshold=
     None
     """
 
-    # Use the relative abundance threshold to filter isomiRs
-    if rel_abundance_threshold > 0:
-
-        # Check if RPM column exists in df
-        if 'RPM' in df.columns:
-
-            # Construir diccionario {ref_sequence: RPM}
-            ref_rpm_dict = df.set_index('sequence')['RPM'].to_dict()
-
-            # Obtener RPM del miRNA canónico (ref_miRNA) mediante mapeo
-            df['ref_RPM'] = df['ref_miRNA'].map(ref_rpm_dict).fillna(0)
-
-            # Calcular abundancia relativa: isomiR_RPM / ref_RPM
-            # Donde ref_RPM == 0 (huérfano), se asignará 0 automáticamente
-            df['RelAbundance'] = df['RPM'] / df['ref_RPM']
-            df['RelAbundance'] = df['RelAbundance'].fillna(0)
-
     # Calculate the number of unique miRNA_group_id per id
     hit_counts = df.groupby('id')['miRNA_group_id'].nunique()
 
@@ -1631,7 +1588,7 @@ def create_isomirs_gff3(df, sample, database, path_out, rel_abundance_threshold=
         'score': df['Bit_Score_p'],
         'strand': '+',
         'phase': '.',
-        'attributes': df.apply(lambda row: build_attributes(row, hit_counts, rel_abundance_threshold), axis=1)
+        'attributes': df.apply(lambda row: build_attributes(row, hit_counts), axis=1)
     })
 
     # Write gff3 file
@@ -1648,13 +1605,9 @@ def create_isomirs_gff3(df, sample, database, path_out, rel_abundance_threshold=
 def create_summary_df(df:pd.DataFrame) -> pd.DataFrame:
     """
     This function generates a one-row summary DataFrame showing the count of
-    each isomiR class from the input DataFrame, optionally filtering based on
-    quality flags.
-
-    This function counts the number of occurrences of each classification type
-    found in the 'Class' column of the input DataFrame. If the DataFrame contains
-    either 'RPM_filt' or 'Raw_counts_filt', only rows marked as 'PASS' will be 
-    considered for the summary.
+    each isomiR class from the input DataFrame. This function counts the number
+    of occurrences of each classification type found in the 'Class' column of
+    the input DataFrame.
 
     Expected values in the 'Class' column include:
     - ref_miRNA
@@ -1679,17 +1632,8 @@ def create_summary_df(df:pd.DataFrame) -> pd.DataFrame:
         its corresponding count.
     """
 
-    # Check if the dataframe must be filtered before the class asignment
-    if 'Raw_counts_filt' in df.columns:
-        if 'RPM_filt' in df.columns:
-            df_pass = df[df['RPM_filt'] == 'PASS']
-        else:
-            df_pass = df[df['Raw_counts_filt'] == 'PASS']
-    else:
-        df_pass = df
-
     # Remove duplicate rows based on the 'sequence' column
-    df_pass = df_pass.drop_duplicates(subset=['sequence'])
+    df = df.drop_duplicates(subset=['sequence'])
 
     # List of possible classes
     classes = [
@@ -1699,7 +1643,7 @@ def create_summary_df(df:pd.DataFrame) -> pd.DataFrame:
     ]
 
     # Count the number of appearances of each class
-    class_counts = df_pass['Class'].value_counts()
+    class_counts = df['Class'].value_counts()
 
     # Create the summary dataframe
     summary_data = {
@@ -1778,7 +1722,6 @@ def main():
         nt_5add = args.five_add
         nt_3add = args.three_add
         diff_ends = args.ends_modification
-        relative_abundance_thld = args.rel_abundance_threshold
 
     except:
         print('ERROR: You have inserted a wrong parameter or you are missing a parameter.')
@@ -1865,9 +1808,9 @@ def main():
     isomir_complete_df = assign_sequence_class(isomir_class_with_blast_df)
     
     # Create a gff3 file
-    create_isomirs_gff3(isomir_complete_df, id, database, f'{id}.gff3', rel_abundance_threshold=relative_abundance_thld)
+    create_isomirs_gff3(isomir_complete_df, id, database, f'{id}.gff3')
 
-    ## 6. Create a summary file
+    ## 6. Create a summary file IGUAL ESTO TOCA ELIMINARLO
     ########################################################################
     summary_df = create_summary_df(isomir_complete_df)
     summary_df.to_csv(f'{id}.summary.tsv', sep='\t', index=False)

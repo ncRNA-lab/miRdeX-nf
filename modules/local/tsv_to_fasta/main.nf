@@ -19,7 +19,6 @@ process TSV_TO_FASTA {
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def awk_cmd = header ? "NR>1" : "1"
     def col2_idx = col2
     def col1_idx = col1 ?: 0
     def header_offset = header ? 1 : 0

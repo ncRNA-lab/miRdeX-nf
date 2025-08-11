@@ -583,7 +583,6 @@ workflow MIRDEX {
         // Do not run this step when only pre-processing is to be done.
         if (!params.only_preprocessing){
             
-            ch_fastq.view()
             // Create count matrix
             QUANTIFICATION(ch_fastq, 'raw', params.counts_not_memory)
 
@@ -909,8 +908,22 @@ workflow MIRDEX {
                         iso_snv_central_supp : item[2].iso_snv_central_supp,
                         mixed : item[2].mixed,
                         mixed_shift : item[2].mixed_shift,
-                        undefined : item[2].undefined
-                    ] : [
+                        undefined : item[2].undefined,
+                        num_isomirs_filt: item[2].num_isomirs_filt,
+                        ref_miRNA_filt: item[2].ref_miRNA_filt,
+                        iso_5p_filt: item[2].iso_5p_filt,
+                        iso_3p_filt: item[2].iso_3p_filt,
+                        iso_add5p_filt: item[2].iso_add5p_filt,
+                        iso_add3p_filt: item[2].iso_add3p_filt,
+                        iso_snv_seed_filt: item[2].iso_snv_seed_filt,
+                        iso_snv_central_offset_filt: item[2].iso_snv_central_offset_filt,
+                        iso_snv_central_filt: item[2].iso_snv_central_filt,
+                        iso_snv_central_supp_filt: item[2].iso_snv_central_supp_filt,
+                        iso_snv_filt: item[2].iso_snv_filt,
+                        mixed_filt: item[2].mixed_filt,
+                        mixed_shift_filt: item[2].mixed_shift_filt,
+                        undefined_filt: item[2].undefined_filt
+                        ] : [
                         species_db : 'NA',
                         database : 'NA',
                         num_pot_isomirs : 'NA',
@@ -926,7 +939,21 @@ workflow MIRDEX {
                         iso_snv_central_supp : 'NA',
                         mixed : 'NA',
                         mixed_shift : 'NA',
-                        undefined : 'NA'
+                        undefined : 'NA',
+                        num_isomirs_filt: 'NA',
+                        ref_miRNA_filt: 'NA',
+                        iso_5p_filt: 'NA',
+                        iso_3p_filt: 'NA',
+                        iso_add5p_filt: 'NA',
+                        iso_add3p_filt: 'NA',
+                        iso_snv_seed_filt: 'NA',
+                        iso_snv_central_offset_filt: 'NA',
+                        iso_snv_central_filt: 'NA',
+                        iso_snv_central_supp_filt: 'NA',
+                        iso_snv_filt: 'NA',
+                        mixed_filt: 'NA',
+                        mixed_shift_filt: 'NA',
+                        undefined_filt: 'NA'
                     ]
 
                     def updatedItem = item[1].collect { element ->

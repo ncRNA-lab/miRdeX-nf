@@ -1,0 +1,65 @@
+name: filter_isomirs_by_abundance
+description: >
+  Filter miRNA isomiRs from one or more GFF3 files using Raw counts, RPM, or
+  Relative abundance thresholds. Emits filtered GFF3 files and a combined summary table.
+keywords:
+  - mirna
+  - isomir
+  - gff3
+  - filter
+  - rpm
+  - relative_abundance
+
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'sample1' ]
+    - gff_files:
+        type: file
+        description: One or more input GFF3 files with miRNA and isomiR annotations.
+        pattern: "*.gff3"
+  - - filter_type:
+        type: string
+        description: |
+          Metric to apply the threshold on. Valid options are:
+          - Raw: absolute read counts
+          - RPM: reads per million
+          - Relative_abundance: isomiR RPM divided by its reference miRNA RPM
+        enum:
+          - Raw
+          - RPM
+          - Relative_abundance
+    - min_value:
+        type: number
+        description: |
+          Threshold value on the selected metric (filter_type) that each sequence
+          must reach to be considered valid.
+    - min_samples:
+        type: integer
+        description: |
+          Minimum number of samples in which a sequence must meet or exceed
+          the threshold (min_value) to be retained.
+output:
+  - filt_gff3:
+      - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'sample1' ]
+      - "*.filtered.gff3":
+          type: file
+          description: Filtered GFF3 file(s) with PASS/REJECT annotations updated.
+          pattern: "*.filtered.gff3"
+  - sum:
+      - "summary.tsv":
+          type: file
+          description: |
+            Combined summary with per-sample counts of PASS isomiRs by class.
+          pattern: "summary.tsv"
+
+authors:
+  - "@antoglz"
+maintainers:
+  - "@antoglz"
