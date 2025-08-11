@@ -177,6 +177,10 @@ createBoxplot <- function(data, x, y, max_labels, x_lab, y_lab, z, legend_title)
   
   # Get number of labels
   num_labels <- length(unique(data[[x]]))
+
+  if (x == "Name"){
+    print(data[["Name"]])
+  }
   
   # Split data into subsets for plotting
   if (num_labels > max_labels) {
@@ -345,7 +349,7 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
     mutate(Name_clean = str_replace(Name, "^[^\\-]+-", "")) %>%
     group_by(seq) %>%
     summarise(
-      Name = str_c(sort(Name_clean), collapse = "/"),
+      Name = str_c(sort(unique(Name_clean)), collapse = "/"),
       .groups = "drop"
     ) %>%
     left_join(
@@ -354,6 +358,11 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
     ) %>%
     filter(Class_check != "variant_undefined" & Class_check != "miRNA_undefined")
   dea_annotated_uniq_name <- dea_annotated_uniq_name[, colnames(dea_annotated_all_isomirs)]
+
+  # Create a new column 'Name_group' containing only the first miRNA name from 'Name'
+  # followed by '_group', to simplify labels for plotting while keeping the original 'Name'.
+  dea_annotated_uniq_name <- dea_annotated_uniq_name %>%
+    mutate(Name_group = str_c(str_extract(Name, "^[^/]+"), "_g"))
   
   # Save table
   file_name_table_unique_name = paste0(id, '.unique.tsv')
@@ -368,11 +377,11 @@ if (nrow(dea_annotated_all_isomirs) > 0) {
   
   # Create the boxplot
   p_fam <- createBoxplot(dea_annotated_uniq_name, 'miRNA_fam', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
-  p_name <- createBoxplot(dea_annotated_uniq_name, 'Name', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
+  p_name <- createBoxplot(dea_annotated_uniq_name, 'Name_group', 'Shrunkenlog2FoldChange', 40, '', 'Log2FC', z='Class_check', legend_title = 'isomiR class')
   
   # Save plot in output directory
-  ggsave(file_name_fam_plot, p_fam)
-  ggsave(file_name_name_plot, p_name)
+  ggsave(file_name_fam_plot, p_fam, height = 15, width = 11)
+  ggsave(file_name_name_plot, p_name, height = 15, width = 11)
   
   
   ### 4. TABLE WITH DIFFUSE-TREND MIRNAS FAMILY
