@@ -24,8 +24,7 @@ include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../../subworkflows/loc
 include { VALIDATION                              } from "../../subworkflows/local/validation"
 include { FILTERING as FILTERING_DB               } from "../../subworkflows/local/filtering"
 include { FILTERING as FILTERING_GENOME           } from "../../subworkflows/local/filtering"
-include { QUANTIFICATION as QUANTIFICATION_RAW    } from "../../subworkflows/local/quantification"
-include { QUANTIFICATION as QUANTIFICATION_RPM    } from "../../subworkflows/local/quantification"
+include { QUANTIFICATION                          } from "../../subworkflows/local/quantification"
 include { MIRNOTE as ANNOTATION                   } from "../../subworkflows/local/mirnote"
 
 /*
@@ -585,23 +584,13 @@ workflow MIRDEX {
         if (!params.only_preprocessing){
             
             // Create count matrix
-            QUANTIFICATION_RAW(ch_fastq, 'raw', params.counts_not_memory)
+            QUANTIFICATION(ch_fastq, params.calculate_rpm, params.counts_not_memory)
 
             // Save the software version
-            ch_versions = ch_versions.mix(QUANTIFICATION_RAW.out.versions)
-
-            // Calculate RPM if the parameters are set
-            if (params.calculate_rpm) {
-
-                // Create RPM matrices
-                QUANTIFICATION_RPM(ch_fastq, 'rpm', params.counts_not_memory)
-
-                // Save the software version
-                ch_versions = ch_versions.mix(QUANTIFICATION_RPM.out.versions)
-            }
+            ch_versions = ch_versions.mix(QUANTIFICATION.out.versions)
             
             // Add the quantification data to the ch_pipeline_summary channel
-            QUANTIFICATION_RAW.out.group_matrix
+            QUANTIFICATION.out.raw_matrix
                 .map { meta, file ->
                     def id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
                     return [id, meta, file]
@@ -629,7 +618,7 @@ workflow MIRDEX {
                 .set{ch_pipeline_summary}
             
             // Change the meta.id from project to subproject.
-            QUANTIFICATION_RAW.out.group_matrix
+            QUANTIFICATION.out.raw_matrix
                 .map { meta, file ->
                     def updatedMeta = meta.clone()
                     updatedMeta.id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
