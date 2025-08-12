@@ -94,8 +94,8 @@ workflow MIRDEX {
         .set{ch_input}
         
     // Split the input channel into samples and project channels
-    ch_input_samples = ch_input.filter { id, file, _meta, _genome, _group -> file.name.endsWith('.fastq.gz') }
-    ch_input_project = ch_input.filter { id, file, _meta, _genome, _group -> file.name.endsWith('.tsv') || file.name.endsWith('.txt') }
+    ch_input_samples = ch_input.filter { _id, file, _meta, _genome, _group -> file.name.endsWith('.fastq.gz') }
+    ch_input_project = ch_input.filter { _id, file, _meta, _genome, _group -> file.name.endsWith('.tsv') || file.name.endsWith('.txt') }
 
     // Organise both channels and get the species and project names
     ch_samples_organised = organiseInputChannel(ch_input_samples, 'Run')

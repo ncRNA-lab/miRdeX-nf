@@ -17,21 +17,21 @@ process COUNTS_MATRIX {
     path  "versions.yml"                              , emit: versions
 
     script:
-    def not_in_memory = not_in_memory ? "--not-in-memory" : ""
+    def not_in_memory_arg = not_in_memory ? "--not-in-memory" : ""
     """
     if [ "${type}" == "raw" ]; then
     03-Create_counts_matrix.py \
         --id ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${metadata} \
-        ${not_in_memory}
+        ${not_in_memory_arg}
     else
     03-Create_counts_matrix.py \
         --id ${meta.id} \
         --counts-tsv ${counts} \
         --metadata ${metadata} \
         --rpm \
-        ${not_in_memory}
+        ${not_in_memory_arg}
     fi
 
     cat <<-END_VERSIONS > versions.yml
