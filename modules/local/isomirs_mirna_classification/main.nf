@@ -13,7 +13,6 @@ process ISOMIRS_MIRNA_CLASSIFICATION {
     val five_add
     val three_add
     val ends_modification
-    val rel_abundance_threshold
 
     output:
     tuple val(meta), path("*gff3")         , emit: gff3
@@ -22,7 +21,6 @@ process ISOMIRS_MIRNA_CLASSIFICATION {
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def relAbundArg = (rel_abundance_threshold > 0) ? "--rel-abundance-threshold ${rel_abundance_threshold}" : ""
     """
     # Execute isomir classification script
     05-IsomiRs_classification.py \
@@ -32,8 +30,7 @@ process ISOMIRS_MIRNA_CLASSIFICATION {
         --substitutions ${substitutions} \
         --five_add ${five_add} \
         --three_add ${three_add} \
-        --ends_modification ${ends_modification} \
-        ${relAbundArg}
+        --ends_modification ${ends_modification}
     
     # Create vesions file
     cat <<-END_VERSIONS > versions.yml

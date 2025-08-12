@@ -140,7 +140,7 @@ def validateInputParameters() {
 
             // Comprobar espacios
             if (params.databases.contains(' ')) {
-                error("The 'databases' parameter must not contain spaces. Use comma-separated names without spaces.")
+                throw new IllegalArgumentException("The 'databases' parameter must not contain spaces. Use comma-separated names without spaces.")
             }
 
             def dbList = params.databases
@@ -150,39 +150,49 @@ def validateInputParameters() {
 
             // Comprobar que no hay duplicados
             if (dbList.size() != dbList.toSet().size()) {
-                error("Duplicate entries found in 'databases' parameter: ${params.databases}")
+                throw new IllegalArgumentException("Duplicate entries found in 'databases' parameter: ${params.databases}")
             }
 
             // Comprobar que todos los nombres sean válidos
             def unknown = dbList.findAll { !validNames.contains(it) }
             if (!unknown.isEmpty()) {
-                error("Invalid database names found in 'databases' parameter: ${unknown.join(', ')}. Allowed values are: miRBase, PmiREN, sRNAanno.")
+                throw new IllegalArgumentException("Invalid database names found in 'databases' parameter: ${unknown.join(', ')}. Allowed values are: miRBase, PmiREN, sRNAanno.")
             }
         }
         
         // List of numeric params
         def numericParams = [
-            'substitutions'      : params.substitutions,
-            'three_add'          : params.three_add,
-            'five_add'           : params.five_add,
-            'ends_modification'  : params.ends_modification,
-            'rpm'                : params.rpm,
-            'counts'             : params.counts
+            'log2fc_threshold'            : params.log2fc_threshold,
+            'substitutions'               : params.substitutions,
+            'three_add'                   : params.three_add,
+            'five_add'                    : params.five_add,
+            'ends_modification'           : params.ends_modification,
+            'min_counts_filt'             : params.min_counts_filt,
+            'min_rpm_filt'                : params.min_rpm_filt,
+            'min_relative_abundance_filt' : params.min_relative_abundance_filt
+
         ]
 
         // Check if the params provided are positive numbers
         numericParams.each { name, value ->
             if (value != null && value < 0) {
-                error("The parameter '${name}' must be a non-negative number. Current value: ${value}")
+                throw new IllegalArgumentException("The parameter '${name}' must be a non-negative number. Current value: ${value}")
             }
         }
 
-        // Check if both counts and rpm params have been used (not  allowed)
-        if (params.counts > 0 && params.rpm > 0) {
-            // Show the error
-            error("The parameters 'counts' and 'rpm' are " +
-                "mutually exclusive and cannot be used together. Please select " +
-                "only one of them.")
+        // Create a list with the three filter parameters
+        def active_filters = [
+            params.min_counts_filt,
+            params.min_rpm_filt,
+            params.min_relative_abundance_filt
+        ]
+        // Count how many filters are active (value > 0)
+        .count { it > 0 }
+
+        // If more than one filter is active, throw an error and stop the pipeline
+        if (active_filters > 1) {
+            throw new IllegalArgumentException("Only one abundance filter can be used at a time: " +
+                "'min_counts_filt', 'min_rpm_filt' or 'min_relative_abundance_filt'. ")
         }
     }
     
@@ -193,7 +203,7 @@ def validateInputParameters() {
         ignoreParams.addAll(['from_counts', 'only_preprocessing'])
         
         // Show the error
-        error("The parameters 'from_counts' and 'only_preprocessing' are " +
+        throw new IllegalArgumentException("The parameters 'from_counts' and 'only_preprocessing' are " +
             "mutually exclusive and cannot be used together. Please select " +
             "only one of them.")
     }
@@ -393,7 +403,7 @@ def validateAndAssignGenome (species, genome) {
 
     // If no valid genome found, throw an error
     if (predetermined_genome == null && (params.filt_genome || params.mirna_classes != 'ref_miRNA')) {
-        error("There is no genome associated with the following species:\n${species}")
+        throw new IllegalArgumentException("There is no genome associated with the following species:\n${species}")
     }
 
     // Return (species, project, metadata_path, genome, file, groups)
@@ -411,11 +421,11 @@ def notTsvFilesError(files) {
 
     if (files.isEmpty() && params.from_counts) {
         // Throw an exception with the list of invalid files
-        error("The --from_counts parameter must " +
+        throw new IllegalArgumentException("The --from_counts parameter must " +
             "be used only when counts matrix files in TSV " +
             "format are provided in the samplesheet.\n")
     } else if (!files.isEmpty() && !params.from_counts) {
-        error("Counts matrices in TSV format " +
+        throw new IllegalArgumentException("Counts matrices in TSV format " +
             "have been provided in the samplesheet, but the " +
             "--from_counts parameter has not been specified. Please " +
             "include this parameter to ensure correct processing.\n")
@@ -438,7 +448,7 @@ def validateGroupInputUsage (item) {
     // Check if all elements have valid groups
     if(groupsProvided.size() != item.size()) {
         if (params.from_counts) {
-            error("Not all input files have an  " +
+            throw new IllegalArgumentException("Not all input files have an  " +
                 "associated group, even though the --from_counts " +
                 "parameter has been specified. Make sure to use the " +
                 "--from_counts parameter and provide a group only when " +

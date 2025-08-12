@@ -178,12 +178,16 @@
           "type": "integer",
           "default": 3,
           "description": "Minimum number of samples in which the sequence must meet the min_counts threshold to avoid being filtered out.",
-          "fa_icon": "fas fa-angle-down"
+          "fa_icon": "fas fa-copy"
         },
         "counts_not_memory": {
           "type": "boolean",
           "fa_icon": "fas fa-sd-card",
           "description": "Indicates whether the SQLite database used to generate the count matrices should not be loaded into memory. This will result in higher memory usage but better performance"
+        },
+        "calculate_rpm": {
+          "type": "boolean",
+          "fa_icon": "fas fa-table"
         }
       },
       "fa_icon": "fas fa-table"
@@ -198,13 +202,20 @@
           "type": "number",
           "default": 0.05,
           "description": "P-value threshold for Mann-Whitney and Wilcoxon tests used to assess whether sample groups are spatially separated in Principal Component Analysis (PCA).",
-          "fa_icon": "fas fa-check-circle"
+          "fa_icon": "fas fa-less-than-equal"
         },
         "dea_alpha": {
           "type": "number",
           "default": 0.05,
           "description": "Significance level (alpha) used for determining statistical significance in DEA.",
-          "fa_icon": "fas fa-check-circle"
+          "fa_icon": "fas fa-less-than-equal"
+        },
+        "log2fc_threshold": {
+          "type": "number",
+          "help_text": "a non-negative value which specifies a log2 fold change threshold. The default value is 0, corresponding to a test that the log2 fold changes are equal to zero. The user can specify the alternative hypothesis using the altHypothesis argument, which defaults to testing for log2 fold changes greater in absolute value than a given threshold. If lfcThreshold is specified, the results are for Wald tests, and LRT p-values will be overwritten.",
+          "description": "A non-negative value which specifies a log2 fold change threshold",
+          "fa_icon": "fas fa-greater-than-equal",
+          "default": 0
         }
       },
       "fa_icon": "fas fa-chart-bar"
@@ -264,26 +275,32 @@
           "fa_icon": "fas fa-laptop-code",
           "description": "Indicates whether to perform annotation using the Unitas program instead of the default annotation methodology."
         },
-        "counts": {
+        "min_counts_filt": {
           "type": "integer",
           "default": 0,
           "fa_icon": "fas fa-table",
           "description": "Minimum raw counts required for a sequence to be retained for the annotation step.",
           "help_text": "Minimum number of raw counts required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--rpm'."
         },
-        "rpm": {
+        "min_rpm_filt": {
           "type": "number",
           "default": 0,
           "fa_icon": "fas fa-table",
           "description": "Minimum Reads per million (RPM) required for a sequence to be retained for the annotation step.",
           "help_text": "Minimum number of RPM required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--counts'."
         },
-        "relative_abundance": {
+        "min_relative_abundance_filt": {
           "type": "number",
-          "default": 0,
+          "default": 0.01,
           "fa_icon": "fas fa-percent",
           "description": "Minimum relative abundance required for an isomiR to be retained.",
           "help_text": "Minimum relative abundance (isomiR RPM / canonical miRNA RPM) required for an isomiR to pass filtering. IsomiRs below this threshold are considered potential sequencing artifacts and will be removed. A value of 0 disables this filter."
+        },
+        "min_samples_filt": {
+          "type": "integer",
+          "default": 2,
+          "fa_icon": "fas fa-copy",
+          "description": "Minimum number of samples in which a given sequence must reach the min_counts_filt, min_rpm_filt, or min_relative_abundance_filt threshold to be considered a valid isomiR."
         },
         "ignore_threshold_for_canonical": {
           "type": "boolean",

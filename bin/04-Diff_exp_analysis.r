@@ -99,23 +99,24 @@ get_arguments <- function() {
                       type = "integer",
                       help = 'Minimum number of samples that must meet the threshold (default: 5)',
                       default = 5)
+  parser$add_argument('-l', '--lfc_threshold',
+                      type = "double",
+                      help = 'LFC threshold (default NULL)',
+                      default = 0,
+                      required = FALSE)
   
   # Arguments list
   args <- parser$parse_args()
   
-  #  Check for missing arguments
-  expected_arguments <- c('id', 'group_id', 'counts', 'metadata', 'alpha', 'min_counts', 'min_samples')
-  if (any(sapply(args, is.null))) {
-    empty_args <- expected_arguments[sapply(args[expected_arguments], is.null)]
-    error_message <- paste('\n\tError. Unspecified argument:', empty_args, sep = ' ')
-    stop(error_message)
+  #  Check for missing arguments (required arguments)
+  expected_arguments <- c('id', 'group_id', 'counts', 'metadata')  # los realmente requeridos
+  missing <- vapply(expected_arguments, function(x) is.null(args[[x]]) ||
+                      (is.character(args[[x]]) && identical(args[[x]], "")), logical(1))
+
+  if (any(missing)) {
+    stop("Error. Unspecified argument(s): ", paste(expected_arguments[missing], collapse = ", "))
   }
-  
-  # Check if the input directory exists
-  if (!file.exists(args$counts)) {
-    stop('Error. The input counts matrix does not exist.')
-  }
-  
+
   return(args)
 }
 
@@ -557,7 +558,7 @@ exploratory_analysis <- function(dds, file_name) {
   # Create html file with interactive plot
   htmlwidgets::saveWidget(widget = plot,
                           file = paste(path_dir_pca_out, '/', file_name, '.ea.html', sep=''),
-                          selfcontained = FALSE)
+                          selfcontained = TRUE)
   
   ############# EUCLIDEAN AND INTRA-/INTER-GROUP DISTANCES ##################### 
   
@@ -848,7 +849,7 @@ split_contrast <- function(dds, contrast, factors){
 #' )
 #' 
 
-custom_contrast_DEA <- function(dds, contrast, alpha, test_deseq) {
+custom_contrast_DEA <- function(dds, contrast, alpha, test_deseq, lfc_th=0) {
   
   # Split the design formula
   design_formula_elements <- str_split(as.character(design(dds))[2], " \\+ ")[[1]]
@@ -936,9 +937,16 @@ custom_contrast_DEA <- function(dds, contrast, alpha, test_deseq) {
       final_contrast <- paste0(final_contrast, element)
     }
   }
-  
+
   # Execute the contrast
-  res_deseq <- results(dds, contrast = eval(parse(text=final_contrast)), alpha = alpha, test = test_deseq)
+  # Only include lfcThreshold if it was provided by the user
+  if (lfc_th != 0) {
+    # Use lfcThreshold in the results call
+    res_deseq <- results(dds, contrast = eval(parse(text=final_contrast)), alpha = alpha, test = test_deseq, lfcThreshold = as.numeric(lfc_th))
+  } else {
+    # Do not include lfcThreshold
+    res_deseq <- results(dds, contrast = eval(parse(text=final_contrast)), alpha = alpha, test = test_deseq)
+  }
   
   # Create the output list
   output_list <- list(
@@ -989,9 +997,11 @@ custom_contrast_DEA <- function(dds, contrast, alpha, test_deseq) {
 #'                                 )
 #'
 
-get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
+get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_th = 0,
                               contrast_dres=NULL, coefficient_dres=NULL) {
-  
+  # Create output directory
+  dir.create("DEA/", showWarnings = FALSE)
+
   # If the selected test is LRT...
   if (toupper(test) == "LRT"){
     
@@ -1016,12 +1026,12 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
     
     # Save the results from LRT (raw and sig)
     write.table(as.data.frame(raw_table_lrt), 
-                file = paste(output_file_id, '.general_dea_raw.tsv', sep = ''), 
+                file = paste('DEA/', output_file_id, '.general_dea_raw.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
     write.table(as.data.frame(significant_table_lrt), 
-                file = paste(output_file_id, '.general_dea_sig.tsv', sep = ''), 
+                file = paste('DEA/', output_file_id, '.general_dea_sig.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
@@ -1049,7 +1059,7 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
     if (!is.null(contrast_dres)) {
       
       # Execute the custom contrast
-      custom_contrast_res <- custom_contrast_DEA(dds, contrast_dres, alpha, "Wald")
+      custom_contrast_res <- custom_contrast_DEA(dds, contrast_dres, alpha, "Wald", lfc_th)
       
       # Get the DESeq results
       deseq_results <- custom_contrast_res$DESeq_results
@@ -1066,8 +1076,15 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
       
       # Get results. It is necessary to specify the use of the Wald test
       # (necessary to see individual comparisons when the LRT test has been
-      # previously used).
-      deseq_results <- results(dds, name = coefficient_dres, alpha = alpha, test = "Wald")
+      # Only include lfcThreshold if it was provided by the user
+      if (lfc_th != 0) {
+        # Use lfcThreshold in the results call
+        deseq_results <- results(dds, name = coefficient_dres, alpha = alpha, test = "Wald", lfcThreshold = as.numeric(lfc_th))
+      } else {
+        # Do not include lfcThreshold
+        deseq_results <- results(dds, name = coefficient_dres, alpha = alpha, test = "Wald")
+      }
+     
       
       # Execute the lfcShrink function
       resLFC <- suppressMessages(lfcShrink(dds, coef = coefficient_dres, res = deseq_results))
@@ -1084,7 +1101,7 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
                                ShrunkenlfcSE = resLFC$lfcSE))
     
     # Create a volcano plot
-    volcano_plot(final_res, alpha, paste0(output_file_id, ".volcano.png"))
+    volcano_plot(final_res, alpha, paste0('DEA/',output_file_id, ".volcano.png"))
     
     # Extract significant differentially expressed miRNAs
     final_res_sig <- final_res %>%
@@ -1097,12 +1114,12 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
     # Save raw and sig results
     final_res <- rownames_to_column(as.data.frame(final_res), var = 'seq')
     write.table(final_res, 
-                file = paste(output_file_id, '.dea_raw.tsv', sep = ''), 
+                file = paste('DEA/', output_file_id, '.dea_raw.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
     write.table(as.data.frame(final_res_sig), 
-                file = paste(output_file_id, '.dea_sig.tsv', sep = ''), 
+                file = paste('DEA/', output_file_id, '.dea_sig.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
@@ -1151,6 +1168,9 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id,
 
 sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, condition_column) {
   
+  # Create output directory
+  dir.create("DEA/sRNA_clusters/", showWarnings = FALSE)
+
   # Create a tibble for LRT results
   res_LRT_tb <- deseq_results %>%
     data.frame() %>%
@@ -1277,9 +1297,9 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
   ########################## Save the output plots #############################
   
   # Save the plots
-  ggsave("default.cluster.png", plot = default_plot, width = 8, height = 6, dpi = 300)
-  ggsave("standard_error.cluster.png", plot = plot_se, width = 8, height = 6, dpi = 300)
-  ggsave("standard_deviation.cluster.png", plot = plot_sdl, width = 8, height = 6, dpi = 300)
+  ggsave("DEA/sRNA_clusters/default.cluster.png", plot = default_plot, width = 8, height = 6, dpi = 300)
+  ggsave("DEA/sRNA_clusters/standard_error.cluster.png", plot = plot_se, width = 8, height = 6, dpi = 300)
+  ggsave("DEA/sRNA_clusters/standard_deviation.cluster.png", plot = plot_sdl, width = 8, height = 6, dpi = 300)
 
   ########################## Save the output tables ############################
 
@@ -1290,7 +1310,7 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
     sequences_of_cluster_df <- clusters$df[clusters$df$cluster == cluster_id,]
     
     # Save the sequences in a TXT file
-    writeLines(sequences_of_cluster_df$genes, paste0(gsub(" ", "_", clusters_names[cluster_id]), "_sequences.cluster.txt"))
+    writeLines(sequences_of_cluster_df$genes, paste0("DEA/sRNA_clusters/", gsub(" ", "_", clusters_names[cluster_id]), "_sequences.cluster.txt"))
   }
 }
 
@@ -1310,8 +1330,13 @@ metadata <- args$metadata
 alpha <- args$alpha
 min_counts <- args$min_counts
 min_samples <- args$min_samples
+lfc_threshold <- args$lfc_threshold
+
 
 ######################### Create the DeseqDataSet ##############################
+
+# Create output directory
+dir.create("DEA/", showWarnings = FALSE)
 
 # Filter the counts matrix by low counts and create the DeseqDataSet
 dds <- create_DeseqDataSet(group_id, file, metadata, min_counts, min_samples)
@@ -1346,7 +1371,7 @@ if (!identical(dds, -1)) {
       dds <- suppressMessages(DESeq(dds, test = "LRT", reduced = as.formula(reduced_formula)))
       
       # Get the DESeq results
-      sum <- get_DESeq_results(dds, alpha, test, sum, paste0(group,"_0"))
+      sum <- get_DESeq_results(dds, alpha, test, sum, paste0(group,"_0"), lfc_th=lfc_threshold)
       
       # Print some information
       cat("- Full model: ", unique(colData(dds)$Design), "\n")
@@ -1393,7 +1418,7 @@ if (!identical(dds, -1)) {
         cat("\t ", output_file_id, " -> ", contrast, "\n")
         
         # Get the DESeq results
-        sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, contrast_dres=contrast)
+        sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, lfc_th=lfc_threshold, contrast_dres=contrast)
         
         # Increment the subfile_num variable
         subfile_num <- subfile_num + 1
@@ -1424,7 +1449,7 @@ if (!identical(dds, -1)) {
           cat("\t ", output_file_id, " -> ", comp, "\n")
           
           # Get the DESeq results
-          sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, coefficient_dres=comp)
+          sum <- get_DESeq_results(dds, alpha, "Wald", sum, output_file_id, lfc_th=lfc_threshold, coefficient_dres=comp)
           
           # Increment the subfile_num variable
           subfile_num <- subfile_num + 1
@@ -1439,7 +1464,7 @@ if (!identical(dds, -1)) {
     # Save Differential expression analysis summary file
     colnames(sum) <- c('Group', 'Test', 'Padj<alpha', 'Total', 'Coefficient', 'Contrast', 'Contrast_coefficient', 'Samples')
     write.table(sum,
-                file=paste0(group, '.dea_summary.tsv', sep=""),
+                file=paste0('DEA/', group, '.dea_summary.tsv', sep=""),
                 quote=FALSE,
                 sep='\t',
                 row.names = FALSE)
@@ -1450,7 +1475,7 @@ if (!identical(dds, -1)) {
     ea_df <- t(as.data.frame(ea_results[2:10]))
     colnames(ea_df) <- c('Group_id', 'Group', 'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'P-value(MWW)')
     write.table(ea_df,
-                file = paste0(group, '.ea_summary.tsv', sep=""),
+                file = paste0('Exploratory_analysis/', group, '.ea_summary.tsv', sep=""),
                 quote=FALSE,
                 sep='\t',
                 row.names = FALSE)
@@ -1464,13 +1489,13 @@ if (!identical(dds, -1)) {
 # If the analysis fails, return empty files.
 if (fail) {
     # Create empty TSVs
-    write.table(data.frame(), file = paste0(group, '.dea_raw_EMPTY.tsv'), sep = '\t', row.names = FALSE)
-    write.table(data.frame(), file = paste0(group, '.dea_sig_EMPTY.tsv'), sep = '\t', row.names = FALSE)
-    write.table(data.frame(), file = paste0(group, '_EMPTY.ea_summary.tsv'), sep = '\t', row.names = FALSE)
-    write.table(data.frame(), file = paste0(group, '_EMPTY.dea_summary.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('DEA/', group, '.dea_raw_EMPTY.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('DEA/', group, '.dea_sig_EMPTY.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('Exploratory_analysis/', group, '_EMPTY.ea_summary.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('DEA/', group, '_EMPTY.dea_summary.tsv'), sep = '\t', row.names = FALSE)
     
     # Create empty placeholder image
-    png(paste0(group, '_EMPTY.volcano.png'))
+    png(paste0('DEA/', group, '_EMPTY.volcano.png'))
     plot.new()
     text(0.5, 0.5, "EMPTY")
     dev.off()

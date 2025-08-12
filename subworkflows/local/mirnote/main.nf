@@ -71,8 +71,8 @@ workflow MIRNOTE {
     ch_output_gff3       = Channel.empty()
 
     // Sepecify the filter type based on the parameters
-    def filter_type  = params.counts > 0 ? "Raw" : (params.rpm > 0 ? "RPM" : (params.relative_abundance > 0 ? "Relative_abundance" : null))
-    def filter_value = params.counts > 0 ? params.counts : (params.rpm > 0 ? params.rpm : (params.relative_abundance > 0 ? params.relative_abundance : null))
+    def filter_type  = params.min_counts_filt > 0 ? "Raw" : (params.min_rpm_filt > 0 ? "RPM" : (params.min_relative_abundance_filt > 0 ? "Relative_abundance" : null))
+    def filter_value = params.min_counts_filt > 0 ? params.min_counts_filt : (params.min_rpm_filt > 0 ? params.min_rpm_filt : (params.min_relative_abundance_filt > 0 ? params.min_relative_abundance_filt : null))
    
     /*
     ========================================================================================
@@ -133,7 +133,7 @@ workflow MIRNOTE {
         COUNTS.out.raw.set{ ch_raw_counts }
 
         // Check whether a RPM threshold is to be used.
-        if (params.rpm  > 0 || params.relative_abundance  > 0){
+        if (params.min_rpm_filt  > 0 || params.min_relative_abundance_filt  > 0){
 
             // Calculate RPM
             RPM(ch_raw_counts)
@@ -257,7 +257,7 @@ workflow MIRNOTE {
         ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts)
 
         // Add RPM to isomiRs dataframe
-        if (params.rpm  > 0 || params.relative_abundance  > 0){
+        if (params.min_rpm_filt  > 0 || params.min_relative_abundance_filt  > 0){
 
             // Set the original id and prepare the channel for merging
             ADD_RAW_COUNTS_TO_ISOMIRS_DF.out.isocounts
@@ -314,8 +314,7 @@ workflow MIRNOTE {
         substitutions,
         five_add,
         three_add,
-        ends_modification,
-        params.relative_abundance
+        ends_modification
     )
 
     // Save the software version

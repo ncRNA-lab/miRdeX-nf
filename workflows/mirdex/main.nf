@@ -24,7 +24,8 @@ include { QUALITY_CONTROL as QUALITY_CONTROL_TRIM } from "../../subworkflows/loc
 include { VALIDATION                              } from "../../subworkflows/local/validation"
 include { FILTERING as FILTERING_DB               } from "../../subworkflows/local/filtering"
 include { FILTERING as FILTERING_GENOME           } from "../../subworkflows/local/filtering"
-include { QUANTIFICATION                          } from "../../subworkflows/local/quantification"
+include { QUANTIFICATION as QUANTIFICATION_RAW    } from "../../subworkflows/local/quantification"
+include { QUANTIFICATION as QUANTIFICATION_RPM    } from "../../subworkflows/local/quantification"
 include { MIRNOTE as ANNOTATION                   } from "../../subworkflows/local/mirnote"
 
 /*
@@ -584,13 +585,23 @@ workflow MIRDEX {
         if (!params.only_preprocessing){
             
             // Create count matrix
-            QUANTIFICATION(ch_fastq, 'raw', params.counts_not_memory)
+            QUANTIFICATION_RAW(ch_fastq, 'raw', params.counts_not_memory)
 
             // Save the software version
-            ch_versions = ch_versions.mix(QUANTIFICATION.out.versions)
+            ch_versions = ch_versions.mix(QUANTIFICATION_RAW.out.versions)
+
+            // Calculate RPM if the parameters are set
+            if (params.calculate_rpm) {
+
+                // Create RPM matrices
+                QUANTIFICATION_RPM(ch_fastq, 'rpm', params.counts_not_memory)
+
+                // Save the software version
+                ch_versions = ch_versions.mix(QUANTIFICATION_RPM.out.versions)
+            }
             
             // Add the quantification data to the ch_pipeline_summary channel
-            QUANTIFICATION.out.group_matrix
+            QUANTIFICATION_RAW.out.group_matrix
                 .map { meta, file ->
                     def id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
                     return [id, meta, file]
@@ -618,7 +629,7 @@ workflow MIRDEX {
                 .set{ch_pipeline_summary}
             
             // Change the meta.id from project to subproject.
-            QUANTIFICATION.out.group_matrix
+            QUANTIFICATION_RAW.out.group_matrix
                 .map { meta, file ->
                     def updatedMeta = meta.clone()
                     updatedMeta.id = file.getName().replaceFirst(/\.raw\.tsv$/, '')
@@ -653,7 +664,7 @@ workflow MIRDEX {
             .set{ ch_counts_to_dea }
 
         // Perform exploratory and differential expression analyses.
-        DIFFEXPANALYSIS(ch_counts_to_dea, params.dea_alpha, params.min_counts, params.min_samples)
+        DIFFEXPANALYSIS(ch_counts_to_dea, params.dea_alpha, params.min_counts, params.min_samples, params.log2fc_threshold)
 
         // Save the software version
         ch_versions = ch_versions.mix(DIFFEXPANALYSIS.out.versions)

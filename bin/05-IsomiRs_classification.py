@@ -1703,11 +1703,6 @@ def main():
     parser.add_argument('-x', '--ends_modification', type=int, required=True, 
                         help='Maximum number of total modifications (substitutions)' \
                         'allowed across both ends (5 + 3).')
-    parser.add_argument('-r', '--rel-abundance-threshold', type=float, default=0.0, required=False,
-                        help='Minimum relative abundance (RPM_isomiR / RPM_reference_miRNA)' \
-                            'required for isomiRs to be retained. IsomiRs with values below'\
-                            'this threshold will be filtered out. Default is 0 (no filtering).')
-
     # Parse the arguments
     args = parser.parse_args()
 
