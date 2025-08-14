@@ -44,28 +44,28 @@ workflow VALIDATION {
 
             // Create the libraries summary channel
             LIBRARIES_VALIDATION.out.sumlibraries
-                .splitCsv(sep: '\t' )
+                .splitCsv(sep: '\t', header: true)
                 .map { item ->
-                    def run = item[0].replaceFirst(/(\.fastp)?\.fastq(\.gz)?$/, '')
-                    return [run, item[1], item[2], item [3]]
+                    def run = item.File.replaceFirst(/(\.fastp)?\.fastq(\.gz)?$/, '')
+                    return [run, item.Depth, item.Depth_validity, item.Replicates_validity]
                 }
                 .set { ch_libraries_summary }
 
             // Create the projects summary channel
             LIBRARIES_VALIDATION.out.sumprojects
-                .splitCsv(sep: '\t' )
+                .splitCsv(sep: '\t', header: true)
                 .map{ item ->
                     // Create the subproject name
-                    def group_name = "${item[0]}_${item[1]}"
+                    def group_name = "${item.Project}_${item.Group_id}"
 
                     // Create a map with all the project information
                     [
-                        project: item[0],
+                        project: item.Project,
                         group: group_name,
-                        group_id:item[1],
-                        num_valid_samples: item[2],
-                        num_notvalid_samples: item[3], 
-                        validity: item[4]
+                        group_id:item.Group_id,
+                        num_valid_samples: item.Number_valid_files,
+                        num_notvalid_samples: item.Number_not_valid_files, 
+                        validity: item.Group_validity
                     ]
                 }
                 .tap { ch_projects }
@@ -125,17 +125,17 @@ workflow VALIDATION {
             
             // Create a channel with the project info
             COUNTS_VALIDATION.out.summary
-                .splitCsv(sep:'\t')
+                .splitCsv(sep:'\t', header: true)
                 .map{ item ->
                     // Create a map with all the project information
                     [
-                        project: item[1],
-                        group: item[0],
-                        group_id: item[2],
-                        num_valid_samples: item[5],
-                        num_notvalid_samples: item[6], 
-                        validity: item[3],
-                        cause: item[4]
+                        project: item.Project,
+                        group: item.Group,
+                        group_id: item.Group_id,
+                        num_valid_samples: item.Number_valid_samples,
+                        num_notvalid_samples: item.Number_not_valid_samples, 
+                        validity: item.Group_validity,
+                        cause: item.Exclusion_reason
                     ]
                 }
                 .set{ch_projects}

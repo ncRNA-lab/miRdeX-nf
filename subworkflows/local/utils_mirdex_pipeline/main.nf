@@ -39,7 +39,7 @@ workflow PIPELINE_INITIALISATION {
     // Print version and exit if required and dump pipeline parameters to JSON file
     UTILS_NEXTFLOW_PIPELINE (
         version,
-        true,
+        false,
         outdir,
         workflow.profile.tokenize(',').intersect(['conda']).size() >= 1
     )
@@ -97,10 +97,13 @@ workflow PIPELINE_COMPLETION {
     workflow.onError {
         log.error "Pipeline failed."
     }
+
+    // Get the current date and time for the summary file name
+    def currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date())
     
     // Save a file with the software versions
     softwareVersionsToYAML(versions)
-        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirdex_versions_${workflow.nextflow.timestamp.replaceAll(/[\\s:]/, '_')}.yml", sort: true, newLine: true)
+        .collectFile(storeDir: "${params.outdir}/09-Workflow_report", name: "mirdex_versions_${currentTimestamp}.yml", sort: true, newLine: true)
     
     // Sort the summary chanel
     summary
@@ -109,10 +112,10 @@ workflow PIPELINE_COMPLETION {
         }
         .flatMap()
         .set{ch_sorted_summary}
-
+    
     // Save a file with the summary information
     summaryToTsv(ch_sorted_summary)
-        .collectFile(storeDir: "${params.outdir}/02-Results", name: "mirdex_summary_${workflow.nextflow.timestamp.replaceAll(/[\\s:]/, '_')}.tsv", newLine: true, sort: false)
+        .collectFile(storeDir: "${params.outdir}/09-Workflow_report", name: "mirdex_summary_${currentTimestamp}.tsv", newLine: true, sort: false)
 }
 
 /*
@@ -167,7 +170,6 @@ def validateInputParameters() {
             'three_add'                   : params.three_add,
             'five_add'                    : params.five_add,
             'ends_modification'           : params.ends_modification,
-            'min_counts_filt'             : params.min_counts_filt,
             'min_rpm_filt'                : params.min_rpm_filt,
             'min_relative_abundance_filt' : params.min_relative_abundance_filt
 
@@ -178,21 +180,6 @@ def validateInputParameters() {
             if (value != null && value < 0) {
                 throw new IllegalArgumentException("The parameter '${name}' must be a non-negative number. Current value: ${value}")
             }
-        }
-
-        // Create a list with the three filter parameters
-        def active_filters = [
-            params.min_counts_filt,
-            params.min_rpm_filt,
-            params.min_relative_abundance_filt
-        ]
-        // Count how many filters are active (value > 0)
-        .count { it > 0 }
-
-        // If more than one filter is active, throw an error and stop the pipeline
-        if (active_filters > 1) {
-            throw new IllegalArgumentException("Only one abundance filter can be used at a time: " +
-                "'min_counts_filt', 'min_rpm_filt' or 'min_relative_abundance_filt'. ")
         }
     }
     
@@ -631,10 +618,13 @@ def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, o
             throw new RuntimeException("No se pudo enviar el correo: ${all.message}", all)
         }
         
+        // Get the current date and time for the summary file name
+        def currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date())
+
         // Save a copy of the email to the output directory
-        def output_tf = new File(workflow.launchDir.toString(), ".pipeline_report_${workflow.nextflow.timestamp}.txt")
+        def output_tf = new File(workflow.launchDir.toString(), ".pipeline_report_${currentTimestamp}.txt")
         output_tf.withWriter { w -> w << rendered }
-        nextflow.extension.FilesEx.copyTo(output_tf.toPath(), "${outdir}/pipeline_info/pipeline_report_${workflow.nextflow.timestamp}.txt")
+        nextflow.extension.FilesEx.copyTo(output_tf.toPath(), "${outdir}/09-Workflow_report/pipeline_report_${currentTimestamp}.txt")
         output_tf.delete()
     }
 }

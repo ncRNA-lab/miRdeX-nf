@@ -15,13 +15,13 @@ process DIFFEXPANALYSIS {
     val lfc_threshold
 
     output:
-    tuple val(meta), path("DEA/*_raw*.tsv")                             , emit: raw
-    tuple val(meta), path("DEA/*_sig*.tsv")                             , emit: sig
-    tuple val(meta), path("DEA/*.volcano.png")                          , emit: volcano
-    tuple val(meta), path("Exploratory_analysis/01-PCA")                , emit: pca
-    tuple val(meta), path("Exploratory_analysis/02-Mean_vs_variance")   , emit: var
-    tuple val(meta), path("Exploratory_analysis/*.ea_summary.tsv")      , emit: easum
-    tuple val(meta), path("DEA/*.dea_summary.tsv")                      , emit: deasum
+    tuple val(meta), path("02-DESeq2/*_raw*.tsv")                             , emit: raw
+    tuple val(meta), path("02-DESeq2/*_sig*.tsv")                             , emit: sig
+    tuple val(meta), path("02-DESeq2/*.volcano.png")                          , emit: volcano
+    tuple val(meta), path("01-Exploratory_analysis/01-PCA")                , emit: pca
+    tuple val(meta), path("01-Exploratory_analysis/02-Mean_vs_variance")   , emit: var
+    tuple val(meta), path("01-Exploratory_analysis/*.ea_summary.tsv")      , emit: easum
+    tuple val(meta), path("02-DESeq2/*.dea_summary.tsv")                      , emit: deasum
     path  "versions.yml"                                                , emit: versions
 
     script:
@@ -39,7 +39,7 @@ process DIFFEXPANALYSIS {
         ${lfc_th_arg}
 
     # Check if the output files are empty
-    for file in DEA/*.dea_*.tsv; do
+    for file in 02-DESeq2/*.dea_*.tsv; do
         [[ "\$file" == *EMPTY* ]] && continue
         (( \$(wc -l < "\$file") <= 1 )) && mv "\$file" "\${file%.tsv}_EMPTY.tsv"
     done
@@ -71,25 +71,25 @@ process DIFFEXPANALYSIS {
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Create output directories
-    mkdir -p DEA
-    mkdir -p Exploratory_analysis/01-PCA
-    mkdir -p Exploratory_analysis/02-Mean_vs_variance
+    mkdir -p 02-Statistical_testing
+    mkdir -p 01-Exploratory_analysis/01-PCA
+    mkdir -p 01-Exploratory_analysis/02-Mean_vs_variance
 
     # Create raw and sig tables
-    touch DEA/${prefix}_1.dea_raw.tsv
-    touch DEA/${prefix}_1.dea_sig.tsv
-    touch DEA/${prefix}_1.volcano.png
+    touch 02-DESeq2/${prefix}_1.dea_raw.tsv
+    touch 02-DESeq2/${prefix}_1.dea_sig.tsv
+    touch 02-DESeq2/${prefix}_1.volcano.png
 
     # Create EA summary file
-    ea_summary=Exploratory_analysis/${meta.id}.ea_summary.tsv
+    ea_summary=01-Exploratory_analysis/${meta.id}.ea_summary.tsv
     echo -e "Group_id\tGroup\tPC1\tPC2\tPC3\tPC4\tPC5\tPC6\tP-value(MWW)" > \$ea_summary
     echo -e "1\t${meta.id}\t37.93\t22.45\t15.52\t13.8\t10.3\t0\t0.00759240759240759" >> \$ea_summary
     
     # Get the sample names from the matrix file (column names excluding 'seq')
     sample_names=\$(head -n 1 ${matrix} | tr '\\t' '\\n' | grep -v '^seq\$' | tr '\\n' ',' | sed 's/,\$//')
 
-    # Create DEA summary file
-    dea_summary=DEA/${meta.id}.dea_summary.tsv
+    # Create 02-Statistical_testing summary file
+    dea_summary=02-DESeq2/${meta.id}.dea_summary.tsv
     echo -e "Group\tTest\tPadj<alpha\tTotal\tCoefficient\tContrast\tContrast_coefficient\tSamples" > \$dea_summary
     echo -e "${meta.id}_1\tWald\t4503\t91672\tTime_24h_vs_0h\tNo contrast\tNo contrast\t\$sample_names" >> \$dea_summary
 

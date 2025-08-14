@@ -442,6 +442,10 @@ def main():
     ## 4. SAVE THE SELECTED FILES AND CREATE THE SUMMARY FILES
     ###################################################################
 
+    # Write the header of the summary file
+    with open(summary_s_path, 'w') as f:
+        f.write("File\tDepth\tDepth_validity\tReplicates_validity\n")
+
     # If valid libraries exist...
     if len(filtered_libraries) > 0:
 
@@ -478,6 +482,10 @@ def main():
 
                 # Get depth value from dictionary of selected files
                 excluded.write(f'{original_fastq_lib}\t{depth_info_lib[original_fastq_lib][0]}\t{depth_info_lib[original_fastq_lib][1]}\tnot-valid\n')
+
+    # Write the header of the Project summary file
+    with open(results_s_path, 'w') as f:
+        f.write("Project\tGroup_id\tNumber_valid_files\tNumber_not_valid_files\tGroup_validity\n")
 
     # Save global results
     total_groups = project_metadata['Group'].unique().tolist()

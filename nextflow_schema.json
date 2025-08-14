@@ -52,11 +52,6 @@
           "type": "boolean",
           "description": "Indicates that the input samplesheet provides paths to raw count tables instead of sequencing libraries. The pipeline starts from the quantification step using these tables.",
           "fa_icon": "fas fa-table"
-        },
-        "from_dea": {
-          "type": "boolean",
-          "description": "Indicates that the input samplesheet provides paths to DEA result tables. The pipeline skips quantification and DEA, starting directly from miRNA annotation.",
-          "fa_icon": "fas fa-table"
         }
       },
       "fa_icon": "fas fa-code-branch"
@@ -275,13 +270,6 @@
           "fa_icon": "fas fa-laptop-code",
           "description": "Indicates whether to perform annotation using the Unitas program instead of the default annotation methodology."
         },
-        "min_counts_filt": {
-          "type": "integer",
-          "default": 0,
-          "fa_icon": "fas fa-table",
-          "description": "Minimum raw counts required for a sequence to be retained for the annotation step.",
-          "help_text": "Minimum number of raw counts required for a sequence to be retained in the analysis. Sequences with fewer counts will be filtered out. This argument is mutually exclusive with '--rpm'."
-        },
         "min_rpm_filt": {
           "type": "number",
           "default": 0,
@@ -301,11 +289,6 @@
           "default": 2,
           "fa_icon": "fas fa-copy",
           "description": "Minimum number of samples in which a given sequence must reach the min_counts_filt, min_rpm_filt, or min_relative_abundance_filt threshold to be considered a valid isomiR."
-        },
-        "ignore_threshold_for_canonical": {
-          "type": "boolean",
-          "fa_icon": "fas fa-table",
-          "description": "Indicates whether canonical miRNA sequences should bypass the abundance threshold filter (e.g., RPM or read count). If set, canonical sequences will pass the filter regardless of their abundance."
         },
         "reuse_dbs": {
           "type": "boolean",
@@ -501,5 +484,10 @@
     {
       "$ref": "#/$defs/generic_options"
     }
-  ]
+  ],
+  "properties": {
+    "only_preprocessing_and_counts": {
+      "type": "boolean"
+    }
+  }
 }

@@ -432,9 +432,9 @@ sere_dendrogram <- function(dds, path_dir_out){
 exploratory_analysis <- function(dds, file_name) {
   
   # Create output directories
-  path_dir_pca_out <- "Exploratory_analysis/01-PCA"
-  #path_dir_sere_out <-"Exploratory_analysis/02-SERE_dendrogram"
-  path_dir_mvv_out <- "Exploratory_analysis/02-Mean_vs_variance"
+  path_dir_pca_out <- "01-Exploratory_analysis/01-PCA"
+  #path_dir_sere_out <-"01-Exploratory_analysis/02-SERE_dendrogram"
+  path_dir_mvv_out <- "01-Exploratory_analysis/02-Mean_vs_variance"
   dir.create(path_dir_pca_out, recursive = TRUE, showWarnings = FALSE)
   #dir.create(path_dir_sere_out, recursive = TRUE, showWarnings = FALSE)
   dir.create(path_dir_mvv_out, recursive = TRUE, showWarnings = FALSE)
@@ -1000,7 +1000,7 @@ custom_contrast_DEA <- function(dds, contrast, alpha, test_deseq, lfc_th=0) {
 get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_th = 0,
                               contrast_dres=NULL, coefficient_dres=NULL) {
   # Create output directory
-  dir.create("DEA/", showWarnings = FALSE)
+  dir.create("02-DESeq2/", showWarnings = FALSE)
 
   # If the selected test is LRT...
   if (toupper(test) == "LRT"){
@@ -1026,12 +1026,12 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_
     
     # Save the results from LRT (raw and sig)
     write.table(as.data.frame(raw_table_lrt), 
-                file = paste('DEA/', output_file_id, '.general_dea_raw.tsv', sep = ''), 
+                file = paste('02-DESeq2/', output_file_id, '.general_dea_raw.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
     write.table(as.data.frame(significant_table_lrt), 
-                file = paste('DEA/', output_file_id, '.general_dea_sig.tsv', sep = ''), 
+                file = paste('02-DESeq2/', output_file_id, '.general_dea_sig.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
@@ -1101,7 +1101,7 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_
                                ShrunkenlfcSE = resLFC$lfcSE))
     
     # Create a volcano plot
-    volcano_plot(final_res, alpha, paste0('DEA/',output_file_id, ".volcano.png"))
+    volcano_plot(final_res, alpha, paste0('02-DESeq2/',output_file_id, ".volcano.png"))
     
     # Extract significant differentially expressed miRNAs
     final_res_sig <- final_res %>%
@@ -1114,12 +1114,12 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_
     # Save raw and sig results
     final_res <- rownames_to_column(as.data.frame(final_res), var = 'seq')
     write.table(final_res, 
-                file = paste('DEA/', output_file_id, '.dea_raw.tsv', sep = ''), 
+                file = paste('02-DESeq2/', output_file_id, '.dea_raw.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
     write.table(as.data.frame(final_res_sig), 
-                file = paste('DEA/', output_file_id, '.dea_sig.tsv', sep = ''), 
+                file = paste('02-DESeq2/', output_file_id, '.dea_sig.tsv', sep = ''), 
                 sep = "\t", 
                 quote = FALSE, 
                 row.names = FALSE)
@@ -1169,7 +1169,7 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_
 sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, condition_column) {
   
   # Create output directory
-  dir.create("DEA/sRNA_clusters/", showWarnings = FALSE)
+  dir.create("02-DESeq2/sRNA_clusters/", showWarnings = FALSE)
 
   # Create a tibble for LRT results
   res_LRT_tb <- deseq_results %>%
@@ -1297,9 +1297,9 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
   ########################## Save the output plots #############################
   
   # Save the plots
-  ggsave("DEA/sRNA_clusters/default.cluster.png", plot = default_plot, width = 8, height = 6, dpi = 300)
-  ggsave("DEA/sRNA_clusters/standard_error.cluster.png", plot = plot_se, width = 8, height = 6, dpi = 300)
-  ggsave("DEA/sRNA_clusters/standard_deviation.cluster.png", plot = plot_sdl, width = 8, height = 6, dpi = 300)
+  ggsave("02-DESeq2/sRNA_clusters/default.cluster.png", plot = default_plot, width = 8, height = 6, dpi = 300)
+  ggsave("02-DESeq2/sRNA_clusters/standard_error.cluster.png", plot = plot_se, width = 8, height = 6, dpi = 300)
+  ggsave("02-DESeq2/sRNA_clusters/standard_deviation.cluster.png", plot = plot_sdl, width = 8, height = 6, dpi = 300)
 
   ########################## Save the output tables ############################
 
@@ -1310,7 +1310,7 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
     sequences_of_cluster_df <- clusters$df[clusters$df$cluster == cluster_id,]
     
     # Save the sequences in a TXT file
-    writeLines(sequences_of_cluster_df$genes, paste0("DEA/sRNA_clusters/", gsub(" ", "_", clusters_names[cluster_id]), "_sequences.cluster.txt"))
+    writeLines(sequences_of_cluster_df$genes, paste0("02-DESeq2/sRNA_clusters/", gsub(" ", "_", clusters_names[cluster_id]), "_sequences.cluster.txt"))
   }
 }
 
@@ -1336,7 +1336,7 @@ lfc_threshold <- args$lfc_threshold
 ######################### Create the DeseqDataSet ##############################
 
 # Create output directory
-dir.create("DEA/", showWarnings = FALSE)
+dir.create("02-DESeq2/", showWarnings = FALSE)
 
 # Filter the counts matrix by low counts and create the DeseqDataSet
 dds <- create_DeseqDataSet(group_id, file, metadata, min_counts, min_samples)
@@ -1464,7 +1464,7 @@ if (!identical(dds, -1)) {
     # Save Differential expression analysis summary file
     colnames(sum) <- c('Group', 'Test', 'Padj<alpha', 'Total', 'Coefficient', 'Contrast', 'Contrast_coefficient', 'Samples')
     write.table(sum,
-                file=paste0('DEA/', group, '.dea_summary.tsv', sep=""),
+                file=paste0('02-DESeq2/', group, '.dea_summary.tsv', sep=""),
                 quote=FALSE,
                 sep='\t',
                 row.names = FALSE)
@@ -1475,7 +1475,7 @@ if (!identical(dds, -1)) {
     ea_df <- t(as.data.frame(ea_results[2:10]))
     colnames(ea_df) <- c('Group_id', 'Group', 'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'P-value(MWW)')
     write.table(ea_df,
-                file = paste0('Exploratory_analysis/', group, '.ea_summary.tsv', sep=""),
+                file = paste0('01-Exploratory_analysis/', group, '.ea_summary.tsv', sep=""),
                 quote=FALSE,
                 sep='\t',
                 row.names = FALSE)
@@ -1489,19 +1489,19 @@ if (!identical(dds, -1)) {
 # If the analysis fails, return empty files.
 if (fail) {
     # Create empty TSVs
-    write.table(data.frame(), file = paste0('DEA/', group, '.dea_raw_EMPTY.tsv'), sep = '\t', row.names = FALSE)
-    write.table(data.frame(), file = paste0('DEA/', group, '.dea_sig_EMPTY.tsv'), sep = '\t', row.names = FALSE)
-    write.table(data.frame(), file = paste0('Exploratory_analysis/', group, '_EMPTY.ea_summary.tsv'), sep = '\t', row.names = FALSE)
-    write.table(data.frame(), file = paste0('DEA/', group, '_EMPTY.dea_summary.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('02-DESeq2/', group, '.dea_raw_EMPTY.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('02-DESeq2/', group, '.dea_sig_EMPTY.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('01-Exploratory_analysis/', group, '_EMPTY.ea_summary.tsv'), sep = '\t', row.names = FALSE)
+    write.table(data.frame(), file = paste0('02-DESeq2/', group, '_EMPTY.dea_summary.tsv'), sep = '\t', row.names = FALSE)
     
     # Create empty placeholder image
-    png(paste0('DEA/', group, '_EMPTY.volcano.png'))
+    png(paste0('02-DESeq2/', group, '_EMPTY.volcano.png'))
     plot.new()
     text(0.5, 0.5, "EMPTY")
     dev.off()
 
     # Create required empty directories
-    dir.create("Exploratory_analysis/01-PCA", showWarnings = FALSE, recursive = TRUE)
+    dir.create("01-Exploratory_analysis/01-PCA", showWarnings = FALSE, recursive = TRUE)
     #dir.create("02-SERE_dendrogram", showWarnings = FALSE, recursive = TRUE)
-    dir.create("Exploratory_analysis/02-Mean_vs_variance", showWarnings = FALSE, recursive = TRUE)
+    dir.create("01-Exploratory_analysis/02-Mean_vs_variance", showWarnings = FALSE, recursive = TRUE)
 }

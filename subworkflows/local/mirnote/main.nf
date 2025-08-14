@@ -71,9 +71,9 @@ workflow MIRNOTE {
     ch_output_gff3       = Channel.empty()
 
     // Sepecify the filter type based on the parameters
-    def filter_type  = params.min_counts_filt > 0 ? "Raw" : (params.min_rpm_filt > 0 ? "RPM" : (params.min_relative_abundance_filt > 0 ? "Relative_abundance" : null))
-    def filter_value = params.min_counts_filt > 0 ? params.min_counts_filt : (params.min_rpm_filt > 0 ? params.min_rpm_filt : (params.min_relative_abundance_filt > 0 ? params.min_relative_abundance_filt : null))
-   
+    def filter_type  = params.min_rpm_filt > 0 ? 'RPM' : (params.min_relative_abundance_filt > 0 ? 'Relative_abundance' : null)
+    def filter_value = params.min_rpm_filt > 0 ? params.min_rpm_filt : (params.min_relative_abundance_filt > 0 ? params.min_relative_abundance_filt : null)
+ 
     /*
     ========================================================================================
         1. Prepare miRNA databases
@@ -132,15 +132,11 @@ workflow MIRNOTE {
         // Save the raw counts inot a channel
         COUNTS.out.raw.set{ ch_raw_counts }
 
-        // Check whether a RPM threshold is to be used.
-        if (params.min_rpm_filt  > 0 || params.min_relative_abundance_filt  > 0){
+        // Calculate RPM
+        RPM(ch_raw_counts)
 
-            // Calculate RPM
-            RPM(ch_raw_counts)
-
-            // Save the raw counts inot a channel
-            RPM.out.rpm.set{ ch_rpm }
-        }
+        // Save the raw counts inot a channel
+        RPM.out.rpm.set{ ch_rpm }
     }
 
     /*
@@ -256,50 +252,35 @@ workflow MIRNOTE {
         // Add raw counts to isomiRs dataframe
         ADD_RAW_COUNTS_TO_ISOMIRS_DF(ch_isomirs_add_raw_counts)
 
+        // Set the original id and prepare the channel for merging
+        ADD_RAW_COUNTS_TO_ISOMIRS_DF.out.isocounts
+            .map { meta, file ->
+                def updatedMeta = meta + [id: meta.prev_id]
+                updatedMeta.remove('prev_id') 
+                return [updatedMeta.id, updatedMeta, file]
+            }
+            .set { ch_isomirs }
+
+        // Prepare the channel for merging
+        ch_rpm
+            .map{ meta, file -> [meta.id, meta, file]}
+            .combine(ch_isomirs, by:0)
+            .map{ _id, _meta_c, file_c, meta_i, file_i ->
+                [meta_i + [id: "${meta_i.id}.rpmc", prev_id:meta_i.id], file_i, file_c]
+            }
+            .set { ch_isomirs_add_rpm }
+
         // Add RPM to isomiRs dataframe
-        if (params.min_rpm_filt  > 0 || params.min_relative_abundance_filt  > 0){
-
-            // Set the original id and prepare the channel for merging
-            ADD_RAW_COUNTS_TO_ISOMIRS_DF.out.isocounts
-                .map { meta, file ->
-                    def updatedMeta = meta + [id: meta.prev_id]
-                    updatedMeta.remove('prev_id') 
-                    return [updatedMeta.id, updatedMeta, file]
-                }
-                .set { ch_isomirs }
-
-            // Prepare the channel for merging
-            ch_rpm
-                .map{ meta, file -> [meta.id, meta, file]}
-                .combine(ch_isomirs, by:0)
-                .map{ _id, _meta_c, file_c, meta_i, file_i ->
-                    [meta_i + [id: "${meta_i.id}.rpmc", prev_id:meta_i.id], file_i, file_c]
-                }
-                .set { ch_isomirs_add_rpm }
-    
-            // Add RPM to isomiRs dataframe
-            ADD_RPM_TO_ISOMIRS_DF(ch_isomirs_add_rpm)
-            
-            // Set the original id and prepare the channel for merging
-            ADD_RPM_TO_ISOMIRS_DF.out.isocounts
-                .map { meta, file ->
-                    def updatedMeta = meta + [id: meta.prev_id]
-                    updatedMeta.remove('prev_id') 
-                    return [updatedMeta, file]
-                }
-                .set { ch_isomirs }    
-
-        } else {
-
-            // Set the original id and prepare the channel for isomir classifcation
-            ADD_RAW_COUNTS_TO_ISOMIRS_DF.out.isocounts
-                .map { meta, file ->
-                    def updatedMeta = meta + [id: meta.prev_id]
-                    updatedMeta.remove('prev_id') 
-                    return [updatedMeta, file]
-                }
-                .set { ch_isomirs }
-        }
+        ADD_RPM_TO_ISOMIRS_DF(ch_isomirs_add_rpm)
+        
+        // Set the original id and prepare the channel for merging
+        ADD_RPM_TO_ISOMIRS_DF.out.isocounts
+            .map { meta, file ->
+                def updatedMeta = meta + [id: meta.prev_id]
+                updatedMeta.remove('prev_id') 
+                return [updatedMeta, file]
+            }
+            .set { ch_isomirs }    
     }
 
     /*

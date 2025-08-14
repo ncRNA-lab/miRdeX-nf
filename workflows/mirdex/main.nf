@@ -337,9 +337,9 @@ workflow MIRDEX {
                     def new_meta = item.last()
                     // Update meta var
                     if (item[1] == null){
-                        new_meta = new_meta + [Trimming: 'Discarded']
+                        new_meta = new_meta + [trimming: 'Discarded']
                     } else {
-                        new_meta = new_meta + [Trimming: 'Trimmed']
+                        new_meta = new_meta + [trimming: 'Trimmed']
                     }
                     return [item[0], new_meta]
                 }
@@ -629,15 +629,15 @@ workflow MIRDEX {
             // Create a samplesheet with intermediate results
             writeSampleSheet(
                 ch_counts,
-                "${params.outdir}/02-Results/02-Counts_matrix",
-                "${params.outdir}/00-Additional_data/02-Samplesheets/Samplesheet_counts.csv"
+                "${params.outdir}/03-Quantification/02-Counts_matrix",
+                "${params.outdir}/03-Quantification/03-Samplesheet/Samplesheet_counts.csv"
             )
 
         }
     }
 
     // Do not run these steps when only pre-processing is to be done.
-    if (!params.only_preprocessing){
+    if( !params.only_preprocessing && !params.only_preprocessing_and_counts ) {
 
         /*
         ============================================================================
@@ -1131,24 +1131,26 @@ workflow MIRDEX {
         }        
     }
 
-    // Move the check fields to the end
+    // Prepare summary channel for the final output
     ch_pipeline_summary
-        .map { record ->
-            def reordered = new LinkedHashMap()
+    .map { r ->
+        // Keys that should always appear first, in this exact order
+        def headOrder = ['sample','species','project','group_id','group']
 
-            // Añadir primero las claves que NO terminan en '_check'
-            record.keySet().findAll { !it.endsWith('_check') }.each { key ->
-                reordered[key] = record[key]
-            }
+        // 1) Fixed header fields in the specified order
+        def head   = headOrder.collectEntries { [(it): r[it]] }
 
-            // Luego añadir las claves que SÍ terminan en '_check'
-            record.keySet().findAll { it.endsWith('_check') }.each { key ->
-                reordered[key] = record[key]
-            }
+        // 2) All other fields except the header and *_check fields
+        def middle = r.findAll { k, v -> !(k in headOrder) && !k.endsWith('_check') }
 
-            return reordered
-        }
-        .set { ch_pipeline_summary }
+        // 3) *_check fields go at the end
+        def tail   = r.findAll { k, v -> k.endsWith('_check') }
+
+        // Merge while preserving insertion order (LinkedHashMap)
+        head + middle + tail
+    }
+    .set { ch_pipeline_summary }
+
 
 
     emit:

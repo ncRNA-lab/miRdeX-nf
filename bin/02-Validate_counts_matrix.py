@@ -360,6 +360,10 @@ def main():
 
     validity, sample_names = check_counts_matrix_structure(counts_file)
 
+    # Write the header of the Project summary file
+    with open(results_s_path, 'w') as f:
+        f.write("Group\tProject\tGroup_id\tGroup_validity\tExclusion_reason\tNumber_valid_samples\tNumber_not_valid_samples\n")
+
     # If the matrix is structurally valid...
     if validity:
     
