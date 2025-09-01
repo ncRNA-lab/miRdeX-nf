@@ -1336,6 +1336,7 @@ lfc_threshold <- args$lfc_threshold
 ######################### Create the DeseqDataSet ##############################
 
 # Create output directory
+dir.create("01-Exploratory_analysis/", showWarnings = FALSE)
 dir.create("02-DESeq2/", showWarnings = FALSE)
 
 # Filter the counts matrix by low counts and create the DeseqDataSet

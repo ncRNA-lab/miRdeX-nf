@@ -389,7 +389,7 @@ workflow MIRNOTE {
     ========================================================================================
     */
 
-    if (filter_type != null) {
+    if (filter_type != null && !only_ref_miRNAs) {
 
         // Create a channel with the metadata of the GFF3 files
         ISOMIRS_MIRNA_CLASSIFICATION.out.gff3
