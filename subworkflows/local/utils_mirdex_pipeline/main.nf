@@ -388,8 +388,17 @@ def validateAndAssignGenome (species, genome) {
         predetermined_genome = genome
     }
 
+    // Will annotation be executed?
+    def annotation_will_run = !params.skip_annotation &&
+                            !params.only_preprocessing &&
+                            !params.only_preprocessing_and_counts
+
+    // Is a genome required?
+    def genome_required_for_filtering  = params.filt_genome
+    def genome_required_for_annotation = annotation_will_run && (params.mirna_classes != 'ref_miRNA')
+    
     // If no valid genome found, throw an error
-    if (predetermined_genome == null && (params.filt_genome || params.mirna_classes != 'ref_miRNA')) {
+    if (predetermined_genome == null && (genome_required_for_filtering || genome_required_for_annotation)) {
         throw new IllegalArgumentException("There is no genome associated with the following species:\n${species}")
     }
 
