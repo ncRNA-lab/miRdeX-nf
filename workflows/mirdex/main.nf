@@ -735,7 +735,7 @@ workflow MIRDEX {
                 def additionalFields = dea_summary ? [
                     comparison_id : dea_summary.Group,
                     test: dea_summary.Test,
-                    'padj<alpha': dea_summary.'Padj<alpha', // CAMMBIAR LO DE 0.05 POR ALPHA
+                    'padj<alpha': dea_summary.'Padj<alpha',
                     total: dea_summary.Total,
                     coefficient: dea_summary.Coefficient,
                     contrast: dea_summary.Contrast,
@@ -768,52 +768,6 @@ workflow MIRDEX {
                 return new_record
             }
             .set{ ch_pipeline_summary }
-
-        // // Add the DEA data to the ch_pipeline_summary channel
-        // ch_pipeline_summary
-        //     .map{ item -> ["${item.sample}_${item.group}", item]}
-        //     .join(dea_summary_ch, remainder:true)
-        //     .map { item ->
-        //         def pip_summary = item[1]
-        //         def dea_summary = item[2]
-
-        //         // Campos adicionales a añadir
-        //         def additionalFields = dea_summary ? [
-        //             comparison_id : dea_summary.Group,
-        //             test: dea_summary.Test,
-        //             'padj<alpha': dea_summary.'Padj<alpha', // CAMMBIAR LO DE 0.05 POR ALPHA
-        //             total: dea_summary.Total,
-        //             coefficient: dea_summary.Coefficient,
-        //             contrast: dea_summary.Contrast,
-        //             contrast_coefficient: dea_summary.Contrast_coefficient
-        //         ] : [
-        //             comparison_id: 'NA',
-        //             test: 'NA',
-        //             'padj<alpha': 'NA',
-        //             total: 'NA',
-        //             coefficient: 'NA',
-        //             contrast: 'NA',
-        //             contrast_coefficient: 'NA'
-        //         ]
-
-        //         // Combinar los campos originales del segundo elemento con los adicionales
-        //         pip_summary + additionalFields
-        //     }
-        //     .map { record ->
-        //         def new_record = record.clone()
-        //         def isNumeric = { val -> 
-        //             try { val as Double; return true } catch (e) { return false }
-        //         }
-
-        //         def mww = record['p-value(mww)']
-        //         new_record.ea_check = (isNumeric(mww) && (mww as Double) < params.ea_p_value) ? 'OK' : 'FAIL'
-
-        //         def padj_str = record['padj<alpha'] as String
-        //         new_record.dea_check = (padj_str != 'NA' && padj_str != '0') ? 'OK' : 'FAIL'
-
-        //         return new_record
-        //     }
-        //     .set{ ch_pipeline_summary }
                     
         // Prepare the channel for the next steps of the workflow.
         DIFFEXPANALYSIS.out.deasum
