@@ -35,5 +35,6 @@ Singularity/
 
 # Ignore file to submit pipeline in garnatxa
 main.sh
+main_samanta.sh
 miRdeX-nf*log
 

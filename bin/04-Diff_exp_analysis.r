@@ -1142,31 +1142,35 @@ get_DESeq_results <- function(dds, alpha, test, summary_df, output_file_id, lfc_
 
 
 #' sRNA cluster profile
-#' The function selects the sequences with an adjusted p-value lower than the
-#' alpha value provided as an argument to the function and generates clusters of
-#' these sequences based on their expression profile using the degPatterns
-#' function from the DEGreport package. Subsequently, the expression profiles
-#' of clusters with more than 10 sequences are graphically represented. The
-#' function also generates a TXT file for each cluster with the associated
-#' sequences.
 #'
-#' @param dds DeseqDataSet object
+#' This function selects the sequences with an adjusted p-value lower than the
+#' alpha value provided as an argument, and generates expression clusters of
+#' these sequences using the `degPatterns` function from the DEGreport package.
+#' Clusters with sufficient numbers of sequences are plotted, and TXT files are
+#' generated containing the sRNAs associated with each cluster.
+#' 
+#' To avoid failures when too few significant sRNAs are available (which causes
+#' `degPatterns` to break), the function includes a minimum threshold of
+#' significant sRNAs required before clustering is attempted.
+#'
+#' @param dds DESeqDataSet object.
 #' @param deseq_results Results from running the DESeq function using the
 #'                      Likelihood Ratio Test (LRT).
 #' @param alpha Adjusted p-value (padj) threshold.
-#' @param time_column Character column of the DeseqDataSet object's ColData
-#'                    that will be used as a variable that changes (normally a
-#'                    time variable).
-#' @param condition_column Character column of the DeseqDataSet object's ColData
-#'                         that will be used to separate samples (normally
-#'                         control/treated or control/mutant).
-#' @param output_dir Path for the output directory.
+#' @param time_column Character column from the DESeqDataSet's `colData`
+#'                    representing the time or stage variable for clustering.
+#' @param condition_column Character column from the DESeqDataSet's `colData`
+#'                         used to separate sample groups (e.g., control/treated).
+#' @param min_sig Minimum number of significant sRNAs (padj < alpha) required
+#'                before attempting clustering. Default = 10. Clustering is
+#'                skipped if fewer significant sRNAs are found.
 #' @return No value is returned.
+#'
 #' @examples
-#' sRNA_cluster_profile(dds, deseq_results, 0.05, "Stage", "Condition")
+#' sRNA_cluster_profile(dds, deseq_results, 0.05, "Stage", "Condition", min_sig = 10)
 #'
 
-sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, condition_column) {
+sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, condition_column, min_sig = 10) {
   
   # Create output directory
   dir.create("02-DESeq2/sRNA_clusters/", showWarnings = FALSE)
@@ -1181,20 +1185,59 @@ sRNA_cluster_profile <- function(dds, deseq_results, alpha, time_column, conditi
   sigLRT_sRNAs <- res_LRT_tb %>% 
     filter(padj < alpha)
   
+  # Count how many significant sRNAs are available
+  n_sig <- nrow(sigLRT_sRNAs)
+  message("Significant sRNAs (padj < ", alpha, "): ", n_sig)
+
+  # If we have fewer than `min_sig` significant sRNAs:
+  #  - degPatterns will break (requires enough genes)
+  #  - clusters would not be biologically meaningful
+  # So we skip clustering safely.
+  if (n_sig < min_sig) {
+    message("Fewer than ", min_sig, " significant sRNAs. Skipping clustering.")
+    return(invisible(NULL))
+  }
+  
   # Normalize the count matrix using the rlog function.
   rld_mat <- rlog(dds)
   
   # Filter the counts matrix selecting the significant sRNAs
   rld_mat_filt <- rld_mat[sigLRT_sRNAs$sRNA, ]
-  
-  # Create clusters of sRNA based on their expression profile. 
-  clusters <- suppressMessages(degPatterns(assay(rld_mat_filt),
-                          colData(dds),
-                          minc = 10,
-                          pattern = NULL,
-                          time = time_column,
-                          col = condition_column,
-                          plot = FALSE))
+
+  # Safety check — even if we had N significant sRNAs, the subset may fail
+  # due to mismatched IDs or other issues. If fewer than `min_sig` rows remain,
+  # clustering should not run.
+  if (is.null(dim(assay(rld_mat_filt))) || nrow(assay(rld_mat_filt)) < min_sig) {
+    message("After rlog filtering, fewer than ", min_sig, 
+            " sRNAs remain. Skipping clustering.")
+    return(invisible(NULL))
+  }
+
+  # Wrap degPatterns in tryCatch because it often crashes if:
+  #  - no genes pass its internal filters (minc, variance, etc.)
+  #  - the matrix becomes dimensionless (0 rows)
+  # Instead of aborting the entire pipeline, we catch the error and skip clustering.
+  clusters <- tryCatch(
+    suppressMessages(
+      degPatterns(
+        assay(rld_mat_filt),
+        colData(dds),
+        minc = 10,            # keep your original threshold
+        pattern = NULL,
+        time = time_column,
+        col = condition_column,
+        plot = FALSE
+      )
+    ),
+    error = function(e) {
+      message("degPatterns failed: ", e$message)
+      message("Skipping clustering, but continuing pipeline execution.")
+      return(NULL)
+    }
+  )
+
+  # If tryCatch returned NULL, it means degPatterns failed → safely exit.
+  if (is.null(clusters)) return(invisible(NULL))
   
   ################### Create the title of the clusters #########################
   
