@@ -3,6 +3,7 @@
 data/Additional_info/01-Databases/01-RNAcentral/
 data/Additional_info/01-Databases/02-Annotation_databases/
 bin/.Rhistory
+bin/__pycache__/
 
 # Ignore personal configuration files
 conf/mail.config

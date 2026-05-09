@@ -1,145 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>miRNote-nf Report</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f7f9fc;
-      color: #333;
-      padding: 2em;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    .container {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      padding: 2em;
-    }
-
-    h1 {
-      text-align: left;
-      color: #212224;
-    }
-    h2 {
-      text-align: left;
-      color: #212224;
-    }
-
-    .status-success {
-      background-color: #d4edda;
-      color: #155724;
-      border-left: 6px solid #28a745;
-      padding: 1em;
-      margin: 1em 0;
-      border-radius: 5px;
-    }
-
-    .status-failed {
-      background-color: #f8d7da;
-      color: #721c24;
-      border-left: 6px solid #dc3545;
-      padding: 1em;
-      margin: 1em 0;
-      border-radius: 5px;
-    }
-
-    .section {
-      margin-top: 2em;
-    }
-
-    .section-title {
-      font-size: 1.2em;
-      font-weight: bold;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 0.3em;
-      margin-bottom: 0.5em;
-      color: #333;
-    }
-
-    pre {
-      background-color: #f0f0f0;
-      padding: 1em;
-      overflow-x: auto;
-      border-radius: 5px;
-    }
-
-    .key-value {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.3em 0;
-    }
-
-    .footer {
-      font-size: 1.2em; /* Aumenta el tamaño de fuente */
-      margin-top: 3em;
-      color: #777;
-      padding-top: 1em;
-      border-top: 2px solid #ccc; /* Raya separadora */
-      text-align: left; /* Alineación a la izquierda */
-    }
-
-    .link {
-      color: #0057b8;
-      text-decoration: none;
-    }
-
-    .link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>miRdeX-nf Report</title>
 </head>
-<body>
-  <div class="container">
-    <h1>Workflow completion notification</h1>
-    <h2>miRdeX-nf (${version})</h2>
 
-    <div class="<% if (success) { %>status-success<% } else { %>status-failed<% } %>">
-      <% if (success) { %>
-        Execution completed successfully!
-      <% } else { %>
-        Execution failed with exit status ${exitStatus}.
-        <br><strong>Error:</strong> ${errorReport}
-      <% } %>
-    </div>
+<body style="margin:0; padding:0; background-color:#e8eaed; font-family:Tahoma, Geneva, sans-serif;">
 
-    <div class="section">
-      <div class="section-title">Run Information</div>
-      <div class="key-value">
-        <span>Run name:</span><span>&nbsp;${runName}</span>
-      </div>
-      <div class="key-value">
-        <span>Completed at:</span><span>&nbsp;${dateComplete}</span>
-      </div>
-      <div class="key-value">
-        <span>Duration:</span><span>&nbsp;${duration}</span>
-      </div>
-    </div>
+  <!-- OUTER WRAPPER -->
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#e8eaed">
+    <tr>
+      <td align="center" style="padding:30px 15px;">
 
-    <div class="section">
-      <div class="section-title">Command Line</div>
-      <pre>${commandLine}</pre>
-    </div>
+        <!-- MAIN CONTAINER -->
+        <table width="700" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff" style="border-radius:12px; overflow:hidden;">
 
-    <% if (!success) { %>
-      <div class="section">
-        <div class="section-title">Error Report</div>
-        <pre>${errorMessage}</pre>
-      </div>
-    <% } %>
-    
-    <div class="section">
-      <div class="section-title">Pipeline Configuration</div>
-      <pre><% out << summary.collect{ k,v -> " - ${k}: ${v}" }.join("\n") %></pre>
-    </div>
+          <!-- HEADER -->
+          <tr>
+            <td bgcolor="#1e2a35" style="padding:32px 36px;">
 
-    <div class="footer">
-      Visit <a href="https://github.com/antoglz/miRdeX-nf" class="link">miRdeX-nf on GitHub</a>
-    </div>
-  </div>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+
+                  <!-- LEFT -->
+                  <td valign="middle">
+
+                    <div style="
+                      display:inline-block;
+                      background-color:rgba(163,36,176,0.25);
+                      color:#d483e0;
+                      font-size:11px;
+                      font-weight:bold;
+                      letter-spacing:1px;
+                      text-transform:uppercase;
+                      padding:6px 12px;
+                      border-radius:20px;
+                      margin-bottom:14px;
+                      border:1px solid rgba(163,36,176,0.35);
+                    ">
+                      Workflow Notification
+                    </div>
+
+                    <div style="
+                      color:#f0f4f8;
+                      font-size:30px;
+                      font-weight:bold;
+                      font-family:Tahoma, Geneva, sans-serif;
+                      line-height:1.2;
+                    ">
+                      Completion Report
+                    </div>
+
+                    <div style="
+                      color:#7a95aa;
+                      font-size:13px;
+                      margin-top:6px;
+                      font-family:'Courier New', monospace;
+                    ">
+                      version ${version}
+                    </div>
+
+                  </td>
+
+                  <!-- RIGHT -->
+                  <td align="right" valign="middle" width="180">
+
+                    <img
+                      src="https://raw.githubusercontent.com/antoglz/miRdeX-nf/main/docs/assets/logo_dark.png"
+                      alt="miRdeX-nf"
+                      width="140"
+                      style="display:block; border:0; margin-left:auto;"
+                    >
+
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- BODY -->
+          <tr>
+            <td style="padding:32px 36px; background:#f7f8fa;">
+
+              <!-- STATUS -->
+              <% if (success) { %>
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                style="
+                  background:#f0faf5;
+                  border:1px solid #b6dfc9;
+                  border-left:5px solid #1aaf6a;
+                  border-radius:8px;
+                  margin-bottom:28px;
+                ">
+                <tr>
+                  <td width="50" valign="top" style="padding:18px 10px 18px 18px;">
+                    <div style="
+                      width:28px;
+                      height:28px;
+                      line-height:28px;
+                      text-align:center;
+                      border-radius:50%;
+                      background:#1aaf6a;
+                      color:#ffffff;
+                      font-weight:bold;
+                      font-size:16px;
+                    ">✓</div>
+                  </td>
+                  <td valign="top" style="padding:18px 18px 18px 0;">
+                    <div style="color:#0a6e3a; font-size:15px; font-weight:bold;">
+                      Pipeline completed successfully
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <% } else { %>
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                style="
+                  background:#fff5f5;
+                  border:1px solid #f5c0c0;
+                  border-left:5px solid #d94040;
+                  border-radius:8px;
+                  margin-bottom:28px;
+                ">
+                <tr>
+                  <td width="50" valign="top" style="padding:18px 10px 18px 18px;">
+                    <div style="
+                      width:28px;
+                      height:28px;
+                      line-height:28px;
+                      text-align:center;
+                      border-radius:50%;
+                      background:#d94040;
+                      color:#ffffff;
+                      font-weight:bold;
+                      font-size:16px;
+                    ">✕</div>
+                  </td>
+                  <td valign="top" style="padding:18px 18px 18px 0;">
+                    <div style="color:#9b2020; font-size:15px; font-weight:bold; margin-bottom:6px;">
+                      Pipeline failed · exit status ${exitStatus}
+                    </div>
+                    <div style="color:#555555; font-size:13px; line-height:1.5;">
+                      <strong>Error:</strong> ${errorReport}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <% } %>
+
+              <!-- COMMAND LINE -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
+                <tr>
+                  <td valign="middle" style="
+                    color:#a324b0;
+                    font-size:11px;
+                    font-weight:bold;
+                    letter-spacing:1.2px;
+                    text-transform:uppercase;
+                    white-space:nowrap;
+                    padding-right:10px;
+                    font-family:Tahoma, Geneva, sans-serif;
+                  ">&#9679;&nbsp; Command Line</td>
+                  <td width="100%" valign="middle" style="padding:0;"><hr style="margin:0; border:none; border-top:1px solid #c9a8d4;" /></td>
+                </tr>
+              </table>
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                style="
+                  background:#f2f4f6;
+                  border-radius:8px;
+                  border:1px solid #dde1e7;
+                  margin-bottom:32px;
+                ">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <div style="
+                      font-size:10px;
+                      font-weight:bold;
+                      color:#8b1f96;
+                      margin-bottom:8px;
+                      text-transform:uppercase;
+                      letter-spacing:1px;
+                      font-family:'Courier New', monospace;
+                    ">bash</div>
+<pre style="
+margin:0;
+font-family:'Courier New', monospace;
+font-size:12px;
+line-height:1.7;
+color:#2d3748;
+white-space:pre-wrap;
+word-break:break-word;
+"><%
+def cmd = commandLine.trim()
+def tokens = cmd.split(/(?=\s{1,}-{1,2}\w)/)
+def lines = tokens.collect { it.trim() }
+
+out << lines.withIndex().collect { line, i ->
+    i == 0 ? line : "    " + line
+}.withIndex().collect { line, i ->
+    i < lines.size() - 1 ? line + " \\" : line
+}.join("\n")
+%></pre>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- ERROR BLOCK -->
+              <% if (!success) { %>
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
+                <tr>
+                  <td valign="middle" style="
+                    color:#d94040;
+                    font-size:11px;
+                    font-weight:bold;
+                    letter-spacing:1.2px;
+                    text-transform:uppercase;
+                    white-space:nowrap;
+                    padding-right:10px;
+                    font-family:Tahoma, Geneva, sans-serif;
+                  ">&#9679;&nbsp; Error Report</td>
+                  <td width="100%" valign="middle" style="padding:0;"><hr style="margin:0; border:none; border-top:1px solid #f5c0c0;" /></td>
+                </tr>
+              </table>
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                style="
+                  background:#f2f4f6;
+                  border-radius:8px;
+                  border:1px solid #dde1e7;
+                  margin-bottom:32px;
+                ">
+                <tr>
+                  <td style="padding:20px;">
+<pre style="
+margin:0;
+font-family:'Courier New', monospace;
+font-size:12px;
+line-height:1.7;
+color:#9b2020;
+white-space:pre-wrap;
+word-break:break-word;
+">${errorMessage}</pre>
+                  </td>
+                </tr>
+              </table>
+
+              <% } %>
+
+              <!-- PIPELINE CONFIGURATION -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px;">
+                <tr>
+                  <td valign="middle" style="
+                    color:#a324b0;
+                    font-size:11px;
+                    font-weight:bold;
+                    letter-spacing:1.2px;
+                    text-transform:uppercase;
+                    white-space:nowrap;
+                    padding-right:10px;
+                    font-family:Tahoma, Geneva, sans-serif;
+                  ">&#9679;&nbsp; Pipeline Configuration</td>
+                  <td width="100%" valign="middle" style="padding:0;"><hr style="margin:0; border:none; border-top:1px solid #c9a8d4;" /></td>
+                </tr>
+              </table>
+
+              <%
+              def configKeys = [
+                'runName',
+                'userName',
+                'dateStarted',
+                'dateComplete',
+                'duration',
+                'input',
+                'outdir',
+                'email',
+                'reuse_dbs',
+                'profile',
+                'containerEngine',
+                'container',
+                'sessionId',
+                'launchDir',
+                'workDir',
+                'projectDir',
+                'configFiles',
+                'scriptName',
+                'scriptFile',
+                'scriptId',
+                'projectName',
+                'repository',
+                'revision',
+                'commitId',
+                'nextflowVersion',
+                'nextflowBuild',
+                'nextflowTimestamp'
+              ]
+              %>
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0"
+                style="
+                  background:#ffffff;
+                  border:1px solid #dde1e7;
+                  border-radius:8px;
+                  margin-bottom:24px;
+                  overflow:hidden;
+                ">
+
+                <% def rowIdx = 0 %>
+                <% configKeys.each { key -> %>
+                <% if (summary[key] != null) { %>
+
+                <tr style="background:${rowIdx % 2 == 0 ? '#ffffff' : '#f2f4f6'};">
+                <% rowIdx++ %>
+                  <td style="
+                    padding:10px 16px;
+                    border-bottom:1px solid #eaecf0;
+                    font-family:'Courier New', monospace;
+                    font-size:12px;
+                    color:#5c1168;
+                    width:40%;
+                    vertical-align:top;
+                  ">
+                    ${key}
+                  </td>
+
+                  <td style="
+                    padding:10px 16px;
+                    border-bottom:1px solid #eaecf0;
+                    font-family:'Courier New', monospace;
+                    font-size:12px;
+                    color:#2d3748;
+                    text-align:right;
+                    word-break:break-word;
+                    vertical-align:top;
+                  ">
+                    ${summary[key]}
+                  </td>
+                </tr>
+
+                <% } %>
+                <% } %>
+
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td bgcolor="#1e2a35" style="padding:20px 36px;">
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+
+                  <td valign="middle" style="color:rgba(255,255,255,0.55); font-size:12px;">
+                    <a
+                      href="https://github.com/antoglz/miRdeX-nf"
+                      style="color:#c96dd8; text-decoration:none; font-weight:bold;"
+                    >miRdeX-nf on GitHub</a>
+                    &nbsp;&middot;&nbsp;
+                    antoglz
+                  </td>
+
+                  <td align="right" valign="middle" style="
+                    color:rgba(255,255,255,0.35);
+                    font-size:11px;
+                    font-family:'Courier New', monospace;
+                  ">
+                    miRdeX-nf ${version}
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>

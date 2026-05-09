@@ -80,16 +80,22 @@ workflow PIPELINE_COMPLETION {
 
     // Get the parameters from the pipeline
     summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    
+
+    // Local variables
+    def _email           = email
+    def _email_on_fail   = email_on_fail
+    def _plaintext_email = plaintext_email
+    def _outdir          = outdir
+
     // Completion email
     workflow.onComplete {
-        if (email || email_on_fail) {
+        if (_email || _email_on_fail) {
             sendCompletionEmail(
                 summary_params,
-                email,
-                email_on_fail,
-                plaintext_email,
-                outdir
+                _email,
+                _email_on_fail,
+                _plaintext_email,
+                _outdir
             )
         }
     }
@@ -534,7 +540,6 @@ def summaryToTsv(ch) {
 // Construct and send completion email (based on CompletionEmail function from
 // Nf-core)
 //
-
 def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, outdir) {
 
     // Construir asunto del correo
@@ -596,46 +601,42 @@ def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, o
     if (!email_address) return
 
     // Render the TXT template
-    def tf           = new File("${workflow.projectDir}/assets/email_template.txt")
-    def templateText = tf.text
-    def engine       = new groovy.text.SimpleTemplateEngine()
-    def email_txt    = engine.createTemplate(templateText).make(email_fields).toString()
+    def engine    = new groovy.text.GStringTemplateEngine()
+    def tf        = new File("${workflow.projectDir}/assets/email_template.txt")
+    def email_txt = engine.createTemplate(tf).make(email_fields).toString()
 
     // Render the HTML template
-    def hf            = new File("${workflow.projectDir}/assets/email_template.html")
-    def html_template = engine.createTemplate(hf).make(email_fields)
-    def rendered      = html_template.toString()
+    def hf         = new File("${workflow.projectDir}/assets/email_template.html")
+    def email_html = engine.createTemplate(hf).make(email_fields).toString()
 
-    // Check if an email address was provided
-    if (email_address) {
-
-        // Check if the mail must be sent as plaintext
+    // Send email using system mail agent (no SMTP config needed)
+    try {
         if (plaintext_email) {
-            rendered = email_txt
+            new org.codehaus.groovy.GroovyException('Send plaintext e-mail, not HTML')
         }
-
-        // Send the email
-        try {
-            sendMail(
-                to: email_address,
-                subject: subject,
-                body: rendered
-            )
-        }
-        catch (Exception all) {
-            log.error("Failed to send email: ${all.message}")
-            throw new RuntimeException("No se pudo enviar el correo: ${all.message}", all)
-        }
-        
-        // Get the current date and time for the summary file name
-        def currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date())
-
-        // Save a copy of the email to the output directory
-        def output_tf = new File(workflow.launchDir.toString(), ".pipeline_report_${currentTimestamp}.txt")
-        output_tf.withWriter { w -> w << rendered }
-        nextflow.extension.FilesEx.copyTo(output_tf.toPath(), "${outdir}/09-Workflow_report/pipeline_report_${currentTimestamp}.txt")
-        output_tf.delete()
+        // Try sendmail first
+        ['sendmail', '-t'].execute() << "To: ${email_address}\nSubject: ${subject}\nContent-Type: text/html\n\n${email_html}"
     }
+    catch (Exception msg) {
+        log.debug(msg.toString())
+        // Fallback to mail
+        def content      = plaintext_email ? email_txt : email_html
+        def content_type = plaintext_email ? 'text/plain' : 'text/html'
+        ['mail', '-s', subject, "--content-type=${content_type}", email_address].execute() << content
+    }
+
+    // Save a copy of the report to the output directory
+    def currentTimestamp = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm").format(new Date())
+
+    def output_hf = new File(workflow.launchDir.toString(), ".pipeline_report_${currentTimestamp}.html")
+    output_hf.withWriter { w -> w << email_html }
+    nextflow.extension.FilesEx.copyTo(output_hf.toPath(), "${outdir}/09-Workflow_report/pipeline_report_${currentTimestamp}.html")
+    output_hf.delete()
+
+    def output_tf = new File(workflow.launchDir.toString(), ".pipeline_report_${currentTimestamp}.txt")
+    output_tf.withWriter { w -> w << email_txt }
+    nextflow.extension.FilesEx.copyTo(output_tf.toPath(), "${outdir}/09-Workflow_report/pipeline_report_${currentTimestamp}.txt")
+    output_tf.delete()
 }
 
 /**

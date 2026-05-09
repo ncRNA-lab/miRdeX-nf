@@ -755,12 +755,9 @@ workflow MIRDEX {
             }
             .map { record ->
                 def new_record = record.clone()
-                def isNumeric = { val -> 
-                    try { val as Double; return true } catch (e) { return false }
-                }
 
                 def mww = record['p-value(mww)']
-                new_record.ea_check = (isNumeric(mww) && (mww as Double) < params.ea_p_value) ? 'OK' : 'FAIL'
+                new_record.ea_check = (mww != null && mww.toString().isDouble() && (mww as Double) < params.ea_p_value) ? 'OK' : 'FAIL'
 
                 def padj_str = record['padj<alpha'] as String
                 new_record.dea_check = (padj_str != 'NA' && padj_str != '0') ? 'OK' : 'FAIL'
