@@ -542,13 +542,13 @@ def summaryToTsv(ch) {
 //
 def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, outdir) {
 
-    // Construir asunto del correo
+    // Email subject
     def subject = "[${workflow.manifest.name}] Successful: ${workflow.runName}"
     if (!workflow.success) {
         subject = "[${workflow.manifest.name}] FAILED: ${workflow.runName}"
     }
 
-    // Procesar resumen en un solo mapa
+    // Process summary
     def summary = [:]
     summary_params
         .keySet()
@@ -557,7 +557,7 @@ def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, o
             summary << summary_params[group]
         }
 
-    // Campos adicionales del workflow
+    // Additional fields
     def misc_fields = [:]
     misc_fields['Date Started']              = workflow.start
     misc_fields['Date Completed']            = workflow.complete
@@ -576,7 +576,7 @@ def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, o
     misc_fields['Nextflow Build']             = workflow.nextflow.build
     misc_fields['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
-    // Variables para la plantilla
+    // Template variables
     def email_fields = [
         version      : getWorkflowVersion(),
         runName      : workflow.runName,
@@ -591,13 +591,11 @@ def sendCompletionEmail(summary_params, email, email_on_fail, plaintext_email, o
         summary      : summary << misc_fields
     ]
 
-    // Determinar si enviar correo y a quién
+    // Check
     def email_address = email
     if (!email && email_on_fail && !workflow.success) {
         email_address = email_on_fail
     }
-
-    // No hacer nada si no hay destinatario
     if (!email_address) return
 
     // Render the TXT template

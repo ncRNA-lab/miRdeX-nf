@@ -472,7 +472,7 @@ workflow MIRDEX {
         if (params.filt_db) {
 
             // Remove sequences that are not of interest (rRNA, tRNA, etc.)
-            FILTERING_DB(ch_fastq, "database", params.filt_db)
+            FILTERING_DB(ch_fastq, "database", file(params.filt_db))
 
             // Save the software version
             ch_versions = ch_versions.mix(FILTERING_DB.out.versions)
