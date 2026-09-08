@@ -7,7 +7,7 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 
-## Introduction
+## miRdeX-nf
 
 **miRdeX-nf** is a Nextflow-based pipeline for differential expression analysis of microRNAs (miRNAs) from small RNA-seq data. One of its key features is the ability to process multiple comparisons, projects, or species within a single execution. Users can provide data from all projects of interest, and miRdeX-nf will independently process each dataset and generate the corresponding results in a single pipeline run.
 
@@ -44,24 +44,28 @@
    - Annotation of differentially expressed sRNAs to identify those corresponding to miRNAs or isomiRs
 8. Global patterns of DE miRNAs
    - Generation of binary matrices indicating which miRNAs are differentially expressed across the analyzed conditions
-   - Creation of log₂ fold-change matrices showing the direction and magnitude of expression changes
+   - Creation of log2FC matrices showing the direction and magnitude of expression changes
    - Summary provided at both individual miRNA and miRNA family levels
    - Designed to support global analysis and identification of shared or condition-specific expression patterns
 
+## Documentation
+
+Complete documentation for **miRdeX-nf**, including usage, pipeline parameters, workflow steps, output descriptions, and a complete tutorial, is available at the [miRdeX-nf documentation website](https://ncrna-lab.github.io/miRdeX-nf-docs/).
+
 ## Usage
 
-To run **miRdeX-nf**, you must provide a properly formatted samplesheet specifying the inputs and metadata for each analysis. The pipeline supports multiple input types, including FASTQ files, SRA accession lists, and raw count matrices. Only the FASTQ input format is shown below; for full details on all supported input types, see the [usage documentation](docs/usage.md).
+To run **miRdeX-nf**, you must provide a properly formatted samplesheet specifying the inputs and metadata for each analysis. The pipeline supports multiple input types, including FASTQ files, SRA accession lists, and raw count matrices. Only the FASTQ input format is shown below; for full details on all supported input types, see the [usage documentation](https://ncrna-lab.github.io/miRdeX-nf-docs/docs/usage).
 
 **samplesheet.csv**:
 
 ```csv
 Id,File,Metadata,Genome,Group
-sample1,data/sample1.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample2,data/sample2.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample3,data/sample3.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample4,data/sample4.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample5,data/sample5.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample6,data/sample6.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
+sample1,data/sample1.fastq.gz,metadata/PROJECT1_meta.tsv,genomes/ath.fa,
+sample2,data/sample2.fastq.gz,metadata/PROJECT1_meta.tsv,genomes/ath.fa,
+sample3,data/sample3.fastq.gz,metadata/PROJECT1_meta.tsv,genomes/ath.fa,
+sample4,data/sample4.fastq.gz,metadata/PROJECT1_meta.tsv,genomes/ath.fa,
+sample5,data/sample5.fastq.gz,metadata/PROJECT1_meta.tsv,genomes/ath.fa,
+sample6,data/sample6.fastq.gz,metadata/PROJECT1_meta.tsv,genomes/ath.fa,
 ```
 
 In this example, each row represents a single-end FASTQ file associated with a sample to be analyzed. On the other hand, the columns represent:
@@ -73,19 +77,20 @@ In this example, each row represents a single-end FASTQ file associated with a s
 - **Group** *(optional)*: Used when input is a count matrix. Not required when using FASTQ files.
 
 The pipeline can be executed as follows:
-```
-nextflow run miRdeX-nf/main.nf
-   --input <SAMPLESHEET>
-   --outdir <OUTDIR>
-   -profile <docker/singularity/.../>
+
+```bash
+nextflow run miRdeX-nf/main.nf \
+    --input <SAMPLESHEET> \
+    --outdir <OUTDIR> \
+    -profile <docker|singularity|...>
 ```
 > [!NOTE] 
-> For a detailed explanation of how to prepare each input type, as well as additional details and functionality, please refer to the [usage documentation](docs/usage.md) and the [parameter documentation](docs/parameters.md).
+> For a detailed explanation of how to prepare each input type, as well as additional details and functionality, please refer to the [usage documentation](https://ncrna-lab.github.io/miRdeX-nf-docs/docs/usage) and the [parameter documentation](https://ncrna-lab.github.io/miRdeX-nf-docs/docs/parameters).
 
 
 ## Pipeline output
 
-The pipeline produces a structured set of results, including processed libraries, quality control reports, quantification tables, differential expression results, and miRNA/isomiR annotations. For a **comprehensive description of the generated outputs and accompanying reports**, please refer to the [output documentation](docs/OUTPUT.md).
+The pipeline produces a structured set of results, including processed libraries, quality control reports, quantification tables, differential expression results, and miRNA/isomiR annotations. For a **comprehensive description of the generated outputs and accompanying reports**, please refer to the [output documentation](https://ncrna-lab.github.io/miRdeX-nf-docs/docs/output).
 
 ## Credits
 
@@ -99,6 +104,6 @@ We would also like to express our gratitude to members of the [ncRNAlab](https:/
  
 ## Citation
 
-If you use mirDeX-nf in your research, please cite it with the following DOI: [placeholder DOI]
+If you use miRdeX-nf in your research, please cite it with the following DOI: [placeholder DOI]
 
-All software and tool references for this pipeline are provided in the [citations.md](docs/citations.md) file.
+All software and tool references for this pipeline are provided in the [citation documentation](https://ncrna-lab.github.io/miRdeX-nf-docs/docs/citations).
