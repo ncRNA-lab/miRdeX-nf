@@ -9,7 +9,7 @@
 
 ## Introduction
 
-**miRdeX-nf** is a Nextflow-based pipeline for differential expression analysis of microRNAs (miRNAs) from small RNA sequencing (sRNA-seq) data. One of the key features of miRdeX-nf is its ability to process and analyze data from multiple comparisons, projects, or species simultaneously. Users only need to include the data for the projects they wish to analyze, and the pipeline will return results for all of them in a single run.
+**miRdeX-nf** is a Nextflow-based pipeline for differential expression analysis of microRNAs (miRNAs) from small RNA-seq data. One of its key features is the ability to process multiple comparisons, projects, or species within a single execution. Users can provide data from all projects of interest, and miRdeX-nf will independently process each dataset and generate the corresponding results in a single pipeline run.
 
 ![mirdex-nf metro map](docs/mirdex_metromap.svg)
 
@@ -22,7 +22,7 @@
    - Quality control (`FastQC`, `MultiQC`)
    - Filtering against user-provided reference FASTA (`Bowtie`)
    - Genome alignment with user-supplied genome (`Bowtie`)
-4. Validation of sequencing depth for each library and minimum number of biological replicates per condition.
+4. Validation of sequencing depth for each library and minimum number of biological replicates per condition
 5. Small RNA quantification:
    - Raw counts of small RNAs
    - Generation of raw count matrices
@@ -31,7 +31,7 @@
    - Principal Component Analysis (PCA)
    - `DESeq2`
 7. miRNA annotation and isomiR classification:
-   - Initial alignment of sRNA sequences to reference mature and precursor miRNAs from `miRBase`, `sRNAanno` or `PmiREN` databases (`BLASTn`)
+   - Initial alignment of sRNA sequences to reference mature and precursor miRNAs from `miRBase`, `sRNAanno`, or `PmiREN` databases (`BLASTn`)
    - Classification of aligned sequences into:
      - Canonical miRNAs (perfect match to mature sequence)
      - Templated isomiRs (sequence variants that align perfectly with the precursor)
@@ -52,16 +52,16 @@
 
 To run **miRdeX-nf**, you must provide a properly formatted samplesheet specifying the inputs and metadata for each analysis. The pipeline supports multiple input types, including FASTQ files, SRA accession lists, and raw count matrices. Only the FASTQ input format is shown below; for full details on all supported input types, see the [usage documentation](docs/usage.md).
 
-**samplesheet.tsv**:
+**samplesheet.csv**:
 
-```tsv
-Id       File                    Metadata                   Genome             Group
-sample1  data/sample1.fastq.gz   metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample2  data/sample2.fastq.gz   metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample3  data/sample3.fastq.gz   metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample4  data/sample4.fastq.gz   metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample5  data/sample5.fastq.gz   metadata/PROJECT1_meta.tsv genomes/ath.fa    
-sample6  data/sample6.fastq.gz   metadata/PROJECT1_meta.tsv genomes/ath.fa    
+```csv
+Id,File,Metadata,Genome,Group
+sample1,data/sample1.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
+sample2,data/sample2.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
+sample3,data/sample3.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
+sample4,data/sample4.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
+sample5,data/sample5.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
+sample6,data/sample6.fastq.gz,metadata/PROJECT1_meta.tsv genomes/ath.fa    
 ```
 
 In this example, each row represents a single-end FASTQ file associated with a sample to be analyzed. On the other hand, the columns represent:
