@@ -7,7 +7,7 @@
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
 
-# miRdeX-nf
+## Introduction
 
 **miRdeX-nf** is a Nextflow-based pipeline for differential expression analysis of microRNAs (miRNAs) from small RNA-seq data. One of its key features is the ability to process multiple comparisons, projects, or species within a single execution. Users can provide data from all projects of interest, and miRdeX-nf will independently process each dataset and generate the corresponding results in a single pipeline run.
 
